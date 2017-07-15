@@ -15,13 +15,12 @@ public class GameController : MonoBehaviour {
 	{
 		instance = this;
 		selector = GameObject.Find("Selector").GetComponent<Selector>(); // get reference to the selector
-		levelloader = LevelLoader.instance; // get instance to the level loader
 	}
 
 	// Use this for initialization
 	void Start () 
 	{
-		
+		levelloader = LevelLoader.instance; // get instance to the level loader
 		if(levelloader) // if level loader exists...
 		{
 			tiles = levelloader.Load(1); // load the level and get reference to the tiles
