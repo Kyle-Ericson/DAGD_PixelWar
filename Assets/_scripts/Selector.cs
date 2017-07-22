@@ -5,11 +5,11 @@ using UnityEngine;
 public class Selector : MonoBehaviour {
 
 	private float zOffset = -0.02f;
-	private Vector2 _gridPosition;
-	public Vector2 gridPosition
+	private Vector2 _position;
+	public Vector2 position
 	{
-		get { return _gridPosition; }
-		set { _gridPosition = value; }
+		get { return _position; }
+		set { _position = value; }
 	}
 
 	

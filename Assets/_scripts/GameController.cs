@@ -4,36 +4,47 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour {
 	
-	[HideInInspector] public GameController instance = null; // singleton of game controller
-	private LevelLoader levelloader; // reference to the level loader
+	[HideInInspector] public static GameController instance = null; // singleton of game controller
 	private Selector selector; // reference to the selector
-	private Dictionary<Vector2, Tile> tiles = new Dictionary<Vector2, Tile>(); // variable for holding a reference to all of the grid tiles
+	public Dictionary<Vector2, Tile> tiles; // list of tiles of the current map
+	
 
 
 
 	void Awake ()
 	{
-		instance = this;
+		GameController.instance = this; // singleton gamecontroller instance
 		selector = GameObject.Find("Selector").GetComponent<Selector>(); // get reference to the selector
 	}
 
-	// Use this for initialization
 	void Start () 
 	{
-		levelloader = LevelLoader.instance; // get instance to the level loader
-		if(levelloader) // if level loader exists...
-		{
-			tiles = levelloader.Load(1); // load the level and get reference to the tiles
-		}
+		Libraries.Load(); // load all the libraries
+		tiles = MapLoader.instance.Load(0); // spawn the map and load the tiles
 	}
 	
-	// Update is called once per frame
 	void Update () 
 	{
-		
+		MoveSelector();
 	}
-	public void MoveSelector (Vector2 position)
+
+	private void RemoveMap() // remove the map from the game
+    {
+        foreach(KeyValuePair<Vector2, Tile> item in tiles) // for each tile...
+        {
+            Destroy(item.Value.gameObject); // destroy the game object
+        }
+        tiles.Clear(); // clear tiles dictionary
+    }
+	public void MoveSelector () // move the selector based on which tile is selected
 	{
-		selector.Move(position);
+		foreach(KeyValuePair<Vector2, Tile> k in tiles) // for each tile...
+		{
+			if(k.Value.isSelected)
+			{
+				Debug.Log(k.Value);
+				selector.Move(k.Value.transform.position); // check if it is selected, then move the selector
+			}
+		}
 	}
 }
