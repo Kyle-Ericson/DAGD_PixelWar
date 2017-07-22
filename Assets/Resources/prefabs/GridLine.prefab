@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 212866604643248606}
   - component: {fileID: 114694331802488976}
   m_Layer: 0
-  m_Name: GridSquare
+  m_Name: GridLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93,3 +93,4 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0

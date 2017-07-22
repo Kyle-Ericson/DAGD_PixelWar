@@ -17,4 +17,12 @@ public class Selector : MonoBehaviour {
 	{
 		transform.position = new Vector3(newPos.x, newPos.y, zOffset);
 	}
+	public void Hide()
+	{
+		gameObject.SetActive(false);
+	}
+	public void Show()
+	{
+		gameObject.SetActive(true);
+	}
 }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 // this class get the desired level data, loads it and spawns the level into the scene
 public class MapLoader : MonoBehaviour
 {
-    public GameObject objTile; // the tile object
+    private GameObject objTile; // tile game obj
     public GameObject objGridLine; // the grid outlines
     public static MapLoader instance = null; // singleton level loader instance
 
@@ -15,6 +15,8 @@ public class MapLoader : MonoBehaviour
     void Awake()
     {
         instance = this; // variable for referencing this
+        objTile = Resources.Load("prefabs/Tile", typeof(GameObject)) as GameObject; // load tile prefab
+        objGridLine = Resources.Load("prefabs/GridLine", typeof(GameObject)) as GameObject; // load grid line prefab
     }
     public Dictionary<Vector2, Tile> Load (int mapID)
     {

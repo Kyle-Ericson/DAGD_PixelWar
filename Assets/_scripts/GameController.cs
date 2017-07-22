@@ -6,7 +6,7 @@ public class GameController : MonoBehaviour {
 	
 	[HideInInspector] public static GameController instance = null; // singleton of game controller
 	private Selector selector; // reference to the selector
-	public Dictionary<Vector2, Tile> tiles; // list of tiles of the current map
+	private Dictionary<Vector2, Tile> tiles; // list of tiles of the current map
 	
 
 
@@ -14,18 +14,20 @@ public class GameController : MonoBehaviour {
 	void Awake ()
 	{
 		GameController.instance = this; // singleton gamecontroller instance
-		selector = GameObject.Find("Selector").GetComponent<Selector>(); // get reference to the selector
+		selector = Instantiate(Resources.Load("prefabs/Tile", typeof(GameObject)) as GameObject).GetComponent<Selector>(); // get reference to the selector
 	}
 
 	void Start () 
 	{
 		Libraries.Load(); // load all the libraries
-		tiles = MapLoader.instance.Load(0); // spawn the map and load the tiles
 	}
-	
 	void Update () 
 	{
 		MoveSelector();
+	}
+	private void LoadMap(int mapID)
+	{
+		tiles = MapLoader.instance.Load(mapID); // spawn the map and load the tiles
 	}
 
 	private void RemoveMap() // remove the map from the game
@@ -40,10 +42,9 @@ public class GameController : MonoBehaviour {
 	{
 		foreach(KeyValuePair<Vector2, Tile> k in tiles) // for each tile...
 		{
-			if(k.Value.isSelected)
+			if(k.Value.isSelected) // if it is selected...
 			{
-				Debug.Log(k.Value);
-				selector.Move(k.Value.transform.position); // check if it is selected, then move the selector
+	    		selector.Move(k.Value.transform.position); // move the selector
 			}
 		}
 	}
