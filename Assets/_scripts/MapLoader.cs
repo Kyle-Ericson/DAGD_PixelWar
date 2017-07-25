@@ -31,8 +31,8 @@ public class MapLoader : MonoBehaviour
         float tileWidth = objTile.transform.localScale.x; // tile's width
         float tileHeight = objTile.transform.localScale.y; // tile's height
 
-        int cols = map.height; // the number of columns
-        int rows = map.width; // the number of rows
+        int cols = map.width; // the number of columns
+        int rows = map.height; // the number of rows
 
         Vector2 offset = new Vector2( // this centers the map at 0,0 
             ((cols * tileWidth) * -0.5f) + (tileWidth * 0.5f), 
@@ -42,6 +42,7 @@ public class MapLoader : MonoBehaviour
         {
             for (var x = 0; x < cols; x++) // for each column in the grid...
             {
+                if(map.grid[(y * map.width) + x] == 0) continue;
                 Vector2 worldPos = new Vector2(x * tileWidth + offset.x, -y * tileHeight + -offset.y); // world space postition based on grid position
                 Tile tile = Instantiate(objTile).GetComponent<Tile>(); // get tile script from tile obj
                 tile.SetType(map.grid[(y * map.width) + x]); // set the type of tile based on the level data retrieved

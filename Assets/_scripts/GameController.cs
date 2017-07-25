@@ -14,12 +14,13 @@ public class GameController : MonoBehaviour {
 	void Awake ()
 	{
 		GameController.instance = this; // singleton gamecontroller instance
-		selector = Instantiate(Resources.Load("prefabs/Tile", typeof(GameObject)) as GameObject).GetComponent<Selector>(); // get reference to the selector
+		selector = Instantiate(Resources.Load("prefabs/Selector", typeof(GameObject)) as GameObject).GetComponent<Selector>(); // get reference to the selector
 	}
 
 	void Start () 
 	{
 		Libraries.Load(); // load all the libraries
+		LoadMap(2);
 	}
 	void Update () 
 	{
@@ -42,7 +43,7 @@ public class GameController : MonoBehaviour {
 	{
 		foreach(KeyValuePair<Vector2, Tile> k in tiles) // for each tile...
 		{
-			if(k.Value.isSelected) // if it is selected...
+			if(k.Value && k.Value.isSelected) // if it is selected...
 			{
 	    		selector.Move(k.Value.transform.position); // move the selector
 			}
