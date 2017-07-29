@@ -1,0 +1,24 @@
+{
+    "tiles":
+    [
+        {
+            "id": 0,
+            "name": "None",
+            "defense": 0,
+            "moveCost": 0 
+        },
+        {
+            "id": 1,
+            "name": "Mountain",
+            "defense": 2,
+            "moveCost": 3 
+        },
+        {
+            "id": 2,
+            "name": "Forest",
+            "defense": 1,
+            "moveCost": 2
+        }
+    ]
+    
+}

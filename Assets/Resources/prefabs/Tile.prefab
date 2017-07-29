@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4533026755739352}
   - component: {fileID: 212557414679644528}
   - component: {fileID: 61521950002774158}
-  - component: {fileID: 114579187607063468}
+  - component: {fileID: 114141495247823900}
   m_Layer: 0
   m_Name: Tile
   m_TagString: Untagged
@@ -57,8 +57,8 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    pivot: {x: 0.5, y: 0.419}
+    oldSize: {x: 1, y: 1.1953125}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -67,7 +67,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &114579187607063468
+--- !u!114 &114141495247823900
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1607243948067066}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6848e232324f00a4f83f1f6f57f483b0, type: 3}
+  m_Script: {fileID: 11500000, guid: cea1f6451bf5b4f49a8d6ebfcfc55273, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!212 &212557414679644528
@@ -110,11 +110,13 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 60b291d06dbccd3489976f8e859da96c, type: 3}
-  m_Color: {r: 0.2352941, g: 0.2352941, b: 0.2352941, a: 1}
+  m_Sprite: {fileID: 21300000, guid: bb8e9217eb15f484e99d1c5d00a1042f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_MaskInteraction: 0

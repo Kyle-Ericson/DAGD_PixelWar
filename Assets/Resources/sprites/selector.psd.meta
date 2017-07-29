@@ -1,17 +1,19 @@
 fileFormatVersion: 2
-guid: 60b291d06dbccd3489976f8e859da96c
-timeCreated: 1496911327
+guid: 729383c7895d8f04483a490a529ed514
+timeCreated: 1501341461
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName: {}
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
     borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
     mipMapFadeDistanceStart: 1
     mipMapFadeDistanceEnd: 3
   bumpmap:
@@ -27,10 +29,13 @@ TextureImporter:
   textureFormat: 1
   maxTextureSize: 2048
   textureSettings:
-    filterMode: 0
-    aniso: 16
-    mipBias: 0
-    wrapMode: 0
+    serializedVersion: 2
+    filterMode: -1
+    aniso: -1
+    mipBias: -1
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -40,9 +45,9 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 4
+  spritePixelsToUnits: 512
   alphaUsage: 1
-  alphaIsTransparency: 0
+  alphaIsTransparency: 1
   spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
@@ -52,7 +57,7 @@ TextureImporter:
   platformSettings:
   - buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
-    textureFormat: 4
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -60,7 +65,7 @@ TextureImporter:
     overridden: 0
   - buildTarget: Standalone
     maxTextureSize: 2048
-    textureFormat: 4
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -68,7 +73,7 @@ TextureImporter:
     overridden: 0
   - buildTarget: iPhone
     maxTextureSize: 2048
-    textureFormat: 4
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -76,7 +81,7 @@ TextureImporter:
     overridden: 0
   - buildTarget: Android
     maxTextureSize: 2048
-    textureFormat: 4
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -84,7 +89,7 @@ TextureImporter:
     overridden: 0
   - buildTarget: WebGL
     maxTextureSize: 2048
-    textureFormat: 4
+    textureFormat: -1
     textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
@@ -94,10 +99,15 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline:
-    - - {x: -2, y: -2}
-      - {x: -2, y: 2}
-      - {x: 2, y: 2}
-      - {x: 2, y: -2}
+    - - {x: -256, y: 256}
+      - {x: -256, y: -256}
+      - {x: 256, y: -256}
+      - {x: 256, y: 256}
+    - - {x: -226.90399, y: 229.7168}
+      - {x: 229.52963, y: 229.7168}
+      - {x: 229.52957, y: -227.42}
+      - {x: -226.20079, y: -229.5296}
+    physicsShape: []
   spritePackingTag: 
   userData: 
   assetBundleName: 
