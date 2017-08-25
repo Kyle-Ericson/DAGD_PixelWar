@@ -6,8 +6,8 @@ using UnityEngine;
 
 
 [System.Serializable]
-public class TileData {
-    
+public class TileItem 
+{
     public int id;
     public string name;
     public int defense;

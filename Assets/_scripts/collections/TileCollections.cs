@@ -6,6 +6,8 @@ using UnityEngine;
 
 
 
-[System.Serializable] public class TileCollection { // library for tile data
-    public List<TileData> tiles = new List<TileData>();     // list of maps from maps.json
+[System.Serializable]
+public class TileCollection // library for tile data
+{ 
+    public List<TileItem> tileItems = new List<TileItem>();     // list of maps from maps.json
 }

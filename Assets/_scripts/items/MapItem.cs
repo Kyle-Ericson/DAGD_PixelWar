@@ -6,7 +6,7 @@ using UnityEngine;
 
 
 [System.Serializable]
-public class MapData
+public class MapItem
 {
     public int id;
     public string name;

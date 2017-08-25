@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 [System.Serializable]
-public class UnitData
+public class UnitItem
 {
     public string name;
     public int health;

@@ -4,23 +4,27 @@ using UnityEngine;
 using System.IO;
 
 
-public static class JsonReader { // reads the json files
+public static class JsonReader // reads the json files
+{
 
-    private static string jMaps = File.ReadAllText(Application.dataPath + "/StreamingAssets/maps.json");
-    private static string jUnits = File.ReadAllText(Application.dataPath + "/StreamingAssets/units.json");
-    private static string jTiles = File.ReadAllText(Application.dataPath + "/StreamingAssets/tiles.json");
+    private static string jMaps = File.ReadAllText(Application.dataPath + "/StreamingAssets/mapItems.json");
+    private static string jUnits = File.ReadAllText(Application.dataPath + "/StreamingAssets/unitItems.json");
+    private static string jTiles = File.ReadAllText(Application.dataPath + "/StreamingAssets/tileItems.json");
 
 
-    public static List<UnitData> GetUnits() {
+    public static List<UnitItem> GetUnits()
+    {
         UnitCollection uc = JsonUtility.FromJson<UnitCollection>(jUnits); // get the collection of unit data from json
-        return uc.units;
+        return uc.unitItems;
     }
-    public static List<MapData> GetMaps() {
+    public static List<MapItem> GetMaps()
+    {
         MapCollection mc = JsonUtility.FromJson<MapCollection>(jMaps); // get the colleciton of map data from json
-        return mc.maps;
+        return mc.mapItems;
     }
-    public static List<TileData> GetTiles() {
+    public static List<TileItem> GetTiles()
+    {
         TileCollection tc = JsonUtility.FromJson<TileCollection>(jTiles); // get the collection of tile data from json
-        return tc.tiles;
+        return tc.tileItems;
     }
 }
