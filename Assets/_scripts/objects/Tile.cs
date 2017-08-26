@@ -9,21 +9,33 @@ public class Tile : MonoBehaviour // the tiles of the map
 {
 
     private bool _isSelected = false; // if this tile is clicked on
-    public bool isSelected { get { return _isSelected; } }
-    private bool _isHovered = false; // if the tile is being hovered over
-    public bool isHovered { get { return _isHovered; } }
+    private bool _isHovered = false; // if the tile is being hovered over   
     private TileItem data; // the data for this tile's type
     private Dictionary<int, Sprite> sprites = new Dictionary<int, Sprite>(); // dictionary for holding all of the sprites
+    
+
+
+
+
+    public bool isHovered 
+    {   
+        get { return _isHovered; } 
+    }
+    public bool isSelected 
+    { 
+        get { return _isSelected; } 
+        set { _isSelected = value; ChangeColor(); }
+    }
+
+
 
 
     void Awake()
     {
         LoadSprites(); // load in the correct sprites
     }
-    void Update()
+    void ChangeColor() // change the sprites color based on selected status
     {
-        CheckMouse(); // check mouse
-
         if (_isSelected) GetComponent<SpriteRenderer>().color = Color.red;
         else GetComponent<SpriteRenderer>().color = Color.white;
     }
@@ -39,17 +51,4 @@ public class Tile : MonoBehaviour // the tiles of the map
     }
     void OnMouseOver() { _isHovered = true; } // if mouse is over this tile, it is selected
     void OnMouseExit() { _isHovered = false; } // if mouse moves off this tile, it is no longer selected
-
-    void CheckMouse() // check for a mouse click and if it is on this tile or not
-    {
-        if (Input.GetMouseButtonDown(0) && _isHovered && !GameController.instance.isATileSelected)
-        { // if left mouse is down, this tile is hovered and no other tile is selected...
-            _isSelected = GameController.instance.isATileSelected = true; // this tile is selected
-        }
-        else if (Input.GetMouseButtonDown(0) && !_isHovered && _isSelected)
-        { // if mouse is down and this tile is selected and not hovered...
-            _isSelected = GameController.instance.isATileSelected = false; // this tile is deselected
-        }
-    }
-
 }

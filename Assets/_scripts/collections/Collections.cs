@@ -12,9 +12,10 @@ public static class Collections
     private static List<UnitItem> _unitData; // list of all tile data
     public static List<UnitItem> unitData { get { return _unitData; } }
 
-
-    public static void Load() { // load all collections
-        _mapData = JsonReader.GetMaps(); // load all maps from JsonReader 
+    // load all collections
+    public static void Load()
+    {
+        _mapData = JsonReader.GetMaps(); // load all maps from JsonReader
         _unitData = JsonReader.GetUnits();// load all unit data from JsonReader
         _tileData = JsonReader.GetTiles(); // load all tile data from JsonReader
     }

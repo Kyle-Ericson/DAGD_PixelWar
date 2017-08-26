@@ -8,47 +8,63 @@ public class GameController : MonoBehaviour
     [HideInInspector] public static GameController instance = null; // singleton of game controller
     private Selector selector; // reference to the selector
     private bool _isATileSelected = false;
-    public bool isATileSelected
-    {
-        get { return _isATileSelected; }
-        set { _isATileSelected = value; }
-    }
+    public bool isATileSelected { get { return _isATileSelected; } }
     private Dictionary<Vector2, Tile> tiles; // list of tiles of the current map
 
 
 
-
-    private void Awake() // called when instantiated
+    // called when instantiated
+    private void Awake()
     {
-        GameController.instance = this; // singleton gamecontroller instance
+        GameController.instance = this;
         selector = Instantiate(Resources.Load<GameObject>("prefabs/Selector").GetComponent<Selector>()); // get reference to the selector
     }
-    private void Start() // called when scene starts
+    // called when scene starts
+    private void Start()
     {
         Collections.Load(); // load all the libraries
-        LoadMap(2);
+        LoadMap(2); // load the map
     }
-    private void Update() // called once a frame
+    // called once a frame
+    private void Update()
     {
-        CheckTiles();
+        if(!_isATileSelected) MoveSelector();
+        if(Input.GetMouseButtonDown(0)) { CheckClick(); }
     }
-    private void LoadMap(int mapID) // load the map
+    // load the map
+    private void LoadMap(int mapID)
     {
         tiles = MapLoader.instance.Load(mapID); // spawn the map and load the tiles
     }
-    private void RemoveMap() // remove the map
+    // remove the map
+    private void RemoveMap()
     {
         foreach (KeyValuePair<Vector2, Tile> item in tiles) { Destroy(item.Value.gameObject); }  // destroy the tiles
         tiles.Clear(); // clear tiles dictionary
     }
-    private void CheckTiles() // move the selector to the correct tile
+    private void MoveSelector()
     {
+        foreach (KeyValuePair<Vector2, Tile> k in tiles) 
+        {
+            if(k.Value.isHovered) selector.Move(k.Value.transform.position);
+        }
+    }
+    private void CheckClick()
+    {
+        Tile selectedTile = null;
+        Tile hoveredTile = null;
+
         foreach (KeyValuePair<Vector2, Tile> k in tiles) // for each tile...
         {
-            if (k.Value && k.Value.isHovered && !_isATileSelected) // if it is selected...
-            {
-                selector.Move(k.Value.transform.position); // move the selector
-            }
+            if(k.Value.isSelected) selectedTile = k.Value;
+            if(k.Value.isHovered) hoveredTile = k.Value;
+
+            if(!selectedTile && hoveredTile) hoveredTile.isSelected = _isATileSelected = true;
+            else if (selectedTile != hoveredTile) DeselectAllTiles();
         }
+    }
+    private void DeselectAllTiles()
+    {
+        foreach (KeyValuePair<Vector2, Tile> k in tiles) k.Value.isSelected = _isATileSelected = false;
     }
 }
