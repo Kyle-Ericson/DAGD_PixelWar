@@ -4,19 +4,24 @@ using UnityEngine;
 
 public static class Collections
 {
-
-    private static List<MapItem> _mapData; // list of all map data
+    // list of all map data
+    private static List<MapItem> _mapData; 
     public static List<MapItem> mapData { get { return _mapData; } }
-    private static List<TileItem> _tileData; // list of all tile data
+    // list of all tile data
+    private static List<TileItem> _tileData; 
     public static List<TileItem> tileData { get { return _tileData; } }
-    private static List<UnitItem> _unitData; // list of all tile data
+    // list of all tile data
+    private static List<UnitItem> _unitData; 
     public static List<UnitItem> unitData { get { return _unitData; } }
+
+
+
 
     // load all collections
     public static void Load()
     {
-        _mapData = JsonReader.GetMaps(); // load all maps from JsonReader
-        _unitData = JsonReader.GetUnits();// load all unit data from JsonReader
-        _tileData = JsonReader.GetTiles(); // load all tile data from JsonReader
+        _mapData = JsonReader.GetMaps();
+        _unitData = JsonReader.GetUnits();
+        _tileData = JsonReader.GetTiles();
     }
 }

@@ -5,8 +5,8 @@ using UnityEngine;
 
 
 
-[System.Serializable]
-public class MapItem
+
+[System.Serializable] public class MapItem
 {
     public int id;
     public string name;

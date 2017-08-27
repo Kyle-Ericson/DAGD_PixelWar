@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
-
-
-[System.Serializable]
-public class TileCollection // library for tile data
+// library for tile data
+[System.Serializable] public class TileCollection 
 { 
-    public List<TileItem> tileItems = new List<TileItem>();     // list of maps from maps.json
+    // list of maps from maps.json
+    public List<TileItem> tileItems = new List<TileItem>();
 }
