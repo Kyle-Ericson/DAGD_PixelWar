@@ -7,13 +7,18 @@ using System.Collections.Generic;
 public class MapLoader : MonoBehaviour
 {
     // tile game obj
-    private GameObject Tile;
+    private GameObject tileObj;
+    // unit game obj
+    private GameObject unitObj;
     // the grid outlines
-    public GameObject objGridLine;
-    // singleton level loader instance
-    public static MapLoader instance = null;
+    private GameObject gridLineObj;
+    // maploader reference to itself
+    [HideInInspector] public static MapLoader instance = null;
     // offset of the grid square outline
     private float gridLineOffsetZ = -0.01f;
+    // current map data
+    public static MapItem currentMap;
+
 
 
 
@@ -21,14 +26,16 @@ public class MapLoader : MonoBehaviour
     {
         instance = this;
         // load tile prefab
-        Tile = Resources.Load<GameObject>("prefabs/Tile");
+        tileObj = Resources.Load<GameObject>("prefabs/Tile");
         // load grid line prefab
-        objGridLine = Resources.Load<GameObject>("prefabs/GridLine");
+        gridLineObj = Resources.Load<GameObject>("prefabs/GridLine");
+
+        unitObj = Resources.Load<GameObject>("prefabs/Unit");
     }
     // Load the map data from the collections
-    public Dictionary<Vector2, Tile> Load(int mapID)
+    public static Dictionary<Vector2, Tile> Load(int mapID)
     {
-        return SpawnMap(Collections.mapData[mapID]);
+        return MapLoader.instance.SpawnMap(Collections.maps[mapID]);
     }
     // spawn the map
     private Dictionary<Vector2, Tile> SpawnMap(MapItem map)
@@ -40,8 +47,8 @@ public class MapLoader : MonoBehaviour
         Dictionary<Vector2, Tile> tiles = new Dictionary<Vector2, Tile>();
 
         // get tile width and height
-        float tileWidth = Tile.transform.localScale.x;
-        float tileHeight = Tile.transform.localScale.y;
+        float tileWidth = tileObj.transform.localScale.x;
+        float tileHeight = tileObj.transform.localScale.y;
 
         // get number of columns and rows
         int cols = map.width;
@@ -65,20 +72,28 @@ public class MapLoader : MonoBehaviour
                 // world space postition based on grid position
                 Vector2 worldPos = new Vector2(x * tileWidth + offset.x, -y * tileHeight + -offset.y);
                 // spawn the grid lines
-                GameObject gl = Instantiate(objGridLine, new Vector3(worldPos.x, worldPos.y, gridLineOffsetZ), Quaternion.identity);
+                GameObject gridLine = Instantiate(gridLineObj, new Vector3(worldPos.x, worldPos.y, gridLineOffsetZ), Quaternion.identity);
                 // set the rendering layer to y
-                gl.GetComponent<SpriteRenderer>().sortingOrder = y;
+                gridLine.GetComponent<SpriteRenderer>().sortingOrder = y;
                 // get tile script from tile obj
-                Tile tile = Instantiate(Tile).GetComponent<Tile>();
+                Tile tileScript = Instantiate(tileObj).GetComponent<Tile>();
                 // position tile in world space based on grid position
-                tile.transform.position = worldPos;
+                tileObj.transform.position = worldPos;
                 // set the type of tile based on the level data retrieved
-                tile.SetType(map.grid[(y * map.width) + x]);
-                tile.GetComponent<SpriteRenderer>().sortingOrder = y;
+                tileScript.SetType(map.grid[(y * map.width) + x]);
+                //tileScript.GetComponent<SpriteRenderer>().sortingOrder = y;
                 // add the new tile to the tiles dictionary
-                tiles.Add(new Vector2(x, y), tile);
+                tiles.Add(new Vector2(x, y), tileScript);
             }
         }
+        // convert start1 into vector2
+        Vector2 start1 = map.start1.ToVector2();
+
+        // spawn start unit here
+        if(tiles[start1]) {
+            Instantiate(unitObj, tiles[start1].transform.position, Quaternion.identity);
+        }
+
         return tiles;
     }
 }

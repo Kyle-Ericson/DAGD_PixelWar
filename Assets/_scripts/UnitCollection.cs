@@ -7,8 +7,8 @@ using UnityEngine;
 
 
 // library for loading map data from json
-[System.Serializable] public class UnitCollection 
+[System.Serializable] public class UnitCollection
 {
     // list of maps from maps.json
-    public List<UnitItem> unitItems = new List<UnitItem>(); 
+    public List<UnitItem> unitItems = new List<UnitItem>();
 }

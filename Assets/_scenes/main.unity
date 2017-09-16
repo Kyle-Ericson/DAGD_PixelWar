@@ -157,7 +157,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.21507353, g: 0.5666074, b: 0.8602941, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -237,8 +237,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83ebf478766044d44844f69496ab56bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objGridLine: {fileID: 1125587717163606, guid: f8197657cb86e8445816eed165b27f86,
-    type: 2}
 --- !u!1 &1384835317
 GameObject:
   m_ObjectHideFlags: 0
