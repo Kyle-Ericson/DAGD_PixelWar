@@ -5,22 +5,17 @@ using UnityEngine;
 public class Unit : GamePiece 
 {
 
-    // unit data
-    private UnitItem data;
+    public UnitItem data = null;
 
-    void Update() {
-        if(Input.GetMouseButtonDown(0)) {
-            if(isHovered) _isSelected = true;
-        }
-    }
+
+
     // load Unit sprites from resources
     protected override void LoadSprites() {
         
     }
+    // set type of unit
     public override void SetType(int type) {
         GetComponent<SpriteRenderer>().sprite = sprites[type];
 	    data = Collections.units[type];	
     }
-    
-
 }

@@ -9,10 +9,12 @@ public class GameController : MonoBehaviour
     // reference to the selector
     private Selector selector;
     // is there currently tile selected
-    private bool _aTileIsSelected = false;
-    public bool aTileIsSelected { get { return _aTileIsSelected; } }
+    private bool aTileIsSelected = false;
+    private Tile currentSelectedTile = null;
     // list of tiles of the current map
     private Dictionary<Vector2, Tile> tiles = null;
+    // list of units on the board
+    private Dictionary<Vector2, Unit> units = null;
 
 
 
@@ -30,8 +32,18 @@ public class GameController : MonoBehaviour
     }
     // called once a frame
     private void Update() {
-        if(!_aTileIsSelected) MoveSelector();
-        CheckSelected();
+
+        if(Input.GetMouseButtonDown(0)) CheckTouch();
+        if(!aTileIsSelected) MoveSelector();
+    }
+    private void CheckTouch() {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Debug.DrawLine(ray.origin, ray.origin + ray.direction * 50f, Color.red, 1000000);
+
+        if(Physics2D.Raycast(ray.origin, ray.origin + ray.direction * 50f))
+        {
+            Debug.Log("Hit");
+        }
     }
     // spawn the map and load the tiles
     private void LoadMap(int mapID) {
@@ -51,26 +63,11 @@ public class GameController : MonoBehaviour
             }
         }
     }
-    // check what tile is clicked
-    private void CheckSelected() {
-        Tile selectedTile = null;
-
-        foreach (KeyValuePair<Vector2, Tile> k in tiles) { 
-            if(k.Value.isSelected) {
-                _aTileIsSelected = true;
-                selectedTile = k.Value;
-            } 
-            else {
-                _aTileIsSelected = false;
-            }
-        }
-
-    }
     // deselects all tiles
     private void DeselectAllTiles() {
         foreach (KeyValuePair<Vector2, Tile> k in tiles) { 
-            k.Value.Deselect(); 
+            k.Value.UnHighlight(); 
         }
-        _aTileIsSelected = false;
+        aTileIsSelected = false;
     }
 }

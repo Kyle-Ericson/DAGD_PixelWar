@@ -14,7 +14,9 @@ public class GamePiece : MonoBehaviour {
     public bool isHovered { get { return _isHovered; } }
     // dictionary for holding all of the sprites
     protected Dictionary<int, Sprite> sprites = new Dictionary<int, Sprite>(); 
-    
+
+
+
 
     // called when instantiated
     void Awake() { LoadSprites(); }
@@ -24,6 +26,8 @@ public class GamePiece : MonoBehaviour {
     protected virtual void LoadSprites() { }
     // set the type of tile that should be used, changing its sprite and data
     public virtual void SetType(int type) { }
+    //
+    public virtual void Select() { _isSelected = true; }
     // Deselect
     public virtual void Deselect() { _isSelected = false; }
     // if mouse is over this tile, it is hovered
