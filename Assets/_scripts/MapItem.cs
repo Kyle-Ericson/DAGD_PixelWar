@@ -11,8 +11,8 @@ public class MapItem : Item
 {
     public int id;
     public string name;
-    public int width;
-    public int height;
+    public int cols;
+    public int rows;
     public SerialVector2 start1;
     public SerialVector2 start2;
     public List<int> grid = new List<int>();

@@ -7,9 +7,8 @@ using UnityEngine;
 // the tile object
 public class Tile : GamePiece 
 {
-    private bool isHighlighted = false;
-    public TileItem data = null;
-    
+    private TileItem _data = null;
+    public TileItem data { get { return _data; }}
     // load the sprites from the resources folder
     protected override void LoadSprites() {
         sprites.Add(1, (Resources.Load<Sprite>("sprites/prototype/mountain")));
@@ -18,14 +17,7 @@ public class Tile : GamePiece
     // set the type of tile that should be used, changing its sprite and data
     public override void SetType(int type) {
         GetComponent<SpriteRenderer>().sprite = sprites[type]; 
-        data = Collections.tiles[type]; 
+        _data = Collections.tiles[type]; 
     }
-    // highlight the tile
-    public void Highlight() {
-        GetComponent<SpriteRenderer>().color = Color.red;
-    }
-    // remove the highlight from the tile
-    public void UnHighlight() {
-        GetComponent<SpriteRenderer>().color = Color.white;
-    }
+    
 }

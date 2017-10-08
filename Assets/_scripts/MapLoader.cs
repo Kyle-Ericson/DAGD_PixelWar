@@ -18,6 +18,9 @@ public class MapLoader : MonoBehaviour
     private float gridLineOffsetZ = -0.01f;
     // current map data
     public static MapItem currentMap;
+    // tile scale
+    float tileWidth;
+    float tileHeight;
 
 
 
@@ -29,71 +32,54 @@ public class MapLoader : MonoBehaviour
         tileObj = Resources.Load<GameObject>("prefabs/Tile");
         // load grid line prefab
         gridLineObj = Resources.Load<GameObject>("prefabs/GridLine");
-
-        unitObj = Resources.Load<GameObject>("prefabs/Unit");
     }
     // Load the map data from the collections
-    public static Dictionary<Vector2, Tile> Load(int mapID)
+    public Dictionary<Vector2, Tile> LoadMap(int mapID)
     {
         return MapLoader.instance.SpawnMap(Collections.maps[mapID]);
     }
     // spawn the map
     private Dictionary<Vector2, Tile> SpawnMap(MapItem map)
     {
+        currentMap = map;
         // if there is no grid, return
         if (map.grid.Count == 0) return null;
-
         // instantiate tiles dictionary
         Dictionary<Vector2, Tile> tiles = new Dictionary<Vector2, Tile>();
-
         // get tile width and height
-        float tileWidth = tileObj.transform.localScale.x;
-        float tileHeight = tileObj.transform.localScale.y;
-
-        // get number of columns and rows
-        int cols = map.width;
-        int rows = map.height;
-
-        // this centers the map at 0,0
-        Vector2 offset = new Vector2
-        (
-            ((cols * tileWidth) * -0.5f) + (tileWidth * 0.5f),
-            ((rows * tileHeight) * -0.5f) + (tileHeight * 0.5f)
-        );
-
+        tileWidth = tileObj.transform.localScale.x;
+        tileHeight = tileObj.transform.localScale.y;
         // for each row in the grid...
-        for (var y = 0; y < rows; y++)
+        for (var y = 0; y < map.rows; y++)
         {
             // for each column in the grid...
-            for (var x = 0; x < cols; x++)
+            for (var x = 0; x < map.cols; x++)
             {
                 // skip this interation if the grid number is 0
-                if (map.grid[(y * map.width) + x] == 0) continue;
-                // world space postition based on grid position
-                Vector2 worldPos = new Vector2(x * tileWidth + offset.x, -y * tileHeight + -offset.y);
-                // spawn the grid lines
-                GameObject gridLine = Instantiate(gridLineObj, new Vector3(worldPos.x, worldPos.y, gridLineOffsetZ), Quaternion.identity);
-                // set the rendering layer to y
-                gridLine.GetComponent<SpriteRenderer>().sortingOrder = y;
-                // get tile script from tile obj
-                Tile tileScript = Instantiate(tileObj).GetComponent<Tile>();
-                // position tile in world space based on grid position
-                tileObj.transform.position = worldPos;
-                // set the type of tile based on the level data retrieved
-                tileScript.SetType(map.grid[(y * map.width) + x]);
-                //tileScript.GetComponent<SpriteRenderer>().sortingOrder = y;
-                // add the new tile to the tiles dictionary
-                tiles.Add(new Vector2(x, y), tileScript);
+                if (map.grid[(y * map.cols) + x] != 0) {
+                    // world space postition based on grid position
+                    Vector2 worldPos = new Vector2(x + (tileWidth / 2), -y - (tileHeight / 2));
+                    // spawn the grid lines
+                    GameObject gridLine = Instantiate(gridLineObj, new Vector3(worldPos.x, worldPos.y, gridLineOffsetZ), Quaternion.identity);
+                    // set the rendering layer to y
+                    gridLine.GetComponent<SpriteRenderer>().sortingOrder = y;
+                    // get tile script from tile obj
+                    Tile tileScript = Instantiate(tileObj, new Vector3(worldPos.x, worldPos.y, 0), Quaternion.identity).GetComponent<Tile>();
+                    // set the type of tile based on the level data retrieved
+                    tileScript.SetType(map.grid[(y * map.cols) + x]);
+                    //tileScript.GetComponent<SpriteRenderer>().sortingOrder = y;
+                    // add the new tile to the tiles dictionary
+                    tiles.Add(new Vector2(x, y), tileScript);
+                }
             }
         }
-        // convert start1 into vector2
-        Vector2 start1 = map.start1.ToVector2();
-
-        // spawn start unit here
-        if(tiles[start1]) {
-            Instantiate(unitObj, tiles[start1].transform.position, Quaternion.identity);
-        }
-
+        MoveCamera();
         return tiles;
+    }
+    private void MoveCamera() {
+        // move the camera
+        float camX = (currentMap.cols * tileWidth) / 2;
+        float camY = -(currentMap.rows * tileHeight) / 2;
+        Camera.main.transform.position = new Vector3(camX,camY, -10);
     }
 }

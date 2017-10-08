@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class GamePiece : MonoBehaviour {
 
+    
     // if this tile is clicked on
     protected bool _isSelected = false;
 	// _isSelected
     public bool isSelected { get { return _isSelected; } }
-    // if the tile is being hovered over   
-    protected bool _isHovered = false;
-	// _isHovered 
-    public bool isHovered { get { return _isHovered; } }
     // dictionary for holding all of the sprites
-    protected Dictionary<int, Sprite> sprites = new Dictionary<int, Sprite>(); 
+    protected Dictionary<int, Sprite> sprites = new Dictionary<int, Sprite>();
 
 
 
@@ -26,12 +23,16 @@ public class GamePiece : MonoBehaviour {
     protected virtual void LoadSprites() { }
     // set the type of tile that should be used, changing its sprite and data
     public virtual void SetType(int type) { }
-    //
+    // select the object
     public virtual void Select() { _isSelected = true; }
     // Deselect
     public virtual void Deselect() { _isSelected = false; }
-    // if mouse is over this tile, it is hovered
-    void OnMouseOver() { _isHovered = true; }
-    // if mouse moves off this tile, it is no longer hovered
-    void OnMouseExit() { _isHovered = false; } 
+    // highlight the tile
+    public virtual void Highlight(Color color) {
+        GetComponent<SpriteRenderer>().color = color;
+    }
+    // remove the highlight from the tile
+    public virtual void UnHighlight() {
+        GetComponent<SpriteRenderer>().color = Color.white;
+    }
 }

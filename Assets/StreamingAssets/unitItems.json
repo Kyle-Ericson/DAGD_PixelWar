@@ -2,11 +2,13 @@
     "unitItems":
     [
         {
+            "id": 0,
             "name": "Infantry",
             "health": 100,
             "speed": 3
         },
         {
+            "id": 1,
             "name": "Tank",
             "health": 200,
             "speed": 2
