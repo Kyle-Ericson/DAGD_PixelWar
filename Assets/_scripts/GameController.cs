@@ -36,7 +36,7 @@ public class GameController : MonoBehaviour
     // called when scene starts
     private void Start() {
         Collections.Load(); 
-        GameController.instance.LoadMap(0);
+        GameController.instance.LoadMap(1);
         selector.Move(GridToWorld(Vector2.zero));
         selector.Show();
     }
