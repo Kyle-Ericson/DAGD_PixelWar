@@ -28,7 +28,8 @@ public class GameController : MonoBehaviour
         // set instance to current instance
         if(GameController.instance == null) GameController.instance = this;
         // get reference to the selector
-        selector = Instantiate(Resources.Load<GameObject>("prefabs/Selector").GetComponent<Selector>()); 
+        selector = Instantiate(Resources.Load<GameObject>("prefabs/Selector").GetComponent<Selector>());
+        selector.Hide(); 
         // load unit object
         unitObj = Resources.Load<GameObject>("prefabs/Unit");
     }
@@ -36,6 +37,8 @@ public class GameController : MonoBehaviour
     private void Start() {
         Collections.Load(); 
         GameController.instance.LoadMap(0);
+        selector.Move(GridToWorld(Vector2.zero));
+        selector.Show();
     }
     // called once a frame
     private void Update() {
@@ -79,7 +82,7 @@ public class GameController : MonoBehaviour
     private void MoveSelector() {
         Vector2 gridPos = WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         if(tiles.ContainsKey(gridPos)) {
-            selector.transform.position = tiles[gridPos].transform.position;
+            selector.Move(GridToWorld(gridPos));
         }
     }
     // check this units neighbors based on its range

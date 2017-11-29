@@ -5,7 +5,7 @@ using UnityEngine;
 public class Selector : MonoBehaviour
 {
 
-    private float zOffset = 0f;
+    private float zOffset = -1;
     private Vector2 _position;
     public Vector2 position
     {
@@ -13,11 +13,9 @@ public class Selector : MonoBehaviour
         set { _position = value; }
     }
 
-    private void Start()
-    {
-        GetComponent<SpriteRenderer>().sortingOrder = 100;
-    }
-    public void Move(Vector2 newPos)
+    private void Start() { }
+
+    public void Move(Vector3 newPos)
     {
         transform.position = new Vector3(newPos.x, newPos.y, zOffset);
     }

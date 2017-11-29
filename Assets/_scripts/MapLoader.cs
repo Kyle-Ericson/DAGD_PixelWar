@@ -17,7 +17,7 @@ public class MapLoader : MonoBehaviour
     // offset of the grid square outline
     private float gridLineOffsetZ = -0.01f;
     // current map data
-    public static MapItem currentMap;
+    public static MapData currentMap;
     // tile scale
     float tileWidth;
     float tileHeight;
@@ -36,10 +36,10 @@ public class MapLoader : MonoBehaviour
     // Load the map data from the collections
     public Dictionary<Vector2, Tile> LoadMap(int mapID)
     {
-        return MapLoader.instance.SpawnMap(Collections.maps[mapID]);
+        return MapLoader.instance.SpawnMap(Collections.mapCollection.mapData[mapID]);
     }
     // spawn the map
-    private Dictionary<Vector2, Tile> SpawnMap(MapItem map)
+    private Dictionary<Vector2, Tile> SpawnMap(MapData map)
     {
         currentMap = map;
         // if there is no grid, return
@@ -60,9 +60,7 @@ public class MapLoader : MonoBehaviour
                     // world space postition based on grid position
                     Vector2 worldPos = new Vector2(x + (tileWidth / 2), -y - (tileHeight / 2));
                     // spawn the grid lines
-                    GameObject gridLine = Instantiate(gridLineObj, new Vector3(worldPos.x, worldPos.y, gridLineOffsetZ), Quaternion.identity);
-                    // set the rendering layer to y
-                    gridLine.GetComponent<SpriteRenderer>().sortingOrder = y;
+                    Instantiate(gridLineObj, new Vector3(worldPos.x, worldPos.y, gridLineOffsetZ), Quaternion.identity);
                     // get tile script from tile obj
                     Tile tileScript = Instantiate(tileObj, new Vector3(worldPos.x, worldPos.y, 0), Quaternion.identity).GetComponent<Tile>();
                     // set the type of tile based on the level data retrieved

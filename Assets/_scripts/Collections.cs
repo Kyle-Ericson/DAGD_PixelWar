@@ -5,26 +5,38 @@ using UnityEngine;
 public static class Collections
 {
     // list of all map data
-    private static List<MapItem> _maps;
-    public static List<MapItem> maps {
-        get { return _maps; }
+    private static MapCollection _mapCollection;
+    public static MapCollection mapCollection {
+        get { return _mapCollection; }
     }
     // list of all tile data
-    private static List<TileItem> _tiles;
-    public static List<TileItem> tiles {
-        get { return _tiles; }
+    private static TileCollection _tileCollection;
+    public static TileCollection tileCollection
+    {
+        get { return _tileCollection; }
     }
     // list of all unit data
-    private static List<UnitItem> _units;
-    public static List<UnitItem> units {
-        get { return _units; }
+    private static UnitCollection _unitCollection;
+    public static UnitCollection unitCollection
+    {
+        get { return _unitCollection; }
     }
 
     // load all collections
     public static void Load()
     {
-        _maps = JsonReader.GetMaps();
-        _units = JsonReader.GetUnits();
-        _tiles = JsonReader.GetTiles();
+        _mapCollection = JsonReader.GetMaps();
+        _unitCollection = JsonReader.GetUnits();
+        _tileCollection = JsonReader.GetTiles();
     }
 }
+
+
+[System.Serializable]
+public class MapCollection { public List<MapData> mapData = new List<MapData>(); }
+
+[System.Serializable]
+public class TileCollection { public List<TileData> tileData = new List<TileData>(); }
+
+[System.Serializable]
+public class UnitCollection { public List<UnitData> unitData = new List<UnitData>(); }
