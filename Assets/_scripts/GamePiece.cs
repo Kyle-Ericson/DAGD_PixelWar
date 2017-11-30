@@ -28,11 +28,13 @@ public class GamePiece : MonoBehaviour {
     // Deselect
     public virtual void Deselect() { _isSelected = false; UnHighlight(); }
     // highlight the tile
-    public virtual void Highlight(Color color) {
+    public virtual void Highlight(Color color)
+    {
         GetComponent<SpriteRenderer>().color = color;
     }
     // remove the highlight from the tile
-    public virtual void UnHighlight() {
+    public virtual void UnHighlight()
+    {
         GetComponent<SpriteRenderer>().color = Color.white;
     }
 }

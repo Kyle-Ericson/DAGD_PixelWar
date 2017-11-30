@@ -17,8 +17,9 @@ public class Tile : GamePiece
 
     // load the sprites from the resources folder
     protected override void LoadSprites() {
-        sprites.Add(1, (Resources.Load<Sprite>("sprites/prototype/mountain")));
+        sprites.Add(1, (Resources.Load<Sprite>("sprites/prototype/plain")));
         sprites.Add(2, (Resources.Load<Sprite>("sprites/prototype/forest")));
+        sprites.Add(3, (Resources.Load<Sprite>("sprites/prototype/mountain")));
     }
     // set the type of tile that should be used, changing its sprite and data
     public override void SetType(int type) {

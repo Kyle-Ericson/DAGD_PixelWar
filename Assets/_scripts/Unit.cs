@@ -24,6 +24,10 @@ public class Unit : GamePiece
         Highlight(Color.red);
         CheckMoveDistance();
     }
+    public override void UnHighlight()
+    {
+        GetComponent<SpriteRenderer>().color = Color.green;
+    }
     public override void Deselect() {
         base.Deselect();
     }
@@ -34,9 +38,10 @@ public class Unit : GamePiece
             for(int j = - data.speed; j <= data.speed; j++)
             {
                 if (Mathf.Abs(i) + Mathf.Abs(j) > data.speed || i == 0 && j == 0) continue;
-                var gPos = MapLoader.instance.WorldToGrid(transform.position);
+                var gPos = MapLoader.instance.WorldToGrid(transform.position);                
                 gPos.x += i;
                 gPos.y += j;
+                if (!GameController.instance.grid.ContainsKey(gPos)) continue;
                 var tile = GameController.instance.grid[gPos];
                 if (tile.data.isWalkable)
                 {
