@@ -13,12 +13,11 @@ public class GameController : MonoBehaviour
     // unt z offset
     private float zoffset = -0.1f;
     // list of tiles of the current map
-    private Dictionary<Vector2, Tile> tiles = null;
+    private Dictionary<Vector2, Tile> _grid = null;
+    public Dictionary<Vector2, Tile> grid { get { return _grid; } }
     // list of units on the board
     private Dictionary<Vector2, Unit> units = new Dictionary<Vector2, Unit>();
     // tile width and height
-    float tileWidth = 1f;
-    float tileHeight = 1f;
 
 
 
@@ -37,7 +36,7 @@ public class GameController : MonoBehaviour
     private void Start() {
         Collections.Load(); 
         GameController.instance.LoadMap(1);
-        selector.Move(GridToWorld(Vector2.zero));
+        selector.Move(MapLoader.instance.GridToWorld(Vector2.zero));
         selector.Show();
     }
     // called once a frame
@@ -48,24 +47,22 @@ public class GameController : MonoBehaviour
     // check input
     private void CheckInput() {
         if(Input.GetMouseButtonDown(0)) {
-            Vector2 gPos = WorldToGrid(selector.transform.position);
+            Vector2 gPos = MapLoader.instance.WorldToGrid(selector.transform.position);
             DeselectAll();
             if(units.ContainsKey(gPos)) {
                 units[gPos].Select();
-                CheckNeighbors(units[gPos]);
+               
             }
         }
     }
     // spawn the map and load the tiles
     private void LoadMap(int mapID) {
-        tiles = MapLoader.instance.LoadMap(mapID);
-        Vector2 start1 = MapLoader.currentMap.start1.ToVector2();
-        SpawnUnit(0, start1);
-
+        _grid = MapLoader.instance.LoadMap(mapID);
+        SpawnUnit(0, MapLoader.instance.currentMap.start1.ToVector2());
     }
     // spawn units
     private void SpawnUnit(int type, Vector2 gridPos) {
-        Vector3 worldPos = GridToWorld(gridPos);
+        Vector3 worldPos = MapLoader.instance.GridToWorld(gridPos);
         worldPos.z = zoffset;
         GameObject newUnit = Instantiate(unitObj, worldPos, Quaternion.identity);
         Unit unit = newUnit.GetComponent<Unit>();
@@ -75,20 +72,15 @@ public class GameController : MonoBehaviour
     }
     // destroy every tile and clear the dictionary
     private void RemoveMap() {
-        foreach (KeyValuePair<Vector2, Tile> item in tiles) { Destroy(item.Value.gameObject); }
-        tiles.Clear();
+        foreach (KeyValuePair<Vector2, Tile> item in _grid) { Destroy(item.Value.gameObject); }
+        _grid.Clear();
     }
     // move the selector
     private void MoveSelector() {
-        Vector2 gridPos = WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        if(tiles.ContainsKey(gridPos)) {
-            selector.Move(GridToWorld(gridPos));
+        Vector2 gridPos = MapLoader.instance.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        if(grid.ContainsKey(gridPos)) {
+            selector.Move(MapLoader.instance.GridToWorld(gridPos));
         }
-    }
-    // check this units neighbors based on its range
-    private void CheckNeighbors(Unit unit) {
-        Vector2 gridPos = WorldToGrid(unit.transform.position);
-        Debug.Log(gridPos);
     }
     // deselects all tiles
     private void DeselectAll() {
@@ -96,16 +88,10 @@ public class GameController : MonoBehaviour
         DeselectAllUnits();
     }
     private void DeselectAllTiles() {
-        foreach (KeyValuePair<Vector2, Tile> k in tiles) k.Value.Deselect(); 
+        foreach (KeyValuePair<Vector2, Tile> k in grid) k.Value.Deselect(); 
     }
     private void DeselectAllUnits() {
         foreach (KeyValuePair<Vector2, Unit> k in units) k.Value.Deselect(); 
     }
-    // convert a world position into a grid position
-    private Vector2 WorldToGrid(Vector2 worldPos) {
-        return new Vector2(Mathf.Floor(worldPos.x / tileWidth), -Mathf.Floor(worldPos.y / tileHeight) - 1);
-    }
-    private Vector3 GridToWorld(Vector2 gridPos) {
-        return new Vector3(gridPos.x * tileWidth + (tileWidth / 2), -gridPos.y * tileHeight - (tileHeight / 2), 0);
-    }
+    
 }

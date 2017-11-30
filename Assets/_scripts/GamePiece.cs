@@ -26,7 +26,7 @@ public class GamePiece : MonoBehaviour {
     // select the object
     public virtual void Select() { _isSelected = true; }
     // Deselect
-    public virtual void Deselect() { _isSelected = false; }
+    public virtual void Deselect() { _isSelected = false; UnHighlight(); }
     // highlight the tile
     public virtual void Highlight(Color color) {
         GetComponent<SpriteRenderer>().color = color;

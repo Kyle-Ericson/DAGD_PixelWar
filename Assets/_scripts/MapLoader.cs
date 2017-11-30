@@ -17,7 +17,7 @@ public class MapLoader : MonoBehaviour
     // offset of the grid square outline
     private float gridLineOffsetZ = -0.01f;
     // current map data
-    public static MapData currentMap;
+    public MapData currentMap;
     // tile scale
     float tileWidth;
     float tileHeight;
@@ -27,7 +27,7 @@ public class MapLoader : MonoBehaviour
 
     void Awake()
     {
-        instance = this;
+        if(instance == null) instance = this;
         // load tile prefab
         tileObj = Resources.Load<GameObject>("prefabs/Tile");
         // load grid line prefab
@@ -79,5 +79,14 @@ public class MapLoader : MonoBehaviour
         float camX = (currentMap.cols * tileWidth) / 2;
         float camY = -(currentMap.rows * tileHeight) / 2;
         Camera.main.transform.position = new Vector3(camX,camY, -10);
+    }
+    // convert a world position into a grid position
+    public Vector2 WorldToGrid(Vector2 worldPos)
+    {
+        return new Vector2(Mathf.Floor(worldPos.x / tileWidth), -Mathf.Floor(worldPos.y / tileHeight) - 1);
+    }
+    public Vector3 GridToWorld(Vector2 gridPos)
+    {
+        return new Vector3(gridPos.x * tileWidth + (tileWidth / 2), -gridPos.y * tileHeight - (tileHeight / 2), 0);
     }
 }

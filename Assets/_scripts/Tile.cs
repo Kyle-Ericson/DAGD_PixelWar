@@ -9,6 +9,12 @@ public class Tile : GamePiece
 {
     private TileData _data = null;
     public TileData data { get { return _data; }}
+    private int g;
+    private int h;
+    private int fcost;
+
+
+
     // load the sprites from the resources folder
     protected override void LoadSprites() {
         sprites.Add(1, (Resources.Load<Sprite>("sprites/prototype/mountain")));
@@ -18,6 +24,10 @@ public class Tile : GamePiece
     public override void SetType(int type) {
         GetComponent<SpriteRenderer>().sprite = sprites[type]; 
         _data = Collections.tileCollection.tileData[type]; 
+    }
+    public void CheckNeighbors()
+    {
+
     }
     
 }
