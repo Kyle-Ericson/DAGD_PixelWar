@@ -26,9 +26,5 @@ public class Tile : GamePiece
         GetComponent<SpriteRenderer>().sprite = sprites[type]; 
         _data = Collections.tileCollection.tileData[type]; 
     }
-    public void CheckNeighbors()
-    {
-
-    }
     
 }

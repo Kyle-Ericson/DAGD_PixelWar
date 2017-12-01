@@ -7,7 +7,7 @@ public class GamePiece : MonoBehaviour {
     
     // if this tile is clicked on
     protected bool _isSelected = false;
-	// _isSelected
+    // _isSelected
     public bool isSelected { get { return _isSelected; } }
     // dictionary for holding all of the sprites
     protected Dictionary<int, Sprite> sprites = new Dictionary<int, Sprite>();
@@ -24,7 +24,7 @@ public class GamePiece : MonoBehaviour {
     // set the type of tile that should be used, changing its sprite and data
     public virtual void SetType(int type) { }
     // select the object
-    public virtual void Select() { _isSelected = true; }
+    public virtual void Select() { _isSelected = true; Highlight(Color.red); }
     // Deselect
     public virtual void Deselect() { _isSelected = false; UnHighlight(); }
     // highlight the tile

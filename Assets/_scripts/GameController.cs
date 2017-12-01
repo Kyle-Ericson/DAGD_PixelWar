@@ -58,15 +58,15 @@ public class GameController : MonoBehaviour
     // spawn the map and load the tiles
     private void LoadMap(int mapID) {
         _grid = MapLoader.instance.LoadMap(mapID);
-        SpawnUnit(0, MapLoader.instance.currentMap.start1.ToVector2());
+        SpawnUnit(UnitType.tank, MapLoader.instance.currentMap.start1.ToVector2());
     }
     // spawn units
-    private void SpawnUnit(int type, Vector2 gridPos) {
+    private void SpawnUnit(UnitType type, Vector2 gridPos) {
         Vector3 worldPos = MapLoader.instance.GridToWorld(gridPos);
         worldPos.z = zoffset;
         GameObject newUnit = Instantiate(unitObj, worldPos, Quaternion.identity);
         Unit unit = newUnit.GetComponent<Unit>();
-        unit.SetType(type);
+        unit.SetType((int)type);
         Debug.Log("New " + unit.data.name + " has spawned at " + gridPos + "!");
         units.Add(gridPos, unit);
     }

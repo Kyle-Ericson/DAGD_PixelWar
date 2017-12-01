@@ -9,9 +9,17 @@ using UnityEngine;
 [System.Serializable] 
 public class TileData : Data
 {
-    public int id;
+    public TileType id;
     public string name;
     public int defense;
     public int moveCost;
     public bool isWalkable;
+}
+
+
+public enum TileType
+{
+    plain = 1,
+    forest = 2,
+    mountain = 3
 }

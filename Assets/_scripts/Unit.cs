@@ -21,7 +21,6 @@ public class Unit : GamePiece
     }
     public override void Select() {
         base.Select();
-        Highlight(Color.red);
         CheckMoveDistance();
     }
     public override void UnHighlight()
@@ -43,12 +42,18 @@ public class Unit : GamePiece
                 gPos.y += j;
                 if (!GameController.instance.grid.ContainsKey(gPos)) continue;
                 var tile = GameController.instance.grid[gPos];
-                if (tile.data.isWalkable)
+                if (tile.data.isWalkable && tile.data.id != TileType.mountain)
                 {
-                    tile.Highlight(Color.red);
+                    tile.Select();
+                }
+                else if(tile.data.id == TileType.mountain)
+                {
+                    if (data.canWalkMountains)
+                    {
+                        tile.Select();
+                    }
                 }
             }
-            
         }
     }
 }
