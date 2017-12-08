@@ -5,14 +5,14 @@
       "name": "Infantry",
       "health": 100,
       "speed": 3,
-      "canWalkMountains": true
+      "size": 0
     },
     {
       "id": 1,
       "name": "Tank",
       "health": 200,
       "speed": 2,
-      "canWalkMountains": false
+      "size":  1
     }
   ]
 

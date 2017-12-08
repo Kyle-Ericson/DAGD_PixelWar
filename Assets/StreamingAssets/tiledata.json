@@ -5,28 +5,28 @@
       "name": "None",
       "defense": 0,
       "moveCost": 0,
-      "isWalkable": true
+      "maxSize": 10
     },
     {
       "id": 1,
       "name": "Plain",
       "defense": 0,
       "moveCost": 0,
-      "isWalkable": true
+      "maxSize": 10
     },
     {
       "id": 2,
       "name": "Forest",
       "defense": 1,
       "moveCost": 1,
-      "isWalkable": true
+      "maxSize": 10
     },
     {
       "id": 3,
       "name": "Mountain",
       "defense": 2,
       "moveCost": 2,
-      "isWalkable": true
+      "maxSize": 0
     }
   ]
     

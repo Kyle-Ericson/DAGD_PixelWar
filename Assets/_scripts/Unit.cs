@@ -8,8 +8,8 @@ public class Unit : GamePiece
     private UnitData _data = null;
     public UnitData data { get { return _data; }}
     public int actionPoints = 3;
-
-
+    public List<Tile> tilesInRange = new List<Tile>();
+    
     // load Unit sprites from resources
     protected override void LoadSprites() {
         //sprites.Add(0, (Resources.Load<Sprite>("sprites/prototype/forest")));
@@ -42,16 +42,9 @@ public class Unit : GamePiece
                 gPos.y += j;
                 if (!GameController.instance.grid.ContainsKey(gPos)) continue;
                 var tile = GameController.instance.grid[gPos];
-                if (tile.data.isWalkable && tile.data.id != TileType.mountain)
+                if (data.size <= tile.data.maxSize)
                 {
                     tile.Select();
-                }
-                else if(tile.data.id == TileType.mountain)
-                {
-                    if (data.canWalkMountains)
-                    {
-                        tile.Select();
-                    }
                 }
             }
         }

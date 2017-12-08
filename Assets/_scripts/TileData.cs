@@ -13,7 +13,7 @@ public class TileData : Data
     public string name;
     public int defense;
     public int moveCost;
-    public bool isWalkable;
+    public int maxSize;
 }
 
 

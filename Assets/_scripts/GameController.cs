@@ -17,7 +17,8 @@ public class GameController : MonoBehaviour
     public Dictionary<Vector2, Tile> grid { get { return _grid; } }
     // list of units on the board
     private Dictionary<Vector2, Unit> units = new Dictionary<Vector2, Unit>();
-    // tile width and height
+    // reference to the maploader instance
+    private MapLoader maploader = null;
 
 
 
@@ -25,8 +26,9 @@ public class GameController : MonoBehaviour
     // called when instantiated
     private void Awake() {
         // set instance to current instance
-        if(GameController.instance == null) GameController.instance = this;
-        // get reference to the selector
+        if(instance == null) instance = this;
+        if(maploader == null) maploader = MapLoader.instance;
+        // spawn selector
         selector = Instantiate(Resources.Load<GameObject>("prefabs/Selector").GetComponent<Selector>());
         selector.Hide(); 
         // load unit object
@@ -35,19 +37,19 @@ public class GameController : MonoBehaviour
     // called when scene starts
     private void Start() {
         Collections.Load(); 
-        GameController.instance.LoadMap(0);
-        selector.Move(MapLoader.instance.GridToWorld(Vector2.zero));
+        instance.LoadMap(0);
+        selector.Move(maploader.GridToWorld(Vector2.zero));
         selector.Show();
     }
     // called once a frame
     private void Update() {
-        GameController.instance.MoveSelector();
-        GameController.instance.CheckInput();
+        instance.MoveSelector();
+        instance.CheckInput();
     }
     // check input
     private void CheckInput() {
         if(Input.GetMouseButtonDown(0)) {
-            Vector2 gPos = MapLoader.instance.WorldToGrid(selector.transform.position);
+            Vector2 gPos = maploader.WorldToGrid(selector.transform.position);
             DeselectAll();
             if(units.ContainsKey(gPos)) {
                 units[gPos].Select();
@@ -57,12 +59,12 @@ public class GameController : MonoBehaviour
     }
     // spawn the map and load the tiles
     private void LoadMap(int mapID) {
-        _grid = MapLoader.instance.LoadMap(mapID);
-        SpawnUnit(UnitType.tank, MapLoader.instance.currentMap.start1.ToVector2());
+        _grid = maploader.LoadMap(mapID);
+        SpawnUnit(UnitType.tank, maploader.currentMap.start1.ToVector2());
     }
     // spawn units
     private void SpawnUnit(UnitType type, Vector2 gridPos) {
-        Vector3 worldPos = MapLoader.instance.GridToWorld(gridPos);
+        Vector3 worldPos = maploader.GridToWorld(gridPos);
         worldPos.z = zoffset;
         GameObject newUnit = Instantiate(unitObj, worldPos, Quaternion.identity);
         Unit unit = newUnit.GetComponent<Unit>();
@@ -77,9 +79,9 @@ public class GameController : MonoBehaviour
     }
     // move the selector
     private void MoveSelector() {
-        Vector2 gridPos = MapLoader.instance.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        Vector2 gridPos = maploader.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         if(grid.ContainsKey(gridPos)) {
-            selector.Move(MapLoader.instance.GridToWorld(gridPos));
+            selector.Move(maploader.GridToWorld(gridPos));
         }
     }
     // deselects all tiles
@@ -92,6 +94,12 @@ public class GameController : MonoBehaviour
     }
     private void DeselectAllUnits() {
         foreach (KeyValuePair<Vector2, Unit> k in units) k.Value.Deselect(); 
+    }
+    private void RefreshUnitList()
+    {
+        // TODO: Refresh the unit list here making sure all units are in the correct positions
+        Dictionary<Vector2, Unit> unitsCopy = units;
+        units.Clear();
     }
     
 }

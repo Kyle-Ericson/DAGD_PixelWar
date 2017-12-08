@@ -12,7 +12,7 @@ public class UnitData : Data
     public string name;
     public int health;
     public int speed;
-    public bool canWalkMountains;
+    public int size;
 }
 
 

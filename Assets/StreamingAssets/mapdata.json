@@ -6,7 +6,7 @@
             "name": "Test - EZ Map",
             "cols": 9,
             "rows": 9,
-            "start1": { "x": 7, "y": 6 },
+            "start1": { "x": 4, "y": 4 },
             "start2": { "x": 8, "y": 8 },
             "grid": [
 
