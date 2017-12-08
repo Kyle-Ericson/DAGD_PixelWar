@@ -7,7 +7,7 @@ using UnityEngine;
 
 
 [System.Serializable] 
-public class TileData : Data
+public class TileData
 {
     public TileType id;
     public string name;
@@ -17,9 +17,4 @@ public class TileData : Data
 }
 
 
-public enum TileType
-{
-    plain = 1,
-    forest = 2,
-    mountain = 3
-}
+

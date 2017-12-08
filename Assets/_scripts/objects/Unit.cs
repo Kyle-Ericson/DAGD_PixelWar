@@ -45,6 +45,7 @@ public class Unit : GamePiece
                 if (data.size <= tile.data.maxSize)
                 {
                     tile.Select();
+                    tilesInRange.Add(tile);
                 }
             }
         }

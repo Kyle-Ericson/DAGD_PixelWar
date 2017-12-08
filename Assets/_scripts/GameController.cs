@@ -17,28 +17,23 @@ public class GameController : MonoBehaviour
     public Dictionary<Vector2, Tile> grid { get { return _grid; } }
     // list of units on the board
     private Dictionary<Vector2, Unit> units = new Dictionary<Vector2, Unit>();
-    // reference to the maploader instance
-    private MapLoader maploader = null;
+
+    private PlayState currentPlayState = PlayState.awaitingInput;
 
 
 
 
     // called when instantiated
     private void Awake() {
-        // set instance to current instance
         if(instance == null) instance = this;
-        if(maploader == null) maploader = MapLoader.instance;
-        // spawn selector
         selector = Instantiate(Resources.Load<GameObject>("prefabs/Selector").GetComponent<Selector>());
-        selector.Hide(); 
-        // load unit object
         unitObj = Resources.Load<GameObject>("prefabs/Unit");
     }
     // called when scene starts
     private void Start() {
         Collections.Load(); 
         instance.LoadMap(0);
-        selector.Move(maploader.GridToWorld(Vector2.zero));
+        selector.Move(MapLoader.instance.GridToWorld(Vector2.zero));
         selector.Show();
     }
     // called once a frame
@@ -48,28 +43,36 @@ public class GameController : MonoBehaviour
     }
     // check input
     private void CheckInput() {
-        if(Input.GetMouseButtonDown(0)) {
-            Vector2 gPos = maploader.WorldToGrid(selector.transform.position);
-            DeselectAll();
-            if(units.ContainsKey(gPos)) {
-                units[gPos].Select();
-               
+        if (Input.GetMouseButtonDown(0))
+        {
+            switch (currentPlayState)
+            {
+                case PlayState.awaitingInput:
+                    if (units.ContainsKey(selector.gridPosition))
+                    {
+                        units[selector.gridPosition].Select();
+                    }
+                    else DeselectAll();
+
+                    break;
+                case PlayState.unitSelected:
+
+                    break;
             }
         }
+        
     }
     // spawn the map and load the tiles
     private void LoadMap(int mapID) {
-        _grid = maploader.LoadMap(mapID);
-        SpawnUnit(UnitType.tank, maploader.currentMap.start1.ToVector2());
+        _grid = MapLoader.instance.LoadMap(mapID);
+        SpawnUnit(UnitType.tank, MapLoader.instance.currentMap.start1.ToVector2());
     }
     // spawn units
     private void SpawnUnit(UnitType type, Vector2 gridPos) {
-        Vector3 worldPos = maploader.GridToWorld(gridPos);
+        Vector3 worldPos = MapLoader.instance.GridToWorld(gridPos);
         worldPos.z = zoffset;
-        GameObject newUnit = Instantiate(unitObj, worldPos, Quaternion.identity);
-        Unit unit = newUnit.GetComponent<Unit>();
+        Unit unit = Instantiate(unitObj, worldPos, Quaternion.identity).GetComponent<Unit>();
         unit.SetType((int)type);
-        Debug.Log("New " + unit.data.name + " has spawned at " + gridPos + "!");
         units.Add(gridPos, unit);
     }
     // destroy every tile and clear the dictionary
@@ -79,9 +82,9 @@ public class GameController : MonoBehaviour
     }
     // move the selector
     private void MoveSelector() {
-        Vector2 gridPos = maploader.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        Vector2 gridPos = MapLoader.instance.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         if(grid.ContainsKey(gridPos)) {
-            selector.Move(maploader.GridToWorld(gridPos));
+            selector.Move(MapLoader.instance.GridToWorld(gridPos));
         }
     }
     // deselects all tiles
@@ -95,11 +98,8 @@ public class GameController : MonoBehaviour
     private void DeselectAllUnits() {
         foreach (KeyValuePair<Vector2, Unit> k in units) k.Value.Deselect(); 
     }
-    private void RefreshUnitList()
-    {
-        // TODO: Refresh the unit list here making sure all units are in the correct positions
-        Dictionary<Vector2, Unit> unitsCopy = units;
-        units.Clear();
-    }
     
 }
+
+
+

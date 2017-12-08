@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
-
-
 [System.Serializable] 
-public class MapData : Data
+public class MapData
 {
     public int id;
     public string name;
