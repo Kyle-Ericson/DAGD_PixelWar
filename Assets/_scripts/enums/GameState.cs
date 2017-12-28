@@ -1,6 +1,4 @@
-﻿
-
-public enum PlayState
+﻿public enum GameState
 {
     // idle state where nothing is selected, waiting for player input
     awaitingInput = 0,

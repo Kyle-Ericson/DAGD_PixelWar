@@ -3,101 +3,107 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-        // reference to itself
-        [HideInInspector] public static GameController instance = null;
-        // reference to the selector
-        private Selector selector;
-        // unit prefab
-        private GameObject unitObj;
-        // unt z offset
-        private float zoffset = -0.1f;
-        // list of tiles of the current map
-        private Dictionary<Vector2, Tile> _grid = null;
-        public Dictionary<Vector2, Tile> grid {
-                get { return _grid; }
-        }
-        // list of units on the board
-        private Dictionary<Vector2, Unit> units = new Dictionary<Vector2, Unit>();
-
-        private PlayState currentPlayState = PlayState.awaitingInput;
-
+    private static GameController _instance = null;
+    public static GameController instance
+    {
+        get { return _instance; }
+    }
+    private Dictionary<Vector2, Tile> _currentMap = null;
+    public Dictionary<Vector2, Tile> currentMap
+    {
+        get { return _currentMap; }
+    }
+    private Selector selector;
+    private GameObject unitObj;
+    private float zoffset = -0.1f;    
+    private Dictionary<Vector2, Unit> units = new Dictionary<Vector2, Unit>();
+    private GameState currentPlayState = GameState.awaitingInput;
+    private MapLoader mapLoader = null;
 
 
 
-        // called when instantiated
-        private void Awake() {
-                if(instance == null) instance = this;
-                selector = Instantiate(Resources.Load<GameObject>("prefabs/Selector").GetComponent<Selector>());
-                unitObj = Resources.Load<GameObject>("prefabs/Unit");
-        }
-        // called when scene starts
-        private void Start() {
-                Collections.Load();
-                instance.LoadMap(0);
-                selector.Move(MapLoader.instance.GridToWorld(Vector2.zero));
-                selector.Show();
-        }
-        // called once a frame
-        private void Update() {
-                instance.MoveSelector();
-                instance.CheckInput();
-        }
-        // check input
-        private void CheckInput() {
-                if (Input.GetMouseButtonDown(0))
+
+    private GameController() { }
+
+    private void Awake()
+    {
+        if (_instance == null) { _instance = this; }
+        mapLoader = MapLoader.instance;
+        selector = Instantiate(Resources.Load<GameObject>("prefabs/Selector").GetComponent<Selector>());
+        unitObj = Resources.Load<GameObject>("prefabs/Unit");
+    }
+    private void Start()
+    {
+        Collections.Load();
+        LoadMap(0);
+        selector.Move(mapLoader.GridToWorld(Vector2.zero));
+        selector.Show();
+    }
+    private void Update()
+    {
+        MoveSelector();
+        CheckInput();
+    }
+    private void CheckInput()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            switch (currentPlayState)
+            {
+            case GameState.awaitingInput:
+                if (units.ContainsKey(selector.gridPosition))
                 {
-                        switch (currentPlayState)
-                        {
-                        case PlayState.awaitingInput:
-                                if (units.ContainsKey(selector.gridPosition))
-                                {
-                                        units[selector.gridPosition].Select();
-                                }
-                                else DeselectAll();
-
-                                break;
-                        case PlayState.unitSelected:
-
-                                break;
-                        }
+                    units[selector.gridPosition].Select();
                 }
+                else{ DeselectAll(); }
 
-        }
-        // spawn the map and load the tiles
-        private void LoadMap(int mapID) {
-                _grid = MapLoader.instance.LoadMap(mapID);
-                SpawnUnit(UnitType.tank, MapLoader.instance.currentMap.start1.ToVector2());
-        }
-        // spawn units
-        private void SpawnUnit(UnitType type, Vector2 gridPos) {
-                Vector3 worldPos = MapLoader.instance.GridToWorld(gridPos);
-                worldPos.z = zoffset;
-                Unit unit = Instantiate(unitObj, worldPos, Quaternion.identity).GetComponent<Unit>();
-                unit.SetType((int)type);
-                units.Add(gridPos, unit);
-        }
-        // destroy every tile and clear the dictionary
-        private void RemoveMap() {
-                foreach (KeyValuePair<Vector2, Tile> item in _grid) { Destroy(item.Value.gameObject); }
-                _grid.Clear();
-        }
-        // move the selector
-        private void MoveSelector() {
-                Vector2 gridPos = MapLoader.instance.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-                if(grid.ContainsKey(gridPos)) {
-                        selector.Move(MapLoader.instance.GridToWorld(gridPos));
-                }
-        }
-        // deselects all tiles
-        private void DeselectAll() {
-                DeselectAllTiles();
-                DeselectAllUnits();
-        }
-        private void DeselectAllTiles() {
-                foreach (KeyValuePair<Vector2, Tile> k in grid) k.Value.Deselect();
-        }
-        private void DeselectAllUnits() {
-                foreach (KeyValuePair<Vector2, Unit> k in units) k.Value.Deselect();
-        }
+                break;
 
+            case GameState.unitSelected:
+
+                break;
+            }
+        }
+    }
+    private void LoadMap(int mapID)
+    {
+        _currentMap = mapLoader.LoadMap(mapID);
+        SpawnUnit(UnitType.tank, mapLoader.currentMap.start1.ToVector2());
+    }
+    private void SpawnUnit(UnitType type, Vector2 gridPos)
+    {
+        Vector3 worldPos = mapLoader.GridToWorld(gridPos);
+
+        worldPos.z = zoffset;
+        Unit unit = Instantiate(unitObj, worldPos, Quaternion.identity).GetComponent<Unit>();
+        unit.SetType((int)type);
+        units.Add(gridPos, unit);
+    }
+    private void RemoveMap()
+    {
+        foreach (KeyValuePair<Vector2, Tile> item in _currentMap) { Destroy(item.Value.gameObject); }
+        _currentMap.Clear();
+    }
+    private void MoveSelector()
+    {
+        Vector2 gridPos = mapLoader.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+        if (_currentMap.ContainsKey(gridPos))
+        {
+            selector.Move(mapLoader.GridToWorld(gridPos));
+        }
+    }
+    private void DeselectAll()
+    {
+        DeselectAllTiles();
+        DeselectAllUnits();
+    }
+    private void DeselectAllTiles()
+    {
+        foreach (KeyValuePair<Vector2, Tile> k in _currentMap) { k.Value.Deselect(); }
+    }
+    private void DeselectAllUnits()
+    {
+        foreach (KeyValuePair<Vector2, Unit> k in units) { k.Value.Deselect(); }
+    }
 }

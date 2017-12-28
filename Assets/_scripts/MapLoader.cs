@@ -11,39 +11,47 @@ public class MapLoader : MonoBehaviour
     // unit game obj
     private GameObject unitObj;
     // the grid outlines
-    private GameObject gridLineObj;
-    // maploader reference to itself
-    [HideInInspector] public static MapLoader instance = null;
+    private GameObject gridLineObj;    
     // offset of the grid square outline
     private float gridLineOffsetZ = -0.01f;
     // current map data
     public MapData currentMap;
     // tile scale
     float tileWidth;
-    float tileHeight;
+    float tileHeight;    
+    // map loader instance
+    private static MapLoader _instance = null;
+    [HideInInspector] public static MapLoader instance
+    {
+        get { return _instance; }
+    }
 
+    private MapLoader()
+    {
 
-
+    }
 
     void Awake()
     {
-        if(instance == null) instance = this;
+        if (instance == null) { _instance = this; }
         // load tile prefab
         tileObj = Resources.Load<GameObject>("prefabs/Tile");
         // load grid line prefab
         gridLineObj = Resources.Load<GameObject>("prefabs/GridLine");
     }
+
     // Load the map data from the collections
     public Dictionary<Vector2, Tile> LoadMap(int mapID)
     {
-        return MapLoader.instance.SpawnMap(Collections.mapCollection.mapData[mapID]);
+        return _instance.SpawnMap(Collections.mapCollection.mapData[mapID]);
     }
+
     // spawn the map
     private Dictionary<Vector2, Tile> SpawnMap(MapData map)
     {
         currentMap = map;
         // if there is no grid, return
-        if (map.grid.Count == 0) return null;
+        if (map.grid.Count == 0) { return null; }
         // instantiate tiles dictionary
         Dictionary<Vector2, Tile> tiles = new Dictionary<Vector2, Tile>();
         // get tile width and height
@@ -56,7 +64,8 @@ public class MapLoader : MonoBehaviour
             for (var x = 0; x < map.cols; x++)
             {
                 // skip this interation if the grid number is 0
-                if (map.grid[(y * map.cols) + x] != 0) {
+                if (map.grid[(y * map.cols) + x] != 0)
+                {
                     // world space postition based on grid position
                     Vector2 worldPos = new Vector2(x + (tileWidth / 2), -y - (tileHeight / 2));
                     // spawn the grid lines
@@ -74,17 +83,22 @@ public class MapLoader : MonoBehaviour
         MoveCamera();
         return tiles;
     }
-    private void MoveCamera() {
+
+    private void MoveCamera()
+    {
         // move the camera
         float camX = (currentMap.cols * tileWidth) / 2;
         float camY = -(currentMap.rows * tileHeight) / 2;
-        Camera.main.transform.position = new Vector3(camX,camY, -10);
+
+        Camera.main.transform.position = new Vector3(camX, camY, -10);
     }
+
     // convert a world position into a grid position
     public Vector2 WorldToGrid(Vector2 worldPos)
     {
         return new Vector2(Mathf.Floor(worldPos.x / tileWidth), -Mathf.Floor(worldPos.y / tileHeight) - 1);
     }
+
     public Vector3 GridToWorld(Vector2 gridPos)
     {
         return new Vector3(gridPos.x * tileWidth + (tileWidth / 2), -gridPos.y * tileHeight - (tileHeight / 2), 0);

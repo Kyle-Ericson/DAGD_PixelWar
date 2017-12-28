@@ -9,12 +9,17 @@ public class Unit : GamePiece
     public UnitData data { get { return _data; }}
     public int actionPoints = 3;
     public List<Tile> tilesInRange = new List<Tile>();
+    private GameController gc = null;
     
-    // load Unit sprites from resources
+
+    public Unit()
+    {
+        gc = GameController.instance;
+    }
+
     protected override void LoadSprites() {
         //sprites.Add(0, (Resources.Load<Sprite>("sprites/prototype/forest")));
     }
-    // set type of unit
     public override void SetType(int type) {
         //GetComponent<SpriteRenderer>().sprite = sprites[type];
 	    _data = Collections.unitCollection.unitData[type];	
@@ -40,8 +45,8 @@ public class Unit : GamePiece
                 var gPos = MapLoader.instance.WorldToGrid(transform.position);                
                 gPos.x += i;
                 gPos.y += j;
-                if (!GameController.instance.grid.ContainsKey(gPos)) continue;
-                var tile = GameController.instance.grid[gPos];
+                if (!gc.currentMap.ContainsKey(gPos)) continue;
+                var tile = gc.currentMap[gPos];
                 if (data.size <= tile.data.maxSize)
                 {
                     tile.Select();

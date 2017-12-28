@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SizeBounce : MonoBehaviour {
+public class SinWaveScale : MonoBehaviour {
 
 
     public float theta = 0;
