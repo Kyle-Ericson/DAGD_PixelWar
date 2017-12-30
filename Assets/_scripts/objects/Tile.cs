@@ -24,7 +24,7 @@ public class Tile : GamePiece
     // set the type of tile that should be used, changing its sprite and data
     public override void SetType(int type) {
         GetComponent<SpriteRenderer>().sprite = sprites[type]; 
-        _data = Collections.tileCollection.tileData[type]; 
+        _data = Database.tileData[type]; 
     }
     
 }
