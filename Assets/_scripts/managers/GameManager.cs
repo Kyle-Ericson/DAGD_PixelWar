@@ -7,18 +7,12 @@ public class GameManager : MonoBehaviour
     private Selector selector;
     private float zoffset = -0.1f;    
     private Dictionary<Vector2, Unit> units = new Dictionary<Vector2, Unit>();
-    private GameState currentPlayState = GameState.awaitingInput;    
-    public MapManager mm;
+    private GameState gameState = GameState.awaitingInput;
 
-
-
-
-    private GameManager() { }
 
     //
     private void Awake()
     {
-        mm = MapManager.ins;
         selector = Instantiate(Resources.Load<GameObject>("prefabs/Selector").GetComponent<Selector>());
         unitPrefab = Resources.Load<GameObject>("prefabs/Unit");
     }
@@ -27,7 +21,7 @@ public class GameManager : MonoBehaviour
     {
         Database.Load();
         LoadMap(0);
-        selector.Move(mm.GridToWorld(Vector2.zero));
+        selector.Move(MapManager.ins.GridToWorld(Vector2.zero));
         selector.Show();
     }
     //
@@ -41,13 +35,13 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            switch (currentPlayState)
+            switch (gameState)
             {
             case GameState.awaitingInput:
-                if (units.ContainsKey(mm.WorldToGrid(selector.transform.position)))
+                if (units.ContainsKey(MapManager.ins.WorldToGrid(selector.transform.position)))
                 {
-                    units[mm.WorldToGrid(selector.transform.position)].Select();
-                    units[mm.WorldToGrid(selector.transform.position)].CheckMoveDistance();
+                    units[MapManager.ins.WorldToGrid(selector.transform.position)].Select();
+                    units[MapManager.ins.WorldToGrid(selector.transform.position)].CheckMoveDistance();
                 }
                 else { DeselectAll(); }
 
@@ -62,13 +56,13 @@ public class GameManager : MonoBehaviour
     //
     private void LoadMap(int mapID)
     {
-        mm.SpawnMap(mapID);
-        SpawnUnit(UnitType.tank, mm.currentMapData.start1.ToVector2());
+        MapManager.ins.SpawnMap(mapID);
+        SpawnUnit(UnitType.tank, MapManager.ins.currentMapData.start1.ToVector2());
     }
     //
     private void SpawnUnit(UnitType type, Vector2 gridPos)
     {
-        Vector3 worldPos = mm.GridToWorld(gridPos);
+        Vector3 worldPos = MapManager.ins.GridToWorld(gridPos);
         worldPos.z = zoffset;
         Unit unit = Instantiate(unitPrefab, worldPos, Quaternion.identity).GetComponent<Unit>();
         unit.SetType((int)type);
@@ -77,17 +71,17 @@ public class GameManager : MonoBehaviour
     //
     private void RemoveMap()
     {
-        foreach (KeyValuePair<Vector2, Tile> item in mm.currentMap) { Destroy(item.Value.gameObject); }
-        mm.currentMap.Clear();
+        foreach (KeyValuePair<Vector2, Tile> item in MapManager.ins.currentMap) { Destroy(item.Value.gameObject); }
+        MapManager.ins.currentMap.Clear();
     }
     //
     private void MoveSelector()
     {
-        Vector2 gridPos = mm.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        Vector2 gridPos = MapManager.ins.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
-        if (mm.currentMap.ContainsKey(gridPos))
+        if (MapManager.ins.currentMap.ContainsKey(gridPos))
         {
-            selector.Move(mm.GridToWorld(gridPos));
+            selector.Move(MapManager.ins.GridToWorld(gridPos));
         }
     }
     //
@@ -99,7 +93,7 @@ public class GameManager : MonoBehaviour
     //
     private void DeselectAllTiles()
     {
-        foreach (KeyValuePair<Vector2, Tile> k in mm.currentMap) { k.Value.Deselect(); }
+        foreach (KeyValuePair<Vector2, Tile> k in MapManager.ins.currentMap) { k.Value.Deselect(); }
     }
     //
     private void DeselectAllUnits()

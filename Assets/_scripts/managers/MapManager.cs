@@ -35,9 +35,9 @@ public class MapManager : MonoBehaviour
     private float gridLineOffsetZ = -0.01f;
 
 
-     void Awake()
+
+    void Awake()
     {
-        Debug.Log("Manager Awake");
         tilePrefab = Resources.Load<GameObject>("prefabs/Tile");
         gridLineObj = Resources.Load<GameObject>("prefabs/GridLine");
     }
