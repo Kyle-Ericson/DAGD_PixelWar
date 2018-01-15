@@ -1,16 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Ericson;
 
-public class SceneManager : MonoBehaviour {
-
-	// Use this for initialization
-	void Start () {
-		
-	}
+public class SceneManager : ESingletonMono<SceneManager> {
+    
+     
 	
-	// Update is called once per frame
-	void Update () {
-		
+	void Start ()
+    {
+        InitializeScenes();
 	}
+
+    void InitializeScenes()
+    {
+        GameScene.ins.gameObject.transform.SetParent(this.gameObject.transform);
+    }
+    public void ChangeScene()
+    {
+        
+    }
 }

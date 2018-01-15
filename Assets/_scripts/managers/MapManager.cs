@@ -1,26 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using Ericson;
 
 // this class get the desired level data, loads it and spawns the level into the scene
-public class MapManager : MonoBehaviour
+public class MapManager : ESingletonMono<MapManager>
 {
-    // singleton
-    private static MapManager _ins = null;
-    public static MapManager ins
-    {
-        get
-        {
-            if(_ins == null)
-            {
-                _ins = (new GameObject("MapManager")).AddComponent<MapManager>();
-            }
-            return _ins;
-        }
-            
-    }
-
     // current map data
     public MapData currentMapData;
     // current map's tiles
@@ -62,24 +47,26 @@ public class MapManager : MonoBehaviour
                 Vector2 worldPos = GridToWorld(new Vector2(x, y));
 
                 // spawn the grid lines
-                Instantiate(gridLineObj, new Vector3(worldPos.x, worldPos.y, gridLineOffsetZ), Quaternion.identity);
+                var line = Instantiate(gridLineObj, new Vector3(worldPos.x, worldPos.y, gridLineOffsetZ), Quaternion.identity);
+                line.transform.SetParent(gameObject.transform);
 
                 // get tile script from tile obj
                 Tile tile = Instantiate(tilePrefab, new Vector3(worldPos.x, worldPos.y, 0), Quaternion.identity).GetComponent<Tile>();
+                tile.gameObject.transform.SetParent(gameObject.transform);
 
                 // set the type of tile based on the level data retrieved
-                tile.SetType(oneDGridPos);
+                tile.SetType((TileType)oneDGridPos);
                 //tile.GetComponent<SpriteRenderer>().sortingOrder = y;
 
                 // add the new tile to the tiles dictionary
                 currentMap.Add(new Vector2(x, y), tile);
             }
         }
-        MoveCamera();
+        SetCamera();
     }
     // TODO: Move this somewhere that makes more sense.
     // Move the camera to the center of the map.
-    private void MoveCamera()
+    private void SetCamera()
     {
         float camX = (currentMapData.cols * _tileScale) / 2;
         float camY = -(currentMapData.rows * _tileScale) / 2;

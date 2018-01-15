@@ -1,18 +1,28 @@
 {
   "data": [
     {
-      "id": 0,
-      "name": "Infantry",
-      "health": 100,
-      "speed": 3,
+      "name": "Tier 1",
+      "tier": 1,
+      "range": 1,
+      "attack": 1,
+      "speed": 5,
       "size": 0
     },
     {
-      "id": 1,
-      "name": "Tank",
-      "health": 200,
+      "name": "Tier 2",
+      "tier": 2,
+      "range": 2,
+      "attack": 2,
+      "speed": 3,
+      "size": 1
+    },
+    {
+      "name": "Tier 3",
+      "tier": 3,
+      "range": 1,
+      "attack": 3,
       "speed": 2,
-      "size":  1
+      "size": 3
     }
   ]
 

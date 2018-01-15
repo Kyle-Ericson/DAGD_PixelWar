@@ -1,30 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Ericson;
 
 
-
-// the tile object
-public class Tile : GamePiece 
+public class Tile : ESprite 
 {
     private TileData _data = null;
     public TileData data { get { return _data; }}
-    private int g;
-    private int h;
-    private int fcost;
+    private Color startColor;
+    public int g;
+    public int h;
+    public int f;
+    public Tile parent;
 
 
 
-    // load the sprites from the resources folder
-    protected override void LoadSprites() {
-        sprites.Add(1, (Resources.Load<Sprite>("sprites/prototype/plain")));
-        sprites.Add(2, (Resources.Load<Sprite>("sprites/prototype/forest")));
-        sprites.Add(3, (Resources.Load<Sprite>("sprites/prototype/mountain")));
+    private void Start()
+    {
+        startColor = GetComponent<SpriteRenderer>().color;
     }
-    // set the type of tile that should be used, changing its sprite and data
-    public override void SetType(int type) {
-        GetComponent<SpriteRenderer>().sprite = sprites[type]; 
-        _data = Database.tileData[type]; 
+    public void SetType(TileType type)
+    {
+        GetComponent<SpriteRenderer>().sprite = Sprites.ins.tileSprites[type];
+        _data = Database.tileData[(int)type];
     }
-    
+    public void Highlight()
+    {
+        SetColor(Color.red / 2);
+    }
+    public void UnHighlight()
+    {
+        SetColor(startColor);
+    }
+
 }

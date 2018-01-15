@@ -24,10 +24,6 @@ public static class Database
         unitData = JsonUtility.FromJson<UnitJson>(unitJson).data;
         tileData = JsonUtility.FromJson<TileJson>(tileJson).data;
 
-        Debug.Log(mapData.Count);
-        Debug.Log(unitData.Count);
-        Debug.Log(tileData.Count);
-
     }
 }
 
@@ -55,7 +51,6 @@ public class TileJson { public List<TileData> data = new List<TileData>(); }
 [System.Serializable]
 public class TileData
 {
-    public TileType id;
     public string name;
     public int defense;
     public int moveCost;
@@ -70,9 +65,10 @@ public class UnitJson { public List<UnitData> data = new List<UnitData>(); }
 [System.Serializable]
 public class UnitData
 {
-    public UnitType id;
     public string name;
-    public int health;
+    public int tier;
+    public int range;
+    public int attack;
     public int speed;
     public int size;
 }
