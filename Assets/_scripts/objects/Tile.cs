@@ -27,7 +27,7 @@ public class Tile : ESprite
     }
     public void Highlight()
     {
-        SetColor(Color.red / 2);
+        SetColor(Color.green);
     }
     public void UnHighlight()
     {

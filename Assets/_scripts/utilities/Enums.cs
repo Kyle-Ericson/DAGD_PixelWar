@@ -29,8 +29,9 @@ public enum Scene
 
 public enum Team
 {
-    Player1,
-    Player2
+    None = 0,
+    Player1 = 1,
+    Player2 = 2
 }
 
 

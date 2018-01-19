@@ -8,25 +8,22 @@ public class Unit : ESprite
 {
 
     private Vector2 _prevPos;
-    private ActionMenu _actionMenu = null;
     private UnitData _data = null;
     public UnitState state = UnitState.idle;
     public List<Vector2> tilesInRange = new List<Vector2>();
     public TextMesh tierText;
     private float zoffset = -0.2f;
+    public Team team = 0;
+
+
     public Vector2 prevPos
     {
         get { return _prevPos; }
     }
-    public ActionMenu actionMenu
+    public UnitData data
     {
-        get
-        {
-            if (_actionMenu == null) _actionMenu = gameObject.transform.Find("ActionMenu").gameObject.GetComponent<ActionMenu>();
-            return _actionMenu;
-        }
+        get { return _data; }
     }
-    public UnitData data { get { return _data; } }
 
 
 
@@ -35,36 +32,31 @@ public class Unit : ESprite
 
     public void Awake()
     {
-        _actionMenu = gameObject.transform.Find("ActionMenu").gameObject.GetComponent<ActionMenu>();
         tierText = gameObject.transform.Find("Tier").gameObject.GetComponent<TextMesh>();
     }
     public void Init(int tier, Team team)
     {
         UpdateTier(tier);
         SetTeam(team);
-        HideMenu();
     }
     public void Select()
     {        
-        CheckMoveDistance();
-        state = UnitState.selected;
+        ChangeState(UnitState.selected);
     }
     public void Sleep()
     {
         SetColor(GetComponent<SpriteRenderer>().color / 2);
-        HideMenu();
-        state = UnitState.sleeping;
+        ChangeState(UnitState.sleeping);
     }
     public void Idle()
     {
         tilesInRange.Clear();
-        HideMenu();
-        state = UnitState.idle;
+        if(state == UnitState.sleeping) SetColor(GetComponent<SpriteRenderer>().color * 2);
+        ChangeState(UnitState.idle);
     }
     public void AwaitAction()
     {
-        ShowMenu();
-        state = UnitState.awaitingAction;
+        ChangeState(UnitState.awaitingAction);
     }
 
     public void Undo()
@@ -72,8 +64,7 @@ public class Unit : ESprite
         var temp = MapManager.ins.GridToWorld(prevPos);
         temp.z = zoffset;
         gameObject.transform.position = temp;
-        HideMenu();
-        state = UnitState.idle;
+        Idle();
     }
     public void Eat()
     {
@@ -100,19 +91,7 @@ public class Unit : ESprite
     }
     public void Deselect()
     {
-        state = UnitState.idle;
-    }
-    private void ShowMenu()
-    {
-        if(actionMenu) actionMenu.gameObject.SetActive(true);
-    }
-    private void HideMenu()
-    {
-        if(actionMenu)
-        {
-            actionMenu.gameObject.SetActive(false);
-            actionMenu.Clear();
-        }
+        if(state != UnitState.idle) Idle();
     }
     public void Move(Vector2 target)
     {
@@ -124,33 +103,46 @@ public class Unit : ESprite
     {
         _prevPos = newPos;
     }
-    public Button AddButton(string label)
+    public void CheckMove()
     {
-        return actionMenu.AddButton(label);
+        CheckTiles(data.speed, false);
     }
-    private void CheckMoveDistance()
+    public void CheckAttackRange()
     {
-        for (int i = -data.speed; i <= data.speed; i++)
+        CheckTiles(data.range, true);
+    }
+    private void CheckTiles(int value, bool attacking)
+    {
+        for (int i = -value; i <= value; i++)
         {
-            for (int j = -data.speed; j <= data.speed; j++)
+            for (int j = -value; j <= value; j++)
             {
-                if (Mathf.Abs(i) + Mathf.Abs(j) > data.speed || i == 0 && j == 0) continue;
+                if (Mathf.Abs(i) + Mathf.Abs(j) > value || i == 0 && j == 0) continue;
                 Vector2 gPos = MapManager.ins.WorldToGrid(transform.position);
                 gPos.x += i;
                 gPos.y += j;
                 if (!MapManager.ins.currentMap.ContainsKey(gPos)) continue;
                 var tile = MapManager.ins.currentMap[gPos];
-                if (data.size <= tile.data.maxSize)
+                
+                if (attacking)
                 {
-                    tile.Highlight();
-                    tilesInRange.Add(gPos);
+                    tile.SetColor(Color.red / 2);
+                }
+                else
+                {
+                    if (data.size <= tile.data.maxSize)
+                    {
+                        tile.Highlight();
+                        tilesInRange.Add(gPos);
+                    }
                 }
             }
         }
     }
 
-    private void SetTeam(Team team)
+    private void SetTeam(Team _team)
     {
+        team = _team;
         switch (team)
         {
             case Team.Player1:
@@ -160,5 +152,10 @@ public class Unit : ESprite
                 SetColor(Color.blue);
                 break;
         }
+    }
+    private void ChangeState(UnitState newstate)
+    {
+        state = newstate;
+        Debug.Log("Current Unit State: " + state);
     }
 }

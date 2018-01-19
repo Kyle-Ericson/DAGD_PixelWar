@@ -15,6 +15,8 @@ public class SceneManager : ESingletonMono<SceneManager> {
     void InitializeScenes()
     {
         GameScene.ins.gameObject.transform.SetParent(this.gameObject.transform);
+        GameScene.ins.Init();
+        GameScene.ins.SetupMatch(1, 2);
     }
     public void ChangeScene()
     {
