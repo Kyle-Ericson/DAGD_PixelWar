@@ -15,7 +15,7 @@ public class GameUI : MonoBehaviour
         actionMenu = transform.Find("ActionMenu").GetComponent<EMenu>();
         endTurn.onClick.AddListener(GameScene.ins.EndTurn);
     }
-    public Button AddButton(string label)
+    private Button AddButton(string label)
     {
         return actionMenu.AddButton(label);
     }
@@ -26,6 +26,22 @@ public class GameUI : MonoBehaviour
     public void ShowActionMenu()
     {
         actionMenu.Show();
+    }
+    public Button AddWaitButton()
+    {
+        return AddButton("Wait");
+    }
+    public Button AddEatButton()
+    {
+        return AddButton("Eat");
+    }
+    public Button AddAttackButton()
+    {
+        return AddButton("Attack");
+    }
+    public Button AddSplitButton()
+    {
+        return AddButton("Split");
     }
 
 }

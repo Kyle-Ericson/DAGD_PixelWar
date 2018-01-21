@@ -10,7 +10,9 @@ public class Unit : ESprite
     private Vector2 _prevPos;
     private UnitData _data = null;
     public UnitState state = UnitState.idle;
-    public List<Vector2> tilesInRange = new List<Vector2>();
+    public List<Vector2> tilesWithinMoveRange = new List<Vector2>();
+    public List<Vector2> foodWithinRange = new List<Vector2>();
+    public List<Vector2> enemiesWithinRange = new List<Vector2>();
     public TextMesh tierText;
     private float zoffset = -0.2f;
     public Team team = 0;
@@ -50,7 +52,7 @@ public class Unit : ESprite
     }
     public void Idle()
     {
-        tilesInRange.Clear();
+        tilesWithinMoveRange.Clear();
         if(state == UnitState.sleeping) SetColor(GetComponent<SpriteRenderer>().color * 2);
         ChangeState(UnitState.idle);
     }
@@ -105,13 +107,17 @@ public class Unit : ESprite
     }
     public void CheckMove()
     {
-        CheckTiles(data.speed, false);
+        CheckTiles(data.speed, Action.move);
     }
     public void CheckAttackRange()
     {
-        CheckTiles(data.range, true);
+        CheckTiles(data.range, Action.attack);
     }
-    private void CheckTiles(int value, bool attacking)
+    public void CheckForFood()
+    {
+        CheckTiles(1, Action.eat);
+    }
+    private void CheckTiles(int value, Action action)
     {
         for (int i = -value; i <= value; i++)
         {
@@ -123,18 +129,20 @@ public class Unit : ESprite
                 gPos.y += j;
                 if (!MapManager.ins.currentMap.ContainsKey(gPos)) continue;
                 var tile = MapManager.ins.currentMap[gPos];
-                
-                if (attacking)
+
+
+                switch (action)
                 {
-                    tile.SetColor(Color.red / 2);
-                }
-                else
-                {
-                    if (data.size <= tile.data.maxSize)
-                    {
-                        tile.Highlight();
-                        tilesInRange.Add(gPos);
-                    }
+                    case Action.move:
+                        if (data.size <= tile.data.maxSize)
+                        {
+                            tile.Highlight();
+                            tilesWithinMoveRange.Add(gPos);
+                        }
+                        break;
+                    case Action.attack:
+                        tile.SetColor(Color.red / 2);
+                        break;
                 }
             }
         }
@@ -156,6 +164,6 @@ public class Unit : ESprite
     private void ChangeState(UnitState newstate)
     {
         state = newstate;
-        Debug.Log("Current Unit State: " + state);
+        //Debug.Log("Current Unit State: " + state);
     }
 }

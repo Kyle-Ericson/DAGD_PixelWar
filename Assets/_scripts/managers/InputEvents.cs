@@ -18,8 +18,10 @@ public class InputEvents : ESingletonMono<InputEvents> {
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0)) if (OnMouseLClick != null) OnMouseLClick();
-        if (Input.GetMouseButtonDown(1)) if (OnMouseRClick != null) OnMouseRClick();
+        if (!GameScene.ins.running || GameScene.ins.gameState == GameState.paused) return;
+
+        if (Input.GetMouseButtonDown(0) && OnMouseLClick != null) OnMouseLClick();
+        if (Input.GetMouseButtonDown(1) && OnMouseRClick != null) OnMouseRClick();
         if (Input.mousePosition != prevMousePos)
         {
             if (OnMouseMoved != null) OnMouseMoved();

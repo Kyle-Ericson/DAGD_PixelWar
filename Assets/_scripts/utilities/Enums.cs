@@ -2,7 +2,8 @@
 {
     awaitingInput,
     unitSelected,
-    awaitingAction
+    awaitingAction,
+    paused
 }
 
 public enum UnitState
@@ -34,12 +35,18 @@ public enum Team
     Player2 = 2
 }
 
-
 public enum TileType
 {
     plain = 1,
     forest = 2,
     mountain = 3,
     food = 4
-        
+}
+
+public enum Action
+{
+    move,
+    eat,
+    attack,
+    split
 }

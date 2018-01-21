@@ -10,6 +10,7 @@ public class MapManager : ESingletonMono<MapManager>
     public MapData currentMapData;
     // current map's tiles
     public Dictionary<Vector2, Tile> currentMap = new Dictionary<Vector2, Tile>();
+    public Dictionary<Vector2, Unit> unitGrid = new Dictionary<Vector2, Unit>();
     // tile scale
     public float _tileScale = 1;
     // tile game obj
