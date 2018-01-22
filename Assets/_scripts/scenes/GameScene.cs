@@ -6,7 +6,11 @@ public class GameScene : ESingletonMono<GameScene>
 {
     private GameObject unitPrefab;
     private Cursor cursor;
-    private Unit currentSelected = null;
+    private Unit _currentSelected = null;
+    public Unit currentSelected
+    {
+        get { return _currentSelected; }
+    }
     private GameState _gameState = GameState.awaitingInput;
     public GameState gameState
     {
@@ -19,6 +23,11 @@ public class GameScene : ESingletonMono<GameScene>
     private int numOfPlayers = 0;
     private int currentTurn = 1;
     private int turnCount = 1;
+    
+
+
+    
+
 
     #region Game Setup
     //
@@ -30,6 +39,7 @@ public class GameScene : ESingletonMono<GameScene>
         gameUI.gameObject.transform.SetParent(this.gameObject.transform);
         MapManager.ins.gameObject.transform.SetParent(this.gameObject.transform);
         InputEvents.ins.gameObject.transform.SetParent(this.gameObject.transform);
+        AStar.ins.gameObject.transform.SetParent(this.gameObject.transform);
         Sprites.ins.LoadSprites();
         Database.Load();
     }
@@ -39,7 +49,6 @@ public class GameScene : ESingletonMono<GameScene>
         cursor.Show();
         AddLIsteners();
         numOfPlayers = players;
-
     }
     //
     private void LoadMap(int mapID)
@@ -47,6 +56,7 @@ public class GameScene : ESingletonMono<GameScene>
         MapManager.ins.SpawnMap(mapID);
         SpawnUnit(3, Team.Player1, MapManager.ins.currentMapData.start1.ToVector2());
         SpawnUnit(2, Team.Player2, MapManager.ins.currentMapData.start2.ToVector2());
+        _currentSelected = MapManager.ins.unitGrid[Vector2.zero];
     }
     #endregion
     #region Input Handling
@@ -72,9 +82,18 @@ public class GameScene : ESingletonMono<GameScene>
                     if(MapManager.ins.unitGrid[cursor.gridpos].team == (Team)currentTurn) SelectUnit();
                 }
                 else DeselectAll();
+
+                if(MapManager.ins.currentMap[cursor.gridpos].data.maxSize >= currentSelected.data.size)
+                {
+                    AStar.ins.FindPath(Vector2.zero, cursor.gridpos);
+                }
+
                 break;
             case GameState.unitSelected:
-                if (currentSelected.tilesWithinMoveRange.Contains(cursor.gridpos)) TempMoveUnit();
+                if (_currentSelected.tilesWithinMoveRange.Contains(cursor.gridpos))
+                {
+                    TempMoveUnit();
+                }
                 break;
             case GameState.awaitingAction:
                 break;
@@ -118,26 +137,26 @@ public class GameScene : ESingletonMono<GameScene>
     //
     private void SelectUnit()
     {
-        currentSelected = MapManager.ins.unitGrid[cursor.gridpos];
-        currentSelected.Select();
-        currentSelected.CheckMove();
+        _currentSelected = MapManager.ins.unitGrid[cursor.gridpos];
+        _currentSelected.Select();
+        _currentSelected.CheckMove();
         ChangeState(GameState.unitSelected);
     }
     //
     private void TempMoveUnit()
     {
         // move the unit
-        currentSelected.SetPrevPos(MapManager.ins.WorldToGrid(currentSelected.transform.position));
-        currentSelected.Move(cursor.gridpos);
-        currentSelected.AwaitAction();
+        _currentSelected.SetPrevPos(MapManager.ins.WorldToGrid(_currentSelected.transform.position));
+        _currentSelected.Move(cursor.gridpos);
+        _currentSelected.AwaitAction();
         DeselectAllTiles();
         
 
         // setup the action menu based on what is around the unit
         gameUI.ClearActionMenu();
-        if (currentSelected.enemiesWithinRange.Count > 0) gameUI.AddAttackButton();
-        if (currentSelected.foodWithinRange.Count > 0) gameUI.AddEatButton();
-        if (currentSelected.data.tier > 1) gameUI.AddSplitButton();
+        if (_currentSelected.enemiesWithinRange.Count > 0) gameUI.AddAttackButton();
+        if (_currentSelected.foodWithinRange.Count > 0) gameUI.AddEatButton();
+        if (_currentSelected.data.tier > 1) gameUI.AddSplitButton();
         gameUI.AddWaitButton().onClick.AddListener(HandleWait);
         
 
@@ -146,15 +165,15 @@ public class GameScene : ESingletonMono<GameScene>
     }
     private void ConfirmMove()
     {
-        MapManager.ins.unitGrid.Remove(currentSelected.prevPos);
-        MapManager.ins.unitGrid.Add(MapManager.ins.WorldToGrid(currentSelected.transform.position), currentSelected);
-        currentSelected = null;
+        MapManager.ins.unitGrid.Remove(_currentSelected.prevPos);
+        MapManager.ins.unitGrid.Add(MapManager.ins.WorldToGrid(_currentSelected.transform.position), _currentSelected);
+        _currentSelected = null;
         ChangeState(GameState.awaitingInput);
     }
     //
     private void Undo()
     {
-        currentSelected.Undo();
+        _currentSelected.Undo();
         ChangeState(GameState.awaitingInput);
     }
     #endregion
@@ -162,7 +181,7 @@ public class GameScene : ESingletonMono<GameScene>
     //
     public void HandleWait()
     {
-        currentSelected.Sleep();
+        _currentSelected.Sleep();
         ChangeState(GameState.awaitingInput);
         ConfirmMove();
     }
@@ -243,7 +262,7 @@ public class GameScene : ESingletonMono<GameScene>
         {
             if (k.Value.state != UnitState.sleeping) k.Value.Deselect();
         }
-        currentSelected = null;
+        //_currentSelected = null;
     }
     
     //

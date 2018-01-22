@@ -123,7 +123,7 @@ public class Unit : ESprite
         {
             for (int j = -value; j <= value; j++)
             {
-                if (Mathf.Abs(i) + Mathf.Abs(j) > value || i == 0 && j == 0) continue;
+                if (Mathf.Abs(i) + Mathf.Abs(j) > value) continue;
                 Vector2 gPos = MapManager.ins.WorldToGrid(transform.position);
                 gPos.x += i;
                 gPos.y += j;
@@ -134,11 +134,7 @@ public class Unit : ESprite
                 switch (action)
                 {
                     case Action.move:
-                        if (data.size <= tile.data.maxSize)
-                        {
-                            tile.Highlight();
-                            tilesWithinMoveRange.Add(gPos);
-                        }
+                        tilesWithinMoveRange.Add(gPos);
                         break;
                     case Action.attack:
                         tile.SetColor(Color.red / 2);

@@ -22,7 +22,6 @@ public class Cursor : MonoBehaviour
     {
         Vector2 gridPos = MapManager.ins.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
         DoMove(gridPos);
-        
     }
     public void Move(Vector2 gridPos)
     {

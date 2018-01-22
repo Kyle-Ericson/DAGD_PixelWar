@@ -9,9 +9,10 @@ public class Tile : ESprite
     private TileData _data = null;
     public TileData data { get { return _data; }}
     private Color startColor;
-    public int g;
-    public int h;
-    public int f;
+    public float g;
+    public float h;
+    public float f;
+
     public Tile parent;
 
 

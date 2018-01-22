@@ -79,14 +79,40 @@ public class MapManager : ESingletonMono<MapManager>
     {
         return (y * currentMapData.cols) + x;
     }
+
     // Convert a world position into a grid position.
     public Vector2 WorldToGrid(Vector2 worldPos)
     {
         return new Vector2(Mathf.Floor(worldPos.x / _tileScale), -Mathf.Floor(worldPos.y / _tileScale) - 1);
     }
+
     // Convert a grid position into a world position.
     public Vector3 GridToWorld(Vector2 gridPos)
     {
         return new Vector3(gridPos.x * _tileScale + (_tileScale / 2), -gridPos.y * _tileScale - (_tileScale / 2), 0);
+    }
+
+
+    public List<Tile> GetNeighbors(Tile tile)
+    {
+        List<Tile> neighbors = new List<Tile>();
+
+        for(int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                if((x == 0 && y == 0) || Mathf.Abs(x) + Mathf.Abs(y) > 1) continue;
+
+                Vector2 check = WorldToGrid(tile.transform.position);
+                check.x += x;
+                check.y += y;
+
+                if (MapManager.ins.currentMap.ContainsKey(check))
+                {
+                    neighbors.Add(MapManager.ins.currentMap[check]);
+                }
+            }
+        }
+        return neighbors;
     }
 }
