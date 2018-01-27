@@ -56,7 +56,7 @@ public class GameScene : ESingletonMono<GameScene>
         MapManager.ins.SpawnMap(mapID);
         SpawnUnit(3, Team.Player1, MapManager.ins.currentMapData.start1.ToVector2());
         SpawnUnit(2, Team.Player2, MapManager.ins.currentMapData.start2.ToVector2());
-        _currentSelected = MapManager.ins.unitGrid[Vector2.zero];
+        SpawnUnit(2, Team.Player1, new Vector2(3, 5));
     }
     #endregion
     #region Input Handling
@@ -82,21 +82,35 @@ public class GameScene : ESingletonMono<GameScene>
                     if(MapManager.ins.unitGrid[cursor.gridpos].team == (Team)currentTurn) SelectUnit();
                 }
                 else DeselectAll();
-
-                if(MapManager.ins.currentMap[cursor.gridpos].data.maxSize >= currentSelected.data.size)
-                {
-                    AStar.ins.FindPath(Vector2.zero, cursor.gridpos);
-                }
-
                 break;
+
             case GameState.unitSelected:
-                if (_currentSelected.tilesWithinMoveRange.Contains(cursor.gridpos))
+                if (_currentSelected.inMoveRange.Contains(cursor.gridpos))
                 {
                     TempMoveUnit();
                 }
                 break;
+
             case GameState.awaitingAction:
+            
                 break;
+
+            case GameState.awaitingSplit:
+                if(currentSelected.inSplitRange.Contains(cursor.gridpos))
+                {
+                    ConfirmSplit(cursor.gridpos);
+                    DeselectAll();
+                }
+                break;
+
+            case GameState.awaitingAttack:
+                if(currentSelected.inAttackRange.Contains(cursor.gridpos))
+                {
+                    ConfirmAttack(cursor.gridpos);
+                    DeselectAll();
+                }
+                break;
+                
             case GameState.paused:
                 break;
         }
@@ -109,7 +123,9 @@ public class GameScene : ESingletonMono<GameScene>
             case GameState.awaitingInput:
                 if (MapManager.ins.unitGrid.ContainsKey(cursor.gridpos))
                 {
-                    MapManager.ins.unitGrid[cursor.gridpos].CheckAttackRange();
+                    var unit = MapManager.ins.unitGrid[cursor.gridpos];
+                    unit.CheckAttackRange();
+                    foreach(Vector2 v in unit.inAttackRange) MapManager.ins.currentMap[v].SetColor(Color.red / 2);
                 }
                 break;
             case GameState.unitSelected:
@@ -117,6 +133,9 @@ public class GameScene : ESingletonMono<GameScene>
                 break;
             case GameState.awaitingAction:
                 Undo();
+                break;
+            case GameState.awaitingAttack:
+
                 break;
             case GameState.paused:
                 break;
@@ -140,7 +159,28 @@ public class GameScene : ESingletonMono<GameScene>
         _currentSelected = MapManager.ins.unitGrid[cursor.gridpos];
         _currentSelected.Select();
         _currentSelected.CheckMove();
+        foreach(Vector2 v in currentSelected.inMoveRange) MapManager.ins.currentMap[v].Highlight();
         ChangeState(GameState.unitSelected);
+    }
+    private void ConfirmSplit(Vector2 splitPos)
+    {
+        SpawnUnit(1, currentSelected.team, splitPos);
+        MapManager.ins.unitGrid[splitPos].Sleep();
+        currentSelected.TakeDamage(1);
+        currentSelected.Sleep();
+        ConfirmMove();        
+    }
+    private void ConfirmAttack(Vector2 attackPos)
+    {
+        var attacked =MapManager.ins.unitGrid[attackPos];
+        attacked.TakeDamage(1);
+        if(attacked.state == UnitState.dead) KillUnit(attackPos);
+        currentSelected.Sleep();
+        ConfirmMove();
+    }
+    private void KillUnit(Vector2 unitPos)
+    {
+        MapManager.ins.RemoveUnit(unitPos);
     }
     //
     private void TempMoveUnit()
@@ -148,15 +188,19 @@ public class GameScene : ESingletonMono<GameScene>
         // move the unit
         _currentSelected.SetPrevPos(MapManager.ins.WorldToGrid(_currentSelected.transform.position));
         _currentSelected.Move(cursor.gridpos);
+        _currentSelected.CheckAttackRange();
+        _currentSelected.CheckForEnemies();
+        _currentSelected.CheckForFood();
+        _currentSelected.CheckSplitRange();
         _currentSelected.AwaitAction();
         DeselectAllTiles();
         
 
         // setup the action menu based on what is around the unit
         gameUI.ClearActionMenu();
-        if (_currentSelected.enemiesWithinRange.Count > 0) gameUI.AddAttackButton();
-        if (_currentSelected.foodWithinRange.Count > 0) gameUI.AddEatButton();
-        if (_currentSelected.data.tier > 1) gameUI.AddSplitButton();
+        if (_currentSelected.enemiesInRange.Count > 0) gameUI.AddAttackButton().onClick.AddListener(HandleAttack);
+        if (_currentSelected.inEatRange.Count > 0) gameUI.AddEatButton().onClick.AddListener(HandleEat);
+        if (_currentSelected.data.tier > 1) gameUI.AddSplitButton().onClick.AddListener(HandleSplit);
         gameUI.AddWaitButton().onClick.AddListener(HandleWait);
         
 
@@ -188,7 +232,11 @@ public class GameScene : ESingletonMono<GameScene>
     //
     public void HandleAttack()
     {
-
+        foreach(Vector2 v in _currentSelected.enemiesInRange)
+        {
+            MapManager.ins.currentMap[v].SetColor(Color.red / 2);
+        }
+        ChangeState(GameState.awaitingAttack);
     }
     //
     public void HandleEat()
@@ -198,7 +246,11 @@ public class GameScene : ESingletonMono<GameScene>
     //
     public void HandleSplit()
     {
-
+        foreach(Vector2 v in currentSelected.inSplitRange)
+        {
+            MapManager.ins.currentMap[v].SetColor(Color.yellow);
+        }
+        ChangeState(GameState.awaitingSplit);
     }
     #endregion
     #region Game Flow
@@ -215,6 +267,14 @@ public class GameScene : ESingletonMono<GameScene>
             case GameState.awaitingAction:
                 cursor.Hide();
                 gameUI.ShowActionMenu();
+                break;
+            case GameState.awaitingSplit:
+                cursor.Show();
+                gameUI.actionMenu.Hide();
+                break;
+            case GameState.awaitingAttack:
+                cursor.Show();
+                gameUI.actionMenu.Hide();
                 break;
             case GameState.paused:
                 cursor.Hide();
@@ -262,7 +322,7 @@ public class GameScene : ESingletonMono<GameScene>
         {
             if (k.Value.state != UnitState.sleeping) k.Value.Deselect();
         }
-        //_currentSelected = null;
+        _currentSelected = null;
     }
     
     //

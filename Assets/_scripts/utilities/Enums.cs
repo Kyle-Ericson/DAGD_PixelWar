@@ -3,7 +3,9 @@
     awaitingInput,
     unitSelected,
     awaitingAction,
-    paused
+    awaitingAttack,
+    paused,
+    awaitingSplit
 }
 
 public enum UnitState

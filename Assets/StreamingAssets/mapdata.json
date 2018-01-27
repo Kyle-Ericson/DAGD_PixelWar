@@ -26,7 +26,7 @@
             "name": "Test - Large Map",
             "cols": 18,
             "rows": 10,
-            "start1": { "x": 0, "y": 0 },
+            "start1": { "x": 6, "y": 5 },
             "start2": { "x": 8, "y": 5 },
             "grid": [
 

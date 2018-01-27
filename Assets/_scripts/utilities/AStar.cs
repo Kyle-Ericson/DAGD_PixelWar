@@ -16,11 +16,13 @@ namespace Ericson
 
         public AStar() { }
 
+        
+
 
         public void FindPath(Vector2 start, Vector2 target)
         {
-            Debug.Log("Start");
-            Tile startTile = MapManager.ins.currentMap[start];
+            Debug.Log("Finding Path");
+            Tile startTile = MapManager.ins.currentMap[MapManager.ins.WorldToGrid(GameScene.ins.currentSelected.transform.position)];
             Tile targetTile = MapManager.ins.currentMap[target];
 
             List<Tile> openSet = new List<Tile>();
@@ -30,7 +32,7 @@ namespace Ericson
 
             while (openSet.Count > 0)
             {
-                Debug.Log("Finding Path");
+                
                 Tile currentTile = openSet[0];
 
                 for (int i = 1; i < openSet.Count; i++)
@@ -41,18 +43,17 @@ namespace Ericson
                     }
                     openSet.Remove(currentTile);
                     closedSet.Add(currentTile);
-                    currentTile.SetColor(Color.red);
-
+                    
                     if (currentTile == targetTile)
                     {
                         RetracePath(startTile, targetTile);
-                        return;
+                        Debug.Log("End");
                     }
                 }
 
                 foreach (Tile t in MapManager.ins.GetNeighbors(currentTile))
                 {
-                    if (GameScene.ins.currentSelected.data.size > t.data.maxSize || closedSet.Contains(t)) continue;
+                    if (!GameScene.ins.currentSelected || GameScene.ins.currentSelected.data.size > t.data.maxSize || closedSet.Contains(t)) continue;
 
                     float newCost = currentTile.g + 1;
                     if ((newCost < t.g) || !openSet.Contains(t))
@@ -69,10 +70,6 @@ namespace Ericson
                     }
                 }
             }
-            foreach(Tile t in closedSet)
-            {
-                t.SetColor(Color.red);
-            }
         }
         void RetracePath(Tile startTile, Tile targetTile)
         {
@@ -88,6 +85,7 @@ namespace Ericson
             _path.Clear();
             _path = path;
         }
+        
         int GetDistance(Tile tile1, Tile tile2)
         {
             int dX = (int)Mathf.Abs(MapManager.ins.WorldToGrid(tile1.transform.position).x - MapManager.ins.WorldToGrid(tile2.transform.position).x);

@@ -115,4 +115,9 @@ public class MapManager : ESingletonMono<MapManager>
         }
         return neighbors;
     }
+    public void RemoveUnit(Vector2 pos)
+    {
+        Destroy(unitGrid[pos].gameObject);
+        unitGrid.Remove(pos);
+    }
 }

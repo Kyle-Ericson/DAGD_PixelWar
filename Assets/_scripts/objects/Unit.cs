@@ -10,9 +10,11 @@ public class Unit : ESprite
     private Vector2 _prevPos;
     private UnitData _data = null;
     public UnitState state = UnitState.idle;
-    public List<Vector2> tilesWithinMoveRange = new List<Vector2>();
-    public List<Vector2> foodWithinRange = new List<Vector2>();
-    public List<Vector2> enemiesWithinRange = new List<Vector2>();
+    public List<Vector2> inMoveRange = new List<Vector2>();
+    public List<Vector2> inEatRange = new List<Vector2>();
+    public List<Vector2> inAttackRange = new List<Vector2>();
+    public List<Vector2> enemiesInRange = new List<Vector2>();
+    public List<Vector2> inSplitRange = new List<Vector2>();
     public TextMesh tierText;
     private float zoffset = -0.2f;
     public Team team = 0;
@@ -52,7 +54,7 @@ public class Unit : ESprite
     }
     public void Idle()
     {
-        tilesWithinMoveRange.Clear();
+        inMoveRange.Clear();
         if(state == UnitState.sleeping) SetColor(GetComponent<SpriteRenderer>().color * 2);
         ChangeState(UnitState.idle);
     }
@@ -107,43 +109,173 @@ public class Unit : ESprite
     }
     public void CheckMove()
     {
-        CheckTiles(data.speed, Action.move);
+        for(int d = 0; d < 8; d++)
+        {
+            for (int i = 0; i <= data.speed; i++)
+            {
+                Vector2 tempgPos = MapManager.ins.WorldToGrid(transform.position);
+                switch (d)
+                {
+                    case 0: // right, down
+                        tempgPos.x += i;
+                        break;
+                    case 1: // right, up
+                        tempgPos.x += i;
+                        break;
+                    case 2: // left, down
+                        tempgPos.x -= i;
+                        break;
+                    case 3: // left, up
+                        tempgPos.x -= i;
+                        break;
+                    case 4: // down, left
+                        tempgPos.y += i;
+                        break;
+                    case 5: // down, right
+                        tempgPos.y += i;
+                        break;
+                    case 6: // up, left
+                        tempgPos.y -= i;
+                        break;
+                    case 7: // up, down
+                        tempgPos.y -= i;
+                        break;
+                }
+                if (!MapManager.ins.currentMap.ContainsKey(tempgPos)) continue;
+                var temptile = MapManager.ins.currentMap[tempgPos];
+                
+                if (data.size > temptile.data.maxSize) break;
+                if(MapManager.ins.unitGrid.ContainsKey(tempgPos) && MapManager.ins.unitGrid[tempgPos].team != team) break;
+                
+
+                for (int j = 0; j <= data.speed; j++)
+                {
+                    if (Mathf.Abs(i) + Mathf.Abs(j) > data.speed) continue;
+                    Vector2 gPos = MapManager.ins.WorldToGrid(transform.position);
+                    switch (d)
+                    {
+                        case 0: // right, down
+                            gPos.x += i;
+                            gPos.y += j;
+                            break;
+                        case 1: // right, up
+                            gPos.x += i;
+                            gPos.y -= j;
+                            break;
+                        case 2: // left, down
+                            gPos.x -= i;
+                            gPos.y += j;
+                            break;
+                        case 3: // left, up
+                            gPos.x -= i;
+                            gPos.y -= j;
+                            break;
+                        case 4: // down, left
+                            gPos.x -= j;
+                            gPos.y += i;
+                            break;
+                        case 5: // down, right
+                            gPos.x += j;
+                            gPos.y += i;
+                            break;
+                        case 6: // up, left
+                            gPos.x -= j;
+                            gPos.y -= i;
+                            break;
+                        case 7: // up, right
+                            gPos.x += j;
+                            gPos.y -= i;
+                            break;
+                    }
+                    if (!MapManager.ins.currentMap.ContainsKey(gPos)) continue;
+                    var tile = MapManager.ins.currentMap[gPos];
+                    if (data.size > tile.data.maxSize) break;
+                    if(MapManager.ins.unitGrid.ContainsKey(gPos) && MapManager.ins.unitGrid[gPos].team != team) break;
+                        
+                    if(!MapManager.ins.unitGrid.ContainsKey(gPos) ||
+                        gPos == MapManager.ins.WorldToGrid(gameObject.transform.position)) 
+                    {
+                        inMoveRange.Add(MapManager.ins.WorldToGrid(tile.transform.position));
+                    }
+
+                    
+                }
+            }
+        }
+    }
+    public void CheckForEnemies()
+    {
+        foreach(Vector2 v in inAttackRange)
+        {
+            if(MapManager.ins.unitGrid.ContainsKey(v) && MapManager.ins.unitGrid[v].team != team)
+            {
+                enemiesInRange.Add(v);
+            }
+        }
     }
     public void CheckAttackRange()
     {
-        CheckTiles(data.range, Action.attack);
+        List<Vector2> tempRange = CheckTiles(data.range);
+        Debug.Log(data.range);
+        foreach(Vector2 v in tempRange) 
+        {
+            Debug.Log(v);
+            var thisgPos = MapManager.ins.WorldToGrid(transform.position);
+            var dx = thisgPos.x - v.x;
+            var dy = thisgPos.y - v.y;
+            if(Mathf.Abs(dx) + Mathf.Abs(dy) == 1 && data.range > 1) continue;
+            inAttackRange.Add(v);
+        }
     }
     public void CheckForFood()
     {
-        CheckTiles(1, Action.eat);
-    }
-    private void CheckTiles(int value, Action action)
-    {
-        for (int i = -value; i <= value; i++)
+        for (int i = -1; i <= 1; i++)
         {
-            for (int j = -value; j <= value; j++)
+            for (int j = -1; j <= 1; j++)
             {
-                if (Mathf.Abs(i) + Mathf.Abs(j) > value) continue;
+                if (Mathf.Abs(i) + Mathf.Abs(j) > 1) continue;
                 Vector2 gPos = MapManager.ins.WorldToGrid(transform.position);
                 gPos.x += i;
                 gPos.y += j;
                 if (!MapManager.ins.currentMap.ContainsKey(gPos)) continue;
                 var tile = MapManager.ins.currentMap[gPos];
 
-
-                switch (action)
-                {
-                    case Action.move:
-                        tilesWithinMoveRange.Add(gPos);
-                        break;
-                    case Action.attack:
-                        tile.SetColor(Color.red / 2);
-                        break;
-                }
+                // TODO: add tile to food list
+                // TODO: turn it a color
             }
         }
     }
+    public void CheckSplitRange() 
+    {
+        List <Vector2> tempSplitRange = CheckTiles(1);
 
+        foreach(Vector2 v in tempSplitRange)
+        {
+            if(MapManager.ins.unitGrid.ContainsKey(v) || 
+               MapManager.ins.currentMap[v].data.maxSize < 0 ||
+               MapManager.ins.WorldToGrid(transform.position) == v) continue;
+
+            inSplitRange.Add(v);
+        }
+    }
+    private List<Vector2> CheckTiles(int range)
+    {
+        List<Vector2> toReturn = new List<Vector2>();
+        for (int i = -range; i <= range; i++)
+        {
+            for (int j = -range; j <= range; j++)
+            {
+                if (Mathf.Abs(i) + Mathf.Abs(j) > range) continue;
+                Vector2 gPos = MapManager.ins.WorldToGrid(transform.position);
+                gPos.x += i;
+                gPos.y += j;
+                if (!MapManager.ins.currentMap.ContainsKey(gPos)) continue;
+                var tile = MapManager.ins.currentMap[gPos];
+                toReturn.Add(gPos);
+            }
+        }
+        return toReturn;
+    }
     private void SetTeam(Team _team)
     {
         team = _team;
