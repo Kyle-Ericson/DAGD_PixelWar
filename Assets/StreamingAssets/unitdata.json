@@ -1,28 +1,44 @@
 {
   "data": [
     {
-      "name": "Tier 1",
-      "tier": 1,
+      "name": "Worker",
+      "id": 0,
       "range": 1,
       "attack": 1,
       "speed": 5,
-      "size": 0
+      "size": 0,
+      "maxHealth": 1,
+      "maxFood": 1
     },
     {
-      "name": "Tier 2",
-      "tier": 2,
-      "range": 3,
+      "name": "Infantry",
+      "id": 1,
+      "range": 1,
       "attack": 2,
-      "speed": 3,
-      "size": 1
+      "speed": 4,
+      "size": 0,
+      "maxHealth": 3,
+      "maxFood": 2
     },
     {
-      "name": "Tier 3",
-      "tier": 3,
+      "name": "Range",
+      "id": 2,
+      "range": 3,
+      "attack": 3,
+      "speed": 3,
+      "size": 0,
+      "maxHealth": 1,
+      "maxFood": 2
+    },
+    {
+      "name": "Tank",
+      "id": 3,
       "range": 1,
       "attack": 3,
       "speed": 2,
-      "size": 3
+      "size": 3,
+      "maxHealth": 4,
+      "maxFood": 3
     }
   ]
 
