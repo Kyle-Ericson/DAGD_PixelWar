@@ -14,7 +14,7 @@ namespace Ericson{
 		public bool xAxis, yAxis, zAxis;
 		public bool invert = false;
 		public bool activeRotation = true;
-		private bool objInPlace = false;
+		public bool objInPlace = false;
 
 		public Vector3 startRotation = new Vector3(0,0,225);
 		

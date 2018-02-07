@@ -7,6 +7,7 @@ using Ericson;
 public class Unit : ESprite 
 {
     private Vector2 _prevPos;
+    private Vector2 _gridpos;
     private UnitData _data = null;
     public UnitState state = UnitState.idle;
     public List<Vector2> inMoveRange = new List<Vector2>();
@@ -21,8 +22,15 @@ public class Unit : ESprite
     private int health = 0;
     private int food = 0;
     private int actionPoints = 3;
+    private bool isMoving = false;
+    private int moveIterator = 0;
+    private int moveSpeed = 8;
 
 
+    public Vector2 gridpos 
+    {
+        get { return _gridpos; }
+    }
     public Vector2 prevPos
     {
         get { return _prevPos; }
@@ -46,6 +54,30 @@ public class Unit : ESprite
     {
         SetType(type);
         SetTeam(team);
+    }
+    void Update()
+    {
+        if(isMoving)
+        {
+            if(AStar.ins.path.Count > 0)
+            {
+                var target = AStar.ins.path[moveIterator].transform.position;
+                target.z = zoffset;
+                transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
+                if(transform.position == target) moveIterator++;
+            }
+            if(moveIterator >= AStar.ins.path.Count || AStar.ins.path.Count == 0) 
+            {
+                moveIterator = 0;
+                isMoving = false;
+                GameScene.ins.TempMoveUnit();
+            }
+        }
+    }
+    public void LerpToPosition()
+    {
+        SetPrevPos();
+        isMoving = true;
     }
     public void Select()
     {   
@@ -71,7 +103,8 @@ public class Unit : ESprite
 
     public void Undo()
     {
-        var temp = MapManager.ins.GridToWorld(prevPos);
+        Debug.Log("undo");
+        var temp = MapManager.ins.GridToWorld(_prevPos);
         temp.z = zoffset;
         gameObject.transform.position = temp;
         Idle();
@@ -116,9 +149,13 @@ public class Unit : ESprite
         temp.z = zoffset;
         gameObject.transform.position = temp;
     }
-    public void SetPrevPos(Vector2 newPos)
+    public void SetPrevPos()
     {
-        _prevPos = newPos;
+        _prevPos = MapManager.ins.WorldToGrid(transform.position);
+    }
+    public void SetGridPos()
+    {
+        _gridpos = MapManager.ins.WorldToGrid(transform.position);
     }
     public void CheckMove()
     {
@@ -210,8 +247,6 @@ public class Unit : ESprite
                     {
                         inMoveRange.Add(MapManager.ins.WorldToGrid(tile.transform.position));
                     }
-
-                    
                 }
             }
         }

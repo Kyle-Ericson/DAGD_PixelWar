@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Ericson;
 
 public class SelectionBox : MonoBehaviour
 {
 
     private float zOffset = -1;
-    private Vector2 _gridpos;
+    private Vector2 _gridpos = Vector2.zero * -1;
     public Vector2 gridpos
     {
         get { return _gridpos; }
@@ -14,14 +15,13 @@ public class SelectionBox : MonoBehaviour
 
     private void Start()
     {
-        InputEvents.ins.OnMouseMoved += Move;
         Move(Vector2.zero);
     }
 
     public void Move()
     {
         Vector2 gridPos = MapManager.ins.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        DoMove(gridPos);
+        if(gridPos != _gridpos) DoMove(gridPos);
     }
     public void Move(Vector2 gridPos)
     {
@@ -36,8 +36,6 @@ public class SelectionBox : MonoBehaviour
             transform.position = newPos;
             UpdateGridPos();
         }
-        
-
     }
     public void Hide()
     {

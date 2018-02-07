@@ -11,7 +11,7 @@ public class GameScene : ESingletonMono<GameScene>
     {
         get { return _currentSelected; }
     }
-    private GameState _gameState = GameState.awaitingInput;
+    public GameState _gameState = GameState.awaitingInput;
     public GameState gameState
     {
         get { return _gameState; }
@@ -39,18 +39,13 @@ public class GameScene : ESingletonMono<GameScene>
         cursor = Instantiate(Resources.Load<GameObject>("prefabs/Cursor").GetComponent<SelectionBox>());
         gameUI = Instantiate(Resources.Load<GameObject>("prefabs/GameUI").GetComponent<GameUI>());
         actionMenu = Instantiate(Resources.Load<GameObject>("prefabs/RadialMenu")).GetComponentInChildren<EMenu>();
-        actionMenu.name = "RadialMenu";
         unitPrefab = Resources.Load<GameObject>("prefabs/Unit");
-
         // set this object as each componenets parent
         gameUI.gameObject.transform.SetParent(this.gameObject.transform);
         actionMenu.gameObject.transform.SetParent(this.gameObject.transform);
         MapManager.ins.gameObject.transform.SetParent(this.gameObject.transform);
         InputEvents.ins.gameObject.transform.SetParent(this.gameObject.transform);
         AStar.ins.gameObject.transform.SetParent(this.gameObject.transform);
-
-
-
         // load the sprites and load the database
         Sprites.ins.LoadSprites();
         Database.Load();
@@ -59,7 +54,8 @@ public class GameScene : ESingletonMono<GameScene>
     {
         LoadMap(map);
         cursor.Show();
-        AddLIsteners();
+        cursor.Move(Vector2.zero);
+        AddListeners();
         numOfPlayers = players;
     }
     //
@@ -72,15 +68,17 @@ public class GameScene : ESingletonMono<GameScene>
     #endregion
     #region Input Handling
     //
-    private void AddLIsteners()
+    private void AddListeners()
     {
         InputEvents.ins.OnMouseLClick += HandleMouseLClick;
         InputEvents.ins.OnMouseRClick += HandleMouseRClick;
+        InputEvents.ins.OnMouseMoved += cursor.Move;
     }
     private void RemoveListeners()
     {
         InputEvents.ins.OnMouseLClick -= HandleMouseLClick;
         InputEvents.ins.OnMouseRClick -= HandleMouseRClick;
+        InputEvents.ins.OnMouseMoved -= cursor.Move;
     }
     //
     private void HandleMouseLClick()
@@ -98,7 +96,16 @@ public class GameScene : ESingletonMono<GameScene>
             case GameState.unitSelected:
                 if (_currentSelected.inMoveRange.Contains(cursor.gridpos))
                 {
-                    TempMoveUnit();
+                    if(cursor.gridpos == _currentSelected.gridpos)
+                    {
+                        _currentSelected.SetPrevPos();
+                        TempMoveUnit();
+                    }
+                    else 
+                    {
+                        _currentSelected.LerpToPosition();
+                        ChangeState(GameState.animating);
+                    }
                 }
                 break;
 
@@ -110,7 +117,6 @@ public class GameScene : ESingletonMono<GameScene>
                 if(currentSelected.inSplitRange.Contains(cursor.gridpos))
                 {
                     ConfirmSplit(cursor.gridpos);
-                    DeselectAll();
                 }
                 break;
 
@@ -139,11 +145,18 @@ public class GameScene : ESingletonMono<GameScene>
         switch(_gameState)
         {
             case GameState.awaitingInput:
+                DeselectAll();
                 if (MapManager.ins.unitGrid.ContainsKey(cursor.gridpos))
                 {
                     var unit = MapManager.ins.unitGrid[cursor.gridpos];
                     unit.CheckAttackRange();
-                    foreach(Vector2 v in unit.inAttackRange) MapManager.ins.currentMap[v].SetColor(Color.red / 2);
+
+                    foreach(Vector2 v in unit.inAttackRange)
+                    {
+                        Tile tile = MapManager.ins.currentMap[v];
+                        tile.Highlight();
+                        tile.SetIconColor(Color.red);
+                    }
                 }
                 break;
             case GameState.unitSelected:
@@ -187,6 +200,15 @@ public class GameScene : ESingletonMono<GameScene>
         foreach(Vector2 v in currentSelected.inMoveRange) MapManager.ins.currentMap[v].Highlight();
         ChangeState(GameState.unitSelected);
     }
+    private void ShowPath()
+    {
+        foreach (Vector2 v in currentSelected.inMoveRange) MapManager.ins.currentMap[v].SetIconColor(Color.white);
+        if (GameScene.ins.currentSelected.inMoveRange.Contains(cursor.gridpos))
+        {
+            var start = MapManager.ins.WorldToGrid(GameScene.ins.currentSelected.transform.position);
+            AStar.ins.FindPath(start, cursor.gridpos);
+        }
+    }
     private void ConfirmSplit(Vector2 splitPos)
     {
         SpawnUnit(nextSplitType, currentSelected.team, splitPos);
@@ -214,10 +236,8 @@ public class GameScene : ESingletonMono<GameScene>
         MapManager.ins.RemoveUnit(unitPos);
     }
     //
-    private void TempMoveUnit()
-    {
-        // move the unit
-        _currentSelected.SetPrevPos(MapManager.ins.WorldToGrid(_currentSelected.transform.position));
+    public void TempMoveUnit()
+    {   
         _currentSelected.Move(cursor.gridpos);
         _currentSelected.CheckAttackRange();
         _currentSelected.CheckForEnemies();
@@ -226,14 +246,13 @@ public class GameScene : ESingletonMono<GameScene>
         _currentSelected.AwaitAction();
         DeselectAllTiles();
         
-
         // setup the action menu based on what is around the unit
         actionMenu.transform.position = cursor.transform.position;
         actionMenu.Clear();
         actionMenu.AddRadialWait().onClick.AddListener(HandleWait);
         if (_currentSelected.enemiesInRange.Count > 0) actionMenu.AddRadialAttack().onClick.AddListener(HandleAttack);
         if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialEat().onClick.AddListener(HandleEat);
-        if (_currentSelected.IsFoodMaxed()) actionMenu.AddRadialButton(null).onClick.AddListener(HandleSplit);
+        if (_currentSelected.IsFoodMaxed()) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
         actionMenu.UpdateRadialMenu();
         
 
@@ -242,10 +261,11 @@ public class GameScene : ESingletonMono<GameScene>
     }
     private void ConfirmMove()
     {
+        _currentSelected.SetGridPos();
         MapManager.ins.unitGrid.Remove(_currentSelected.prevPos);
-        MapManager.ins.unitGrid.Add(MapManager.ins.WorldToGrid(_currentSelected.transform.position), _currentSelected);
+        MapManager.ins.unitGrid.Add(_currentSelected.gridpos, _currentSelected);
         _currentSelected = null;
-        ChangeState(GameState.awaitingInput);
+        DeselectAll();
     }
     //
     private void Undo()
@@ -260,7 +280,6 @@ public class GameScene : ESingletonMono<GameScene>
     public void HandleWait()
     {
         _currentSelected.Sleep();
-        ChangeState(GameState.awaitingInput);
         ConfirmMove();
     }
     //
@@ -268,7 +287,9 @@ public class GameScene : ESingletonMono<GameScene>
     {
         foreach(Vector2 v in _currentSelected.enemiesInRange)
         {
-            MapManager.ins.currentMap[v].SetColor(Color.red / 2);
+            Tile tile = MapManager.ins.currentMap[v];
+            tile.Highlight();
+            tile.SetIconColor(Color.red / 2);
         }
         ChangeState(GameState.awaitingAttack);
     }
@@ -277,7 +298,9 @@ public class GameScene : ESingletonMono<GameScene>
     {
         foreach(Vector2 v in _currentSelected.foodInRange)
         {
-            MapManager.ins.currentMap[v].SetColor(Color.green);
+            Tile tile = MapManager.ins.currentMap[v];
+            tile.Highlight();
+            tile.SetIconColor(Color.green);
         }
         ChangeState(GameState.awaitingEat);
     }
@@ -311,34 +334,51 @@ public class GameScene : ESingletonMono<GameScene>
     #endregion
     #region Game Flow
     //
-    private void ChangeState(GameState newState)
+    public void ChangeState(GameState newState)
     {
         _gameState = newState;
         switch (_gameState)
         {
             case GameState.awaitingInput:
+                InputEvents.ins.OnMouseMoved -= ShowPath;
                 cursor.Show();
                 actionMenu.Hide();
                 break;
+            case GameState.unitSelected:
+                InputEvents.ins.OnMouseMoved += ShowPath;
+                break;
             case GameState.awaitingAction:
+                AddListeners();
+                InputEvents.ins.OnMouseMoved -= ShowPath;
                 cursor.Hide();
                 actionMenu.Show();
                 break;
             case GameState.awaitingSplit:
-                foreach(Vector2 v in currentSelected.inSplitRange)
+                InputEvents.ins.OnMouseMoved -= ShowPath;
+                foreach (Vector2 v in currentSelected.inSplitRange)
                 {
-                    MapManager.ins.currentMap[v].SetColor(Color.yellow);
+                    Tile tile = MapManager.ins.currentMap[v];
+                    tile.Highlight();
+                    tile.SetIconColor(Color.yellow);
                 }
                 cursor.Show();
                 actionMenu.Hide();
                 break;
             case GameState.awaitingAttack:
+                InputEvents.ins.OnMouseMoved -= ShowPath;
                 cursor.Show();
                 actionMenu.Hide();
                 break;
             case GameState.awaitingEat:
                 cursor.Show();
                 actionMenu.Hide();
+                break;
+            case GameState.animating:
+                RemoveListeners();
+                InputEvents.ins.OnMouseMoved -= ShowPath;
+                cursor.Hide();
+                actionMenu.Hide();
+                DeselectAllTiles();
                 break;
             case GameState.paused:
                 cursor.Hide();
@@ -377,7 +417,11 @@ public class GameScene : ESingletonMono<GameScene>
     //
     private void DeselectAllTiles()
     {
-        foreach (KeyValuePair<Vector2, Tile> k in MapManager.ins.currentMap) { k.Value.UnHighlight(); }
+        foreach (KeyValuePair<Vector2, Tile> k in MapManager.ins.currentMap) 
+        { 
+            k.Value.UnHighlight();
+            k.Value.SetIconColor(Color.white);
+        }
     }
     //
     private void DeselectAllUnits()

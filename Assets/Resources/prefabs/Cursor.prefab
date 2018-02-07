@@ -20,7 +20,6 @@ GameObject:
   m_Component:
   - component: {fileID: 224714715258470668}
   - component: {fileID: 222745897240727910}
-  - component: {fileID: 114751706431570954}
   - component: {fileID: 114843779600180842}
   m_Layer: 0
   m_Name: Cursor
@@ -28,7 +27,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1805357123157444
 GameObject:
   m_ObjectHideFlags: 0
@@ -38,6 +37,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4212550080699086}
   - component: {fileID: 212586042337737654}
+  - component: {fileID: 114717855001155748}
   m_Layer: 0
   m_Name: sprite
   m_TagString: Untagged
@@ -58,22 +58,24 @@ Transform:
   m_Father: {fileID: 224714715258470668}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114751706431570954
+--- !u!114 &114717855001155748
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1316580005596208}
+  m_GameObject: {fileID: 1805357123157444}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9efabc3799be12e4d9c53ee07e21205c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   theta: 0
-  amplitude: 0.05
+  amplitude: 0.1
   speed: 5
-  baseLine: 1
+  baseLine: 2
   newScale: {x: 0, y: 0, z: 0}
+  doScale: 1
+  doAlpha: 0
 --- !u!114 &114843779600180842
 MonoBehaviour:
   m_ObjectHideFlags: 1

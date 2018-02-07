@@ -74,6 +74,7 @@ namespace Ericson
         {
             if (basicButtonFab == null) basicButtonFab = Resources.Load<GameObject>("prefabs/EButton");
             Button newButton = Instantiate(basicButtonFab).GetComponent<Button>();
+            newButton.GetComponent<RadialButton>().Hide();
             newButton.gameObject.transform.SetParent(gameObject.transform);
             newButton.transform.localScale = Vector3.one;
             newButton.transform.localPosition = Vector3.zero;
@@ -86,7 +87,6 @@ namespace Ericson
             if (radialButtonFab == null) radialButtonFab = Resources.Load<GameObject>("prefabs/RadialButton");
             Button newButton = Instantiate(radialButtonFab).GetComponent<Button>();
             newButton.transform.position = gameObject.transform.position;
-            newButton.gameObject.SetActive(true);
             newButton.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
             newButton.gameObject.transform.SetParent(gameObject.transform);
             radialButtons.Add(newButton);
@@ -110,7 +110,7 @@ namespace Ericson
         }
         public Button AddRadialSplit()
         {
-            return AddRadialButton(null);
+            return AddRadialButton(Sprites.ins.iconSprites[Icon.split]);
         }
         public Button AddRadialAttack()
         {
@@ -118,19 +118,19 @@ namespace Ericson
         }
         public Button AddRadialTank()
         {
-            return AddRadialButton(null);
+            return AddRadialButton(Sprites.ins.unitSprites[UnitType.tank]);
         }
         public Button AddRadialInfantry()
         {
-            return AddRadialButton(null);
+            return AddRadialButton(Sprites.ins.unitSprites[UnitType.infantry]);
         }
         public Button AddRadialWorker()
         {
-            return AddRadialButton(null);
+            return AddRadialButton(Sprites.ins.unitSprites[UnitType.worker]);
         }
         public Button AddRadialSniper()
         {
-            return AddRadialButton(null);
+            return AddRadialButton(Sprites.ins.unitSprites[UnitType.sniper]);
         }
 
 

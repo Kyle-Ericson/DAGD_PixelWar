@@ -19,30 +19,36 @@ public class Sprites {
     }
 
     public Dictionary<TileType, Sprite> tileSprites = new Dictionary<TileType, Sprite>();
-    public Dictionary<int, Sprite> unitSprites = new Dictionary<int, Sprite>();
+    public Dictionary<UnitType, Sprite> unitSprites = new Dictionary<UnitType, Sprite>();
     public Dictionary<Icon, Sprite> iconSprites = new Dictionary<Icon, Sprite>();
 
     public void LoadSprites()
     {
         LoadTileSprites();
-        LoadIconSprites();
+        LoadActionSprites();
+        LoadUnitSprites();
     }
     public void LoadTileSprites()
     {
-        tileSprites.Add(TileType.plain, (Resources.Load<Sprite>("sprites/prototype/plain")));
-        tileSprites.Add(TileType.forest, (Resources.Load<Sprite>("sprites/prototype/forest"))); 
-        tileSprites.Add(TileType.mountain, (Resources.Load<Sprite>("sprites/prototype/mountain")));
-        tileSprites.Add(TileType.food, (Resources.Load<Sprite>("sprites/prototype/forest")));
+        tileSprites.Add(TileType.plain, (Resources.Load<Sprite>("sprites/tiles/plain")));
+        tileSprites.Add(TileType.forest, (Resources.Load<Sprite>("sprites/tiles/forest"))); 
+        tileSprites.Add(TileType.mountain, (Resources.Load<Sprite>("sprites/tiles/mountain")));
+        tileSprites.Add(TileType.food, (Resources.Load<Sprite>("sprites/tiles/forest")));
     }
     public void LoadUnitSprites()
     {
-        
+        unitSprites.Add(UnitType.worker,(Resources.Load<Sprite>("sprites/units/worker")));
+        unitSprites.Add(UnitType.tank,(Resources.Load<Sprite>("sprites/units/tank")));
+        unitSprites.Add(UnitType.sniper,(Resources.Load<Sprite>("sprites/units/sniper")));
+        unitSprites.Add(UnitType.infantry,(Resources.Load<Sprite>("sprites/units/infantry")));
     }
-    public void LoadIconSprites()
+    public void LoadActionSprites()
     {
-        iconSprites.Add(Icon.wait, (Resources.Load<Sprite>("sprites/icons/wait_icon")));
-        iconSprites.Add(Icon.attack, (Resources.Load<Sprite>("sprites/icons/attack_icon")));
-        iconSprites.Add(Icon.eat, (Resources.Load<Sprite>("sprites/icons/eat_icon")));
+        iconSprites.Add(Icon.split, (Resources.Load<Sprite>("sprites/actions/split")));
+        iconSprites.Add(Icon.wait, (Resources.Load<Sprite>("sprites/actions/wait")));
+        iconSprites.Add(Icon.attack, (Resources.Load<Sprite>("sprites/actions/attack")));
+        iconSprites.Add(Icon.eat, (Resources.Load<Sprite>("sprites/actions/eat")));
+        
     }
 }
 

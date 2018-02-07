@@ -15,10 +15,8 @@ public class MapManager : ESingletonMono<MapManager>
     public float _tileScale = 1;
     // tile game obj
     private GameObject tilePrefab;
-    // the grid outlines
-    private GameObject gridLineObj;    
-    // offset of the grid square outline
-    private float gridLineOffsetZ = -0.01f;
+
+
 
 
 

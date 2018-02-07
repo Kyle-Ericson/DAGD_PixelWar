@@ -48,12 +48,15 @@ namespace Ericson
                     {
                         RetracePath(startTile, targetTile);
                         Debug.Log("End");
+                        return;
                     }
                 }
 
                 foreach (Tile t in MapManager.ins.GetNeighbors(currentTile))
                 {
-                    if (!GameScene.ins.currentSelected || GameScene.ins.currentSelected.data.size > t.data.maxSize || closedSet.Contains(t)) continue;
+                    if (!GameScene.ins.currentSelected.inMoveRange.Contains(MapManager.ins.WorldToGrid(t.transform.position)) || 
+                        GameScene.ins.currentSelected.data.size > t.data.maxSize || 
+                        closedSet.Contains(t)) continue;
 
                     float newCost = currentTile.g + 1;
                     if ((newCost < t.g) || !openSet.Contains(t))
@@ -73,17 +76,15 @@ namespace Ericson
         }
         void RetracePath(Tile startTile, Tile targetTile)
         {
-            List<Tile> path = new List<Tile>();
+            _path = new List<Tile>();
             Tile currentTile = targetTile;
             while(currentTile != startTile)
             {
-                path.Add(currentTile);
-                currentTile.Highlight();
+                _path.Add(currentTile);
+                currentTile.SetIconColor(Color.red);
                 currentTile = currentTile.parent;
             }
-            path.Reverse();
-            _path.Clear();
-            _path = path;
+            _path.Reverse();
         }
         
         int GetDistance(Tile tile1, Tile tile2)

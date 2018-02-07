@@ -6,7 +6,8 @@
     awaitingAttack,
     awaitingEat,
     paused,
-    awaitingSplit
+    awaitingSplit,
+    animating
 }
 
 public enum UnitState
