@@ -6,11 +6,12 @@ using Ericson;
 
 public class Unit : ESprite 
 {
-    private Vector2 _prevPos;
-    private Vector2 _gridpos;
+    public Vector2 _prevPos;
+    public Vector2 _gridpos;
     private UnitData _data = null;
     public UnitState state = UnitState.idle;
     public List<Vector2> inMoveRange = new List<Vector2>();
+    public List<Vector2> visibleTiles = new List<Vector2>();
     public List<Vector2> foodInRange = new List<Vector2>();
     public List<Vector2> inAttackRange = new List<Vector2>();
     public List<Vector2> enemiesInRange = new List<Vector2>();
@@ -22,7 +23,7 @@ public class Unit : ESprite
     private int health = 0;
     private int food = 0;
     private int actionPoints = 3;
-    private bool isMoving = false;
+    public bool isMoving = false;
     private int moveIterator = 0;
     private int moveSpeed = 8;
 
@@ -83,11 +84,13 @@ public class Unit : ESprite
     {   
         ClearAllLists();     
         ChangeState(UnitState.selected);
+        SetGridPos();
     }
     public void Sleep()
     {
         ClearAllLists();
         SetColor(GetComponent<SpriteRenderer>().color / 2);
+        SetGridPos();
         ChangeState(UnitState.sleeping);
     }
     public void Idle()
@@ -103,7 +106,6 @@ public class Unit : ESprite
 
     public void Undo()
     {
-        Debug.Log("undo");
         var temp = MapManager.ins.GridToWorld(_prevPos);
         temp.z = zoffset;
         gameObject.transform.position = temp;
@@ -251,6 +253,115 @@ public class Unit : ESprite
             }
         }
     }
+    
+    //
+    public void CheckVision()
+    {
+        visibleTiles.Clear();
+
+        for(int d = 0; d < 8; d++)
+        {
+            for (int i = 0; i <= data.speed; i++)
+            {
+                Vector2 tempgPos = MapManager.ins.WorldToGrid(transform.position);
+                switch (d)
+                {
+                    case 0: // right, down
+                        tempgPos.x += i;
+                        break;
+                    case 1: // right, up
+                        tempgPos.x += i;
+                        break;
+                    case 2: // left, down
+                        tempgPos.x -= i;
+                        break;
+                    case 3: // left, up
+                        tempgPos.x -= i;
+                        break;
+                    case 4: // down, left
+                        tempgPos.y += i;
+                        break;
+                    case 5: // down, right
+                        tempgPos.y += i;
+                        break;
+                    case 6: // up, left
+                        tempgPos.y -= i;
+                        break;
+                    case 7: // up, down
+                        tempgPos.y -= i;
+                        break;
+                }
+                if (!MapManager.ins.currentMap.ContainsKey(tempgPos)) break;
+
+                var temptile = MapManager.ins.currentMap[tempgPos];
+                if ((data.size > temptile.data.maxSize) ||
+                    (MapManager.ins.unitGrid.ContainsKey(tempgPos) && MapManager.ins.unitGrid[tempgPos].team != team)) 
+                {
+                    visibleTiles.Add(MapManager.ins.WorldToGrid(temptile.transform.position));
+                    break;
+                }
+                
+
+                for (int j = 0; j <= data.speed; j++)
+                {
+                    if (Mathf.Abs(i) + Mathf.Abs(j) > data.speed) continue;
+                    Vector2 gPos = MapManager.ins.WorldToGrid(transform.position);
+                    switch (d)
+                    {
+                        case 0: // right, down
+                            gPos.x += i;
+                            gPos.y += j;
+                            break;
+                        case 1: // right, up
+                            gPos.x += i;
+                            gPos.y -= j;
+                            break;
+                        case 2: // left, down
+                            gPos.x -= i;
+                            gPos.y += j;
+                            break;
+                        case 3: // left, up
+                            gPos.x -= i;
+                            gPos.y -= j;
+                            break;
+                        case 4: // down, left
+                            gPos.x -= j;
+                            gPos.y += i;
+                            break;
+                        case 5: // down, right
+                            gPos.x += j;
+                            gPos.y += i;
+                            break;
+                        case 6: // up, left
+                            gPos.x -= j;
+                            gPos.y -= i;
+                            break;
+                        case 7: // up, right
+                            gPos.x += j;
+                            gPos.y -= i;
+                            break;
+                    }
+                    if (!MapManager.ins.currentMap.ContainsKey(gPos)) break;
+
+
+                    var tile = MapManager.ins.currentMap[gPos];
+                    if (data.size > tile.data.maxSize ||
+                    (MapManager.ins.unitGrid.ContainsKey(gPos) && MapManager.ins.unitGrid[gPos].team != team)) 
+                    {
+                        visibleTiles.Add(MapManager.ins.WorldToGrid(tile.transform.position));
+                        break;
+                    }
+                    else visibleTiles.Add(MapManager.ins.WorldToGrid(tile.transform.position));
+                    
+                        
+                    
+                    
+                    
+                }
+            }
+        }
+
+    }
     public void CheckForEnemies()
     {
         foreach(Vector2 v in inAttackRange)
@@ -341,7 +452,6 @@ public class Unit : ESprite
     private void ChangeState(UnitState newstate)
     {
         state = newstate;
-        //Debug.Log("Current Unit State: " + state);
     }
     public void ClearAllLists()
     {
@@ -354,5 +464,24 @@ public class Unit : ESprite
     public bool IsFoodMaxed()
     {
         return food == _data.maxFood;
+    }
+    public void CheckEverything()
+    {
+        CheckAttackRange();
+        CheckForEnemies();
+        CheckForFood();
+        CheckSplitRange();
+    }
+    public void Show()
+    {
+        var newpos = transform.position;
+        newpos.z = zoffset;
+        transform.position = newpos;
+    }
+    public void Hide()
+    {
+        var newpos = transform.position;
+        newpos.z = -zoffset;
+        transform.position = newpos;
     }
 }

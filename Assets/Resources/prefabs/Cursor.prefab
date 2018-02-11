@@ -27,7 +27,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1805357123157444
 GameObject:
   m_ObjectHideFlags: 0
@@ -72,7 +72,7 @@ MonoBehaviour:
   theta: 0
   amplitude: 0.1
   speed: 5
-  baseLine: 2
+  baseLine: 1.5
   newScale: {x: 0, y: 0, z: 0}
   doScale: 1
   doAlpha: 0

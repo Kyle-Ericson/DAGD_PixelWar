@@ -21,7 +21,6 @@ namespace Ericson
 
         public void FindPath(Vector2 start, Vector2 target)
         {
-            Debug.Log("Finding Path");
             Tile startTile = MapManager.ins.currentMap[MapManager.ins.WorldToGrid(GameScene.ins.currentSelected.transform.position)];
             Tile targetTile = MapManager.ins.currentMap[target];
 
@@ -47,11 +46,9 @@ namespace Ericson
                     if (currentTile == targetTile)
                     {
                         RetracePath(startTile, targetTile);
-                        Debug.Log("End");
                         return;
                     }
                 }
-
                 foreach (Tile t in MapManager.ins.GetNeighbors(currentTile))
                 {
                     if (!GameScene.ins.currentSelected.inMoveRange.Contains(MapManager.ins.WorldToGrid(t.transform.position)) || 
@@ -85,6 +82,18 @@ namespace Ericson
                 currentTile = currentTile.parent;
             }
             _path.Reverse();
+        }
+        public void ClearPath()
+        {
+            if(_path.Count > 0)
+            {
+                foreach(Tile t in _path)
+                {
+                    t.SetIconColor(Color.white);
+                    t.UnHighlight();
+                }
+            }
+            _path.Clear();
         }
         
         int GetDistance(Tile tile1, Tile tile2)

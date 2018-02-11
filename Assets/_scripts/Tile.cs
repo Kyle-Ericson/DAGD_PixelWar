@@ -8,9 +8,10 @@ public class Tile : ESprite
 {
     private TileData _data = null;
     public TileData data { get { return _data; }}
+
+    private GameObject fog = null;
     private SpriteRenderer gridLine = null;
     private SpriteRenderer icon = null;
-
 
     // AStar stuff
     public float g;
@@ -19,11 +20,15 @@ public class Tile : ESprite
     public Tile parent;
 
 
-
+    private void Awake()
+    {
+        gridLine = transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+        icon = transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>();
+        fog = transform.GetChild(2).gameObject;
+    }
     private void Start()
     {
-        icon = transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>();
-        gridLine = transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+        
         icon.gameObject.SetActive(false);
     }
     public void SetType(TileType type)
@@ -50,5 +55,13 @@ public class Tile : ESprite
     public void HideGrid()
     {
         gridLine.gameObject.SetActive(false);
+    }
+    public void ShowFog()
+    {
+        if(fog) fog.SetActive(true);
+    }
+    public void HideFog()
+    {
+       if(fog) fog.SetActive(false);
     }
 }

@@ -4,27 +4,30 @@ using Ericson;
 
 public class GameScene : ESingletonMono<GameScene>
 {
-    private GameObject unitPrefab;
-    private SelectionBox cursor;
-    private Unit _currentSelected = null;
+    public GameObject unitPrefab;
+    public SelectionBox cursor;
+    public Unit _currentSelected = null;
+    public GameState _gameState = GameState.awaitingInput;
+    public GameUI gameUI = null;
+    public EMenu actionMenu = null;
+    public Vector2 tempGridPos;
+    public bool running = true;
+    private float zoffset = -0.2f;
+    public int numOfPlayers = 0;
+    public int currentTurn = 1;
+    public int turnCount = 1;
+    private UnitType nextSplitType;
+
+
+
     public Unit currentSelected
     {
         get { return _currentSelected; }
     }
-    public GameState _gameState = GameState.awaitingInput;
     public GameState gameState
     {
         get { return _gameState; }
     }
-    private GameUI gameUI = null;
-    private EMenu actionMenu = null;
-    private Vector2 tempGridPos;
-    public bool running = true;
-    private float zoffset = -0.2f;
-    private int numOfPlayers = 0;
-    private int currentTurn = 1;
-    private int turnCount = 1;
-    private UnitType nextSplitType;
     
 
 
@@ -66,6 +69,8 @@ public class GameScene : ESingletonMono<GameScene>
         SpawnUnit(UnitType.worker, Team.Player2, MapManager.ins.currentMapData.start2.ToVector2());
     }
     #endregion
+
+    
     #region Input Handling
     //
     private void AddListeners()
@@ -80,13 +85,15 @@ public class GameScene : ESingletonMono<GameScene>
         InputEvents.ins.OnMouseRClick -= HandleMouseRClick;
         InputEvents.ins.OnMouseMoved -= cursor.Move;
     }
-    //
+
+    // handle a left mouse button click
     private void HandleMouseLClick()
     {
         switch (_gameState)
         {
             case GameState.awaitingInput:
-                if (MapManager.ins.unitGrid.ContainsKey(cursor.gridpos) && MapManager.ins.unitGrid[cursor.gridpos].state != UnitState.sleeping)
+                if (MapManager.ins.unitGrid.ContainsKey(cursor.gridpos) && 
+                    MapManager.ins.unitGrid[cursor.gridpos].state != UnitState.sleeping)
                 {
                     if(MapManager.ins.unitGrid[cursor.gridpos].team == (Team)currentTurn) SelectUnit();
                 }
@@ -94,58 +101,40 @@ public class GameScene : ESingletonMono<GameScene>
                 break;
 
             case GameState.unitSelected:
+                
                 if (_currentSelected.inMoveRange.Contains(cursor.gridpos))
                 {
-                    if(cursor.gridpos == _currentSelected.gridpos)
-                    {
-                        _currentSelected.SetPrevPos();
-                        TempMoveUnit();
-                    }
-                    else 
-                    {
-                        _currentSelected.LerpToPosition();
-                        ChangeState(GameState.animating);
-                    }
+                    _currentSelected.LerpToPosition();
+                    StateAnimating();
                 }
-                break;
 
+                break;
             case GameState.awaitingAction:
             
                 break;
-
             case GameState.awaitingSplit:
-                if(currentSelected.inSplitRange.Contains(cursor.gridpos))
-                {
-                    ConfirmSplit(cursor.gridpos);
-                }
+                if(currentSelected.inSplitRange.Contains(cursor.gridpos)) ConfirmSplit(cursor.gridpos);
                 break;
 
             case GameState.awaitingAttack:
-                if(currentSelected.inAttackRange.Contains(cursor.gridpos))
-                {
-                    ConfirmAttack(cursor.gridpos);
-                    DeselectAll();
-                }
-                break;
-            case GameState.awaitingEat:
-                if(currentSelected.foodInRange.Contains(cursor.gridpos))
-                {
-                    ConfirmEat(cursor.gridpos);
-                    DeselectAll();
-                }
+                if(currentSelected.inAttackRange.Contains(cursor.gridpos)) ConfirmAttack(cursor.gridpos);
                 break;
                 
+            case GameState.awaitingEat:
+                if(currentSelected.foodInRange.Contains(cursor.gridpos)) ConfirmEat(cursor.gridpos);
+                break;
             case GameState.paused:
                 break;
         }
     }
-    //
+
+    // handle when the right mouse button is clicked
     private void HandleMouseRClick()
     {
+
         switch(_gameState)
         {
             case GameState.awaitingInput:
-                DeselectAll();
                 if (MapManager.ins.unitGrid.ContainsKey(cursor.gridpos))
                 {
                     var unit = MapManager.ins.unitGrid[cursor.gridpos];
@@ -159,28 +148,279 @@ public class GameScene : ESingletonMono<GameScene>
                     }
                 }
                 break;
-            case GameState.unitSelected:
-                DeselectAll();
-                break;
-            case GameState.awaitingAction:
+            default:
                 Undo();
-                DeselectAll();
-                break;
-            case GameState.awaitingAttack:
-                DeselectAll();
-                break;
-            case GameState.awaitingEat:
-                DeselectAll();
-                break;
-            case GameState.awaitingSplit:
-                DeselectAll();
-                break;
-            case GameState.paused:
                 break;
         }
     }
     #endregion
-    #region Unit Control
+
+
+    #region Action Confirmation
+
+    // confirm the split action
+    private void ConfirmSplit(Vector2 splitPos)
+    {
+        SpawnUnit(nextSplitType, currentSelected.team, splitPos);
+        MapManager.ins.unitGrid[splitPos].Sleep();
+        currentSelected.Split();
+        currentSelected.Sleep();
+        ConfirmMove();        
+    }
+
+    // confirm the attack action
+    private void ConfirmAttack(Vector2 attackPos)
+    {
+        var attacked = MapManager.ins.unitGrid[attackPos];
+        attacked.TakeDamage(currentSelected.data.attack);
+        if(attacked.state == UnitState.dead) KillUnit(attackPos);
+        currentSelected.Sleep();
+        ConfirmMove();
+    }
+
+    // confirm the eat action
+    private void ConfirmEat(Vector2 eatPos)
+    {
+        currentSelected.Eat();
+        currentSelected.Sleep();
+        ConfirmMove();
+    }
+
+    // confirm the temporary move
+    private void ConfirmMove()
+    {
+        MapManager.ins.unitGrid.Remove(_currentSelected.prevPos);
+        MapManager.ins.unitGrid.Add(_currentSelected.gridpos, _currentSelected);
+        _currentSelected = null;
+        DeselectAll();
+        UpdateFog();
+    }
+    #endregion
+
+
+    #region Action Menu Handlers
+
+    // handle wait button
+    public void HandleWait()
+    {
+        _currentSelected.Sleep();
+        ConfirmMove();
+    }
+
+    // handle attack button
+    public void HandleAttack()
+    {
+        foreach(Vector2 v in _currentSelected.enemiesInRange)
+        {
+            Tile tile = MapManager.ins.currentMap[v];
+            tile.Highlight();
+            tile.SetIconColor(Color.red / 2);
+        }
+        StateAwaitAttack();
+    }
+
+    // handle eat button
+    public void HandleEat()
+    {
+        foreach(Vector2 v in _currentSelected.foodInRange)
+        {
+            Tile tile = MapManager.ins.currentMap[v];
+            tile.Highlight();
+            tile.SetIconColor(Color.green);
+        }
+        StateAwaitEat();
+    }
+
+    // handle the split button being clicked
+    public void HandleSplit()
+    {
+        actionMenu.Clear();
+        actionMenu.AddRadialWorker().onClick.AddListener(() => 
+        { 
+            nextSplitType = UnitType.worker;
+            StateAwaitSplit();
+        });
+        actionMenu.AddRadialTank().onClick.AddListener(() => 
+        { 
+            nextSplitType = UnitType.tank; 
+            StateAwaitSplit();
+        });
+        actionMenu.AddRadialInfantry().onClick.AddListener(() => 
+        { 
+            nextSplitType = UnitType.infantry; 
+            StateAwaitSplit();
+        });
+        actionMenu.AddRadialSniper().onClick.AddListener(() => 
+        { 
+            nextSplitType = UnitType.sniper;
+            StateAwaitSplit();
+        });
+        actionMenu.UpdateRadialMenu();
+    }
+    #endregion
+
+
+    #region State Managers
+
+    public void StateAwaitInput()
+    {
+        InputEvents.ins.OnMouseMoved -= ShowPath;
+        cursor.Show();
+        actionMenu.Hide();
+        _gameState = GameState.awaitingInput;
+    }
+    public void StateUnitSelected()
+    {
+        InputEvents.ins.OnMouseMoved += ShowPath;
+        _gameState = GameState.unitSelected;
+    }
+    public void StateAwaitAction()
+    {
+        AddListeners();
+        InputEvents.ins.OnMouseMoved -= ShowPath;
+        cursor.Hide();
+        actionMenu.Show();
+        _gameState = GameState.awaitingAction;
+    }
+    public void StateAwaitSplit()
+    {
+        InputEvents.ins.OnMouseMoved -= ShowPath;
+        foreach (Vector2 v in currentSelected.inSplitRange)
+        {
+            Tile tile = MapManager.ins.currentMap[v];
+            tile.Highlight();
+            tile.SetIconColor(Color.yellow);
+        }
+        cursor.Show();
+        actionMenu.Hide();
+        _gameState = GameState.awaitingSplit;
+    }
+    public void StateAwaitAttack()
+    {
+        InputEvents.ins.OnMouseMoved -= ShowPath;
+        cursor.Show();
+        actionMenu.Hide();
+        _gameState = GameState.awaitingAttack;
+    }
+    public void StateAwaitEat()
+    {
+        cursor.Show();
+        actionMenu.Hide();
+        _gameState = GameState.awaitingEat;
+    }
+    public void StateAnimating()
+    {
+        RemoveListeners();
+        InputEvents.ins.OnMouseMoved -= ShowPath;
+        cursor.Hide();
+        actionMenu.Hide();
+        DeselectAllTiles();
+        _gameState = GameState.animating;
+    }
+    public void StatePaused()
+    {
+        RemoveListeners();
+        cursor.Hide();
+        _gameState = GameState.paused;
+    }
+
+    #endregion
+
+
+    #region Tile Controls
+
+    // wake up all units
+    public void WakeUpAll()
+    {
+        foreach (KeyValuePair<Vector2, Unit> item in MapManager.ins.unitGrid)
+        {
+            item.Value.Idle();
+        }
+    }
+
+    // deselected everything
+    private void DeselectAll()
+    {
+        DeselectAllTiles();
+        DeselectAllUnits();
+        StateAwaitInput();
+    }
+
+    // Make sure there are no highlighted tiles
+    private void DeselectAllTiles()
+    {
+        foreach (KeyValuePair<Vector2, Tile> k in MapManager.ins.currentMap) 
+        { 
+            k.Value.SetIconColor(Color.white);
+            k.Value.UnHighlight();
+        }
+    }
+
+    // make sure there are no units selected
+    private void DeselectAllUnits()
+    {
+        foreach (KeyValuePair<Vector2, Unit> k in MapManager.ins.unitGrid)
+        {
+            if (k.Value.state != UnitState.sleeping) k.Value.Deselect();
+        }
+        _currentSelected = null;
+    }
+
+    // remove all tiles from the scene
+    private void RemoveAllTiles()
+    {
+        foreach (KeyValuePair<Vector2, Tile> item in MapManager.ins.currentMap) { Destroy(item.Value.gameObject); }
+        MapManager.ins.currentMap.Clear();
+    }
+
+    // remove all units from the scene
+    private void RemoveAllUnits()
+    {
+        foreach (KeyValuePair<Vector2, Unit> item in MapManager.ins.unitGrid) { Destroy(item.Value.gameObject); }
+    }
+
+    // this method cleans up the scene
+    private void ClearScene()
+    {
+        RemoveAllTiles();
+        RemoveAllUnits();
+        RemoveListeners();
+        cursor.Hide();
+    }
+
+    #endregion
+
+
+    #region Unit Controls
+
+    // temporary unit move, can still be undon
+    public void TempMoveUnit()
+    {
+        _currentSelected.CheckEverything();
+        _currentSelected.AwaitAction();
+        DeselectAllTiles();
+        SetupActionMenu();
+        StateAwaitAction();
+    }
+
+    // setup the action menu based on what is around the unit
+    private void SetupActionMenu()
+    {
+        actionMenu.transform.position = cursor.transform.position;
+        actionMenu.Clear();
+        actionMenu.AddRadialWait().onClick.AddListener(HandleWait);
+        if (_currentSelected.enemiesInRange.Count > 0) actionMenu.AddRadialAttack().onClick.AddListener(HandleAttack);
+        if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialEat().onClick.AddListener(HandleEat);
+        if (_currentSelected.IsFoodMaxed()) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
+        actionMenu.UpdateRadialMenu();
+    }
+
+    // destroy the unit
+    private void KillUnit(Vector2 unitPos)
+    {
+        MapManager.ins.RemoveUnit(unitPos);
+    }
+    
     //
     private void SpawnUnit(UnitType type, Team team, Vector2 gridPos)
     {
@@ -190,16 +430,30 @@ public class GameScene : ESingletonMono<GameScene>
         unit.gameObject.transform.position = worldPos;
         unit.Init(type, team);
         MapManager.ins.unitGrid.Add(gridPos, unit);
+        unit.SetPrevPos();
+        unit.SetGridPos();
+        UpdateFog();
     }
+
     //
     private void SelectUnit()
     {
         _currentSelected = MapManager.ins.unitGrid[cursor.gridpos];
         _currentSelected.Select();
         _currentSelected.CheckMove();
-        foreach(Vector2 v in currentSelected.inMoveRange) MapManager.ins.currentMap[v].Highlight();
-        ChangeState(GameState.unitSelected);
+        foreach(Vector2 v in currentSelected.inMoveRange) 
+        {
+            if(v != _currentSelected.gridpos) MapManager.ins.currentMap[v].Highlight();
+        }
+        StateUnitSelected();
     }
+
+    #endregion
+
+
+
+    // OnMouseMoved listener
+    // when the mouse moves show the path that will be followed
     private void ShowPath()
     {
         foreach (Vector2 v in currentSelected.inMoveRange) MapManager.ins.currentMap[v].SetIconColor(Color.white);
@@ -209,183 +463,49 @@ public class GameScene : ESingletonMono<GameScene>
             AStar.ins.FindPath(start, cursor.gridpos);
         }
     }
-    private void ConfirmSplit(Vector2 splitPos)
-    {
-        SpawnUnit(nextSplitType, currentSelected.team, splitPos);
-        MapManager.ins.unitGrid[splitPos].Sleep();
-        currentSelected.Split();
-        currentSelected.Sleep();
-        ConfirmMove();        
-    }
-    private void ConfirmAttack(Vector2 attackPos)
-    {
-        var attacked = MapManager.ins.unitGrid[attackPos];
-        attacked.TakeDamage(currentSelected.data.attack);
-        if(attacked.state == UnitState.dead) KillUnit(attackPos);
-        currentSelected.Sleep();
-        ConfirmMove();
-    }
-    private void ConfirmEat(Vector2 eatPos)
-    {
-        currentSelected.Eat();
-        currentSelected.Sleep();
-        ConfirmMove();
-    }
-    private void KillUnit(Vector2 unitPos)
-    {
-        MapManager.ins.RemoveUnit(unitPos);
-    }
-    //
-    public void TempMoveUnit()
-    {   
-        _currentSelected.Move(cursor.gridpos);
-        _currentSelected.CheckAttackRange();
-        _currentSelected.CheckForEnemies();
-        _currentSelected.CheckForFood();
-        _currentSelected.CheckSplitRange();
-        _currentSelected.AwaitAction();
-        DeselectAllTiles();
-        
-        // setup the action menu based on what is around the unit
-        actionMenu.transform.position = cursor.transform.position;
-        actionMenu.Clear();
-        actionMenu.AddRadialWait().onClick.AddListener(HandleWait);
-        if (_currentSelected.enemiesInRange.Count > 0) actionMenu.AddRadialAttack().onClick.AddListener(HandleAttack);
-        if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialEat().onClick.AddListener(HandleEat);
-        if (_currentSelected.IsFoodMaxed()) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
-        actionMenu.UpdateRadialMenu();
-        
 
-        // change the game state to wait for an action to be selected
-        ChangeState(GameState.awaitingAction);
-    }
-    private void ConfirmMove()
-    {
-        _currentSelected.SetGridPos();
-        MapManager.ins.unitGrid.Remove(_currentSelected.prevPos);
-        MapManager.ins.unitGrid.Add(_currentSelected.gridpos, _currentSelected);
-        _currentSelected = null;
-        DeselectAll();
-    }
     //
-    private void Undo()
+    private void UpdateFog()
     {
-        _currentSelected.Undo();
-        ChangeState(GameState.awaitingInput);
-        actionMenu.Clear();
-    }
-    #endregion
-    #region Action Menu Handlers
-    //
-    public void HandleWait()
-    {
-        _currentSelected.Sleep();
-        ConfirmMove();
-    }
-    //
-    public void HandleAttack()
-    {
-        foreach(Vector2 v in _currentSelected.enemiesInRange)
+        AllFogOn();
+        AllUnitsOff();
+
+        foreach(KeyValuePair<Vector2, Unit> k in MapManager.ins.unitGrid)
         {
-            Tile tile = MapManager.ins.currentMap[v];
-            tile.Highlight();
-            tile.SetIconColor(Color.red / 2);
-        }
-        ChangeState(GameState.awaitingAttack);
-    }
-    //
-    public void HandleEat()
-    {
-        foreach(Vector2 v in _currentSelected.foodInRange)
-        {
-            Tile tile = MapManager.ins.currentMap[v];
-            tile.Highlight();
-            tile.SetIconColor(Color.green);
-        }
-        ChangeState(GameState.awaitingEat);
-    }
-    //
-    public void HandleSplit()
-    {
-        
-        actionMenu.Clear();
-        actionMenu.AddRadialWorker().onClick.AddListener(() => 
-        { 
-            nextSplitType = UnitType.worker;
-            ChangeState(GameState.awaitingSplit);
-        });
-        actionMenu.AddRadialTank().onClick.AddListener(() => 
-        { 
-            nextSplitType = UnitType.tank; 
-            ChangeState(GameState.awaitingSplit);
-        });
-        actionMenu.AddRadialInfantry().onClick.AddListener(() => 
-        { 
-            nextSplitType = UnitType.infantry; 
-            ChangeState(GameState.awaitingSplit);
-        });
-        actionMenu.AddRadialSniper().onClick.AddListener(() => 
-        { 
-            nextSplitType = UnitType.sniper;
-            ChangeState(GameState.awaitingSplit);
-        });
-        actionMenu.UpdateRadialMenu();
-    }
-    #endregion
-    #region Game Flow
-    //
-    public void ChangeState(GameState newState)
-    {
-        _gameState = newState;
-        switch (_gameState)
-        {
-            case GameState.awaitingInput:
-                InputEvents.ins.OnMouseMoved -= ShowPath;
-                cursor.Show();
-                actionMenu.Hide();
-                break;
-            case GameState.unitSelected:
-                InputEvents.ins.OnMouseMoved += ShowPath;
-                break;
-            case GameState.awaitingAction:
-                AddListeners();
-                InputEvents.ins.OnMouseMoved -= ShowPath;
-                cursor.Hide();
-                actionMenu.Show();
-                break;
-            case GameState.awaitingSplit:
-                InputEvents.ins.OnMouseMoved -= ShowPath;
-                foreach (Vector2 v in currentSelected.inSplitRange)
+            if(k.Value.team == (Team)currentTurn)
+            {
+                k.Value.Show();
+                k.Value.CheckVision();
+                foreach(Vector2 v in k.Value.visibleTiles)
                 {
-                    Tile tile = MapManager.ins.currentMap[v];
-                    tile.Highlight();
-                    tile.SetIconColor(Color.yellow);
+                    MapManager.ins.currentMap[v].HideFog();
+                    if(MapManager.ins.unitGrid.ContainsKey(v))
+                    {
+                        MapManager.ins.unitGrid[v].Show();
+                    }
                 }
-                cursor.Show();
-                actionMenu.Hide();
-                break;
-            case GameState.awaitingAttack:
-                InputEvents.ins.OnMouseMoved -= ShowPath;
-                cursor.Show();
-                actionMenu.Hide();
-                break;
-            case GameState.awaitingEat:
-                cursor.Show();
-                actionMenu.Hide();
-                break;
-            case GameState.animating:
-                RemoveListeners();
-                InputEvents.ins.OnMouseMoved -= ShowPath;
-                cursor.Hide();
-                actionMenu.Hide();
-                DeselectAllTiles();
-                break;
-            case GameState.paused:
-                cursor.Hide();
-                break;
+            }
+        }
+    }
+
+    //
+    private void AllFogOn()
+    {
+        foreach(KeyValuePair<Vector2, Tile> k in MapManager.ins.currentMap)
+        {
+            k.Value.ShowFog();
         }
     }
     //
+    private void AllUnitsOff()
+    {
+        foreach(KeyValuePair<Vector2, Unit> k in MapManager.ins.unitGrid)
+        {
+            k.Value.Hide();
+        }
+    }
+
+    // end the turn
     public void EndTurn()
     {
         currentTurn++;
@@ -396,64 +516,20 @@ public class GameScene : ESingletonMono<GameScene>
         }
         DeselectAll();
         WakeUpAll();
+        StateAwaitInput();
+        UpdateFog();
     }
-    #endregion
-    #region Helpers
-    //
-    public void WakeUpAll()
-    {
-        foreach (KeyValuePair<Vector2, Unit> item in MapManager.ins.unitGrid)
-        {
-            item.Value.Idle();
-        }
-    }
-    //
-    private void DeselectAll()
-    {
-        DeselectAllTiles();
-        DeselectAllUnits();
-        ChangeState(GameState.awaitingInput);
-    }
-    //
-    private void DeselectAllTiles()
-    {
-        foreach (KeyValuePair<Vector2, Tile> k in MapManager.ins.currentMap) 
-        { 
-            k.Value.UnHighlight();
-            k.Value.SetIconColor(Color.white);
-        }
-    }
-    //
-    private void DeselectAllUnits()
-    {
-        foreach (KeyValuePair<Vector2, Unit> k in MapManager.ins.unitGrid)
-        {
-            if (k.Value.state != UnitState.sleeping) k.Value.Deselect();
-        }
-        _currentSelected = null;
-    }
-    
-    //
-    private void RemoveAllTiles()
-    {
-        foreach (KeyValuePair<Vector2, Tile> item in MapManager.ins.currentMap) { Destroy(item.Value.gameObject); }
-        MapManager.ins.currentMap.Clear();
-    }
-    //
-    private void RemoveAllUnits()
-    {
-        foreach (KeyValuePair<Vector2, Unit> item in MapManager.ins.unitGrid) { Destroy(item.Value.gameObject); }
-    }
-    //
-    private void ClearScene()
-    {
-        RemoveAllTiles();
-        RemoveAllUnits();
-        RemoveListeners();
-        cursor.Hide();
-    }
-    #endregion
 
+    // undo the last move set everything back to await input
+    private void Undo()
+    {
+        if(_currentSelected) _currentSelected.Undo();
+        DeselectAll();
+        AStar.ins.ClearPath();
+        actionMenu.Clear();
+    }
+
+    
 
 }
 
