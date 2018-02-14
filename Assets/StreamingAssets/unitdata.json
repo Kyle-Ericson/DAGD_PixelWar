@@ -1,44 +1,59 @@
 {
   "data": [
     {
-      "name": "Worker",
+      "name": "Original",
       "id": 0,
-      "range": 1,
-      "attack": 1,
-      "speed": 4,
-      "size": 0,
-      "maxHealth": 1,
-      "maxFood": 1
-    },
-    {
-      "name": "Infantry",
-      "id": 1,
-      "range": 1,
-      "attack": 2,
-      "speed": 3,
-      "size": 0,
-      "maxHealth": 3,
-      "maxFood": 2
-    },
-    {
-      "name": "Sniper",
-      "id": 2,
-      "range": 3,
-      "attack": 3,
+      "range": 0,
+      "attack": 0,
       "speed": 2,
       "size": 0,
       "maxHealth": 1,
-      "maxFood": 2
+      "maxFood": 5,
+      "cost": 5
+    },
+    {
+      "name": "Scout",
+      "id": 1,
+      "range": 1,
+      "attack": 1,
+      "speed": 3,
+      "size": 0,
+      "maxHealth": 1,
+      "maxFood": 0,
+      "cost": 1
+    },
+    {
+      "name": "Infantry",
+      "id": 2,
+      "range": 1,
+      "attack": 2,
+      "speed": 2,
+      "size": 0,
+      "maxHealth": 3,
+      "maxFood": 0,
+      "cost": 2
+    },
+    {
+      "name": "Sniper",
+      "id": 3,
+      "range": 4,
+      "attack": 3,
+      "speed": 1,
+      "size": 0,
+      "maxHealth": 1,
+      "maxFood": 0,
+      "cost": 3
     },
     {
       "name": "Tank",
-      "id": 3,
+      "id": 4,
       "range": 1,
       "attack": 3,
-      "speed": 1,
+      "speed": 2,
       "size": 3,
       "maxHealth": 4,
-      "maxFood": 3
+      "maxFood": 0,
+      "cost": 4
     }
   ]
 

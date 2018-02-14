@@ -124,13 +124,17 @@ namespace Ericson
         {
             return AddRadialButton(Sprites.ins.unitSprites[UnitType.infantry]);
         }
-        public Button AddRadialWorker()
+        public Button AddRadialScout()
         {
-            return AddRadialButton(Sprites.ins.unitSprites[UnitType.worker]);
+            return AddRadialButton(Sprites.ins.unitSprites[UnitType.scout]);
         }
         public Button AddRadialSniper()
         {
             return AddRadialButton(Sprites.ins.unitSprites[UnitType.sniper]);
+        }
+        public Button AddRadialOriginal()
+        {
+            return AddRadialButton(Sprites.ins.unitSprites[UnitType.original]);
         }
 
 

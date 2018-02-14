@@ -16,12 +16,11 @@ namespace Ericson
 
         public AStar() { }
 
-        
 
 
         public void FindPath(Vector2 start, Vector2 target)
         {
-            Tile startTile = MapManager.ins.currentMap[MapManager.ins.WorldToGrid(GameScene.ins.currentSelected.transform.position)];
+            Tile startTile = MapManager.ins.currentMap[GameScene.ins.currentSelected.gridpos];
             Tile targetTile = MapManager.ins.currentMap[target];
 
             List<Tile> openSet = new List<Tile>();
@@ -31,7 +30,7 @@ namespace Ericson
 
             while (openSet.Count > 0)
             {
-                
+
                 Tile currentTile = openSet[0];
 
                 for (int i = 1; i < openSet.Count; i++)

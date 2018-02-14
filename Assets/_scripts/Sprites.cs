@@ -30,14 +30,14 @@ public class Sprites {
     }
     public void LoadTileSprites()
     {
-        tileSprites.Add(TileType.plain, (Resources.Load<Sprite>("sprites/tiles/plain")));
-        tileSprites.Add(TileType.forest, (Resources.Load<Sprite>("sprites/tiles/forest"))); 
-        tileSprites.Add(TileType.mountain, (Resources.Load<Sprite>("sprites/tiles/mountain")));
-        tileSprites.Add(TileType.food, (Resources.Load<Sprite>("sprites/tiles/forest")));
+        tileSprites.Add(TileType.open, (Resources.Load<Sprite>("sprites/tiles/open")));
+        tileSprites.Add(TileType.food, (Resources.Load<Sprite>("sprites/tiles/food"))); 
+        tileSprites.Add(TileType.blocking, (Resources.Load<Sprite>("sprites/tiles/blocking")));
     }
     public void LoadUnitSprites()
     {
-        unitSprites.Add(UnitType.worker,(Resources.Load<Sprite>("sprites/units/worker")));
+        unitSprites.Add(UnitType.scout,(Resources.Load<Sprite>("sprites/units/worker")));
+        unitSprites.Add(UnitType.original,(Resources.Load<Sprite>("sprites/units/worker")));
         unitSprites.Add(UnitType.tank,(Resources.Load<Sprite>("sprites/units/tank")));
         unitSprites.Add(UnitType.sniper,(Resources.Load<Sprite>("sprites/units/sniper")));
         unitSprites.Add(UnitType.infantry,(Resources.Load<Sprite>("sprites/units/infantry")));

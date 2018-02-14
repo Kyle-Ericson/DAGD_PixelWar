@@ -65,8 +65,8 @@ public class GameScene : ESingletonMono<GameScene>
     private void LoadMap(int mapID)
     {
         MapManager.ins.SpawnMap(mapID);
-        SpawnUnit(UnitType.worker, Team.Player1, MapManager.ins.currentMapData.start1.ToVector2());
-        SpawnUnit(UnitType.worker, Team.Player2, MapManager.ins.currentMapData.start2.ToVector2());
+        SpawnUnit(UnitType.original, Team.Player1, MapManager.ins.currentMapData.start1.ToVector2());
+        SpawnUnit(UnitType.original, Team.Player2, MapManager.ins.currentMapData.start2.ToVector2());
     }
     #endregion
 
@@ -164,7 +164,6 @@ public class GameScene : ESingletonMono<GameScene>
         SpawnUnit(nextSplitType, currentSelected.team, splitPos);
         MapManager.ins.unitGrid[splitPos].Sleep();
         currentSelected.Split();
-        currentSelected.Sleep();
         ConfirmMove();        
     }
 
@@ -174,7 +173,6 @@ public class GameScene : ESingletonMono<GameScene>
         var attacked = MapManager.ins.unitGrid[attackPos];
         attacked.TakeDamage(currentSelected.data.attack);
         if(attacked.state == UnitState.dead) KillUnit(attackPos);
-        currentSelected.Sleep();
         ConfirmMove();
     }
 
@@ -182,7 +180,6 @@ public class GameScene : ESingletonMono<GameScene>
     private void ConfirmEat(Vector2 eatPos)
     {
         currentSelected.Eat();
-        currentSelected.Sleep();
         ConfirmMove();
     }
 
@@ -190,6 +187,7 @@ public class GameScene : ESingletonMono<GameScene>
     private void ConfirmMove()
     {
         MapManager.ins.unitGrid.Remove(_currentSelected.prevPos);
+        currentSelected.Sleep();
         MapManager.ins.unitGrid.Add(_currentSelected.gridpos, _currentSelected);
         _currentSelected = null;
         DeselectAll();
@@ -203,7 +201,6 @@ public class GameScene : ESingletonMono<GameScene>
     // handle wait button
     public void HandleWait()
     {
-        _currentSelected.Sleep();
         ConfirmMove();
     }
 
@@ -235,26 +232,53 @@ public class GameScene : ESingletonMono<GameScene>
     public void HandleSplit()
     {
         actionMenu.Clear();
-        actionMenu.AddRadialWorker().onClick.AddListener(() => 
-        { 
-            nextSplitType = UnitType.worker;
-            StateAwaitSplit();
-        });
-        actionMenu.AddRadialTank().onClick.AddListener(() => 
-        { 
-            nextSplitType = UnitType.tank; 
-            StateAwaitSplit();
-        });
-        actionMenu.AddRadialInfantry().onClick.AddListener(() => 
-        { 
-            nextSplitType = UnitType.infantry; 
-            StateAwaitSplit();
-        });
-        actionMenu.AddRadialSniper().onClick.AddListener(() => 
-        { 
-            nextSplitType = UnitType.sniper;
-            StateAwaitSplit();
-        });
+        
+        // add worker button
+        if(_currentSelected.food == Database.unitData[(int)UnitType.scout].cost)
+        {
+            actionMenu.AddRadialScout().onClick.AddListener(() => 
+            { 
+                nextSplitType = UnitType.scout;
+                StateAwaitSplit();
+            });
+        }
+        // add tank button
+        if(_currentSelected.food == Database.unitData[(int)UnitType.tank].cost)
+        {
+            actionMenu.AddRadialTank().onClick.AddListener(() => 
+            { 
+                nextSplitType = UnitType.tank; 
+                StateAwaitSplit();
+            });    
+        }
+        // add infantry button
+        if(_currentSelected.food == Database.unitData[(int)UnitType.infantry].cost)
+        {
+            actionMenu.AddRadialInfantry().onClick.AddListener(() => 
+            { 
+                nextSplitType = UnitType.infantry; 
+                StateAwaitSplit();
+            });
+        }
+        // add sniper
+        if(_currentSelected.food == Database.unitData[(int)UnitType.sniper].cost)
+        {
+            actionMenu.AddRadialSniper().onClick.AddListener(() => 
+            { 
+                nextSplitType = UnitType.sniper;
+                StateAwaitSplit();
+            });
+        }
+        // add sniper
+        if(_currentSelected.food == Database.unitData[(int)UnitType.original].cost)
+        {
+            actionMenu.AddRadialOriginal().onClick.AddListener(() => 
+            { 
+                nextSplitType = UnitType.original;
+                StateAwaitSplit();
+            });
+        }
+        
         actionMenu.UpdateRadialMenu();
     }
     #endregion
@@ -409,9 +433,16 @@ public class GameScene : ESingletonMono<GameScene>
         actionMenu.transform.position = cursor.transform.position;
         actionMenu.Clear();
         actionMenu.AddRadialWait().onClick.AddListener(HandleWait);
-        if (_currentSelected.enemiesInRange.Count > 0) actionMenu.AddRadialAttack().onClick.AddListener(HandleAttack);
-        if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialEat().onClick.AddListener(HandleEat);
-        if (_currentSelected.IsFoodMaxed()) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
+        
+        if(_currentSelected.data.type == UnitType.original)
+        {
+            if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialEat().onClick.AddListener(HandleEat);
+            if (_currentSelected.food > 0 && _currentSelected.inSplitRange.Count > 0) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
+        }
+        else
+        {
+            actionMenu.AddRadialAttack().onClick.AddListener(HandleAttack);
+        }
         actionMenu.UpdateRadialMenu();
     }
 
@@ -441,9 +472,12 @@ public class GameScene : ESingletonMono<GameScene>
         _currentSelected = MapManager.ins.unitGrid[cursor.gridpos];
         _currentSelected.Select();
         _currentSelected.CheckMove();
-        foreach(Vector2 v in currentSelected.inMoveRange) 
+        if(_currentSelected.inMoveRange.Count > 0)
         {
-            if(v != _currentSelected.gridpos) MapManager.ins.currentMap[v].Highlight();
+            foreach(Vector2 v in currentSelected.inMoveRange) 
+            {
+                if(v != _currentSelected.gridpos) MapManager.ins.currentMap[v].Highlight();
+            }
         }
         StateUnitSelected();
     }
@@ -456,12 +490,14 @@ public class GameScene : ESingletonMono<GameScene>
     // when the mouse moves show the path that will be followed
     private void ShowPath()
     {
+        if(_currentSelected.inMoveRange.Count < 2) return;
         foreach (Vector2 v in currentSelected.inMoveRange) MapManager.ins.currentMap[v].SetIconColor(Color.white);
-        if (GameScene.ins.currentSelected.inMoveRange.Contains(cursor.gridpos))
+        if (_currentSelected.inMoveRange.Contains(cursor.gridpos))
         {
-            var start = MapManager.ins.WorldToGrid(GameScene.ins.currentSelected.transform.position);
+            var start = _currentSelected.gridpos;
             AStar.ins.FindPath(start, cursor.gridpos);
         }
+        
     }
 
     //

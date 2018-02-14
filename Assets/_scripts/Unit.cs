@@ -21,7 +21,7 @@ public class Unit : ESprite
     private float zoffset = -0.2f;
     public Team team = 0;
     private int health = 0;
-    private int food = 0;
+    public int food = 0;
     private int actionPoints = 3;
     public bool isMoving = false;
     private int moveIterator = 0;
@@ -89,7 +89,9 @@ public class Unit : ESprite
     public void Sleep()
     {
         ClearAllLists();
+        AStar.ins.path.Clear();
         SetColor(GetComponent<SpriteRenderer>().color / 2);
+        SetPrevPos();
         SetGridPos();
         ChangeState(UnitState.sleeping);
     }
@@ -243,16 +245,17 @@ public class Unit : ESprite
                     var tile = MapManager.ins.currentMap[gPos];
                     if (data.size > tile.data.maxSize) break;
                     if(MapManager.ins.unitGrid.ContainsKey(gPos) && MapManager.ins.unitGrid[gPos].team != team) break;
-                        
-                    if(!MapManager.ins.unitGrid.ContainsKey(gPos) ||
-                        gPos == MapManager.ins.WorldToGrid(gameObject.transform.position)) 
+                    
+                    if(!inMoveRange.Contains(tile.gridpos))
                     {
-                        inMoveRange.Add(MapManager.ins.WorldToGrid(tile.transform.position));
+                        inMoveRange.Add(tile.gridpos);
                     }
+                    
                 }
             }
         }
     }
+
     
     //
     public void CheckVision()
@@ -291,13 +294,16 @@ public class Unit : ESprite
                         tempgPos.y -= i;
                         break;
                 }
-                if (!MapManager.ins.currentMap.ContainsKey(tempgPos)) break;
+                if (!MapManager.ins.currentMap.ContainsKey(tempgPos)) continue;
 
                 var temptile = MapManager.ins.currentMap[tempgPos];
                 if ((data.size > temptile.data.maxSize) ||
                     (MapManager.ins.unitGrid.ContainsKey(tempgPos) && MapManager.ins.unitGrid[tempgPos].team != team)) 
                 {
-                    visibleTiles.Add(MapManager.ins.WorldToGrid(temptile.transform.position));
+                    if(!visibleTiles.Contains(temptile.gridpos))
+                    {
+                        visibleTiles.Add(temptile.gridpos);
+                    }
                     break;
                 }
                 
@@ -341,22 +347,26 @@ public class Unit : ESprite
                             gPos.y -= i;
                             break;
                     }
-                    if (!MapManager.ins.currentMap.ContainsKey(gPos)) break;
+                    if (!MapManager.ins.currentMap.ContainsKey(gPos)) continue;
 
 
                     var tile = MapManager.ins.currentMap[gPos];
                     if (data.size > tile.data.maxSize ||
-                    (MapManager.ins.unitGrid.ContainsKey(gPos) && MapManager.ins.unitGrid[gPos].team != team)) 
+                    (MapManager.ins.unitGrid.ContainsKey(gPos) && MapManager.ins.unitGrid[gPos].team != team))
                     {
-                        visibleTiles.Add(MapManager.ins.WorldToGrid(tile.transform.position));
+                        if (!visibleTiles.Contains(MapManager.ins.WorldToGrid(tile.transform.position)))
+                        {
+                            visibleTiles.Add(MapManager.ins.WorldToGrid(tile.transform.position));
+                        }
                         break;
                     }
-                    else visibleTiles.Add(MapManager.ins.WorldToGrid(tile.transform.position));
-                    
-                        
-                    
-                    
-                    
+                    else
+                    {
+                        if (!visibleTiles.Contains(MapManager.ins.WorldToGrid(tile.transform.position)))
+                        {
+                            visibleTiles.Add(MapManager.ins.WorldToGrid(tile.transform.position));
+                        }
+                    }
                 }
             }
         }
@@ -368,13 +378,21 @@ public class Unit : ESprite
         {
             if(MapManager.ins.unitGrid.ContainsKey(v) && MapManager.ins.unitGrid[v].team != team)
             {
-                enemiesInRange.Add(v);
+                foreach(Vector2 k in visibleTiles)
+                {
+                    if(k == v) 
+                    {
+                        enemiesInRange.Add(v);
+                        break;
+                    }
+                }
+                
             }
         }
     }
     public void CheckAttackRange()
     {
-        List<Vector2> tempRange = CheckTiles(data.range);
+        List<Vector2> tempRange = GetTilesInRange(data.range);
         foreach(Vector2 v in tempRange) 
         {
             var thisgPos = MapManager.ins.WorldToGrid(transform.position);
@@ -407,7 +425,7 @@ public class Unit : ESprite
     }
     public void CheckSplitRange() 
     {
-        List <Vector2> tempSplitRange = CheckTiles(1);
+        List <Vector2> tempSplitRange = GetTilesInRange(1);
 
         foreach(Vector2 v in tempSplitRange)
         {
@@ -418,7 +436,7 @@ public class Unit : ESprite
             inSplitRange.Add(v);
         }
     }
-    private List<Vector2> CheckTiles(int range)
+    private List<Vector2> GetTilesInRange(int range)
     {
         List<Vector2> toReturn = new List<Vector2>();
         for (int i = -range; i <= range; i++)
@@ -430,7 +448,6 @@ public class Unit : ESprite
                 gPos.x += i;
                 gPos.y += j;
                 if (!MapManager.ins.currentMap.ContainsKey(gPos)) continue;
-                var tile = MapManager.ins.currentMap[gPos];
                 toReturn.Add(gPos);
             }
         }
@@ -461,10 +478,6 @@ public class Unit : ESprite
         inSplitRange.Clear();
         enemiesInRange.Clear();
     }
-    public bool IsFoodMaxed()
-    {
-        return food == _data.maxFood;
-    }
     public void CheckEverything()
     {
         CheckAttackRange();
@@ -483,5 +496,9 @@ public class Unit : ESprite
         var newpos = transform.position;
         newpos.z = -zoffset;
         transform.position = newpos;
+    }
+    private int GetDistance(Vector2 g1, Vector2 g2)
+    {
+        return ((int)Mathf.Abs(g1.x - g2.x)) + ((int)Mathf.Abs(g1.y - g2.y));
     }
 }

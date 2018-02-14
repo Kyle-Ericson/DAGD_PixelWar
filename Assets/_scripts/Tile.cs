@@ -9,6 +9,7 @@ public class Tile : ESprite
     private TileData _data = null;
     public TileData data { get { return _data; }}
 
+    public Vector2 gridpos;
     private GameObject fog = null;
     private SpriteRenderer gridLine = null;
     private SpriteRenderer icon = null;
@@ -28,13 +29,14 @@ public class Tile : ESprite
     }
     private void Start()
     {
-        
         icon.gameObject.SetActive(false);
+       
     }
     public void SetType(TileType type)
     {
         GetComponent<SpriteRenderer>().sprite = Sprites.ins.tileSprites[type];
         _data = Database.tileData[(int)type];
+        gridpos = MapManager.ins.WorldToGrid(transform.position);
     }
     public void Highlight()
     {

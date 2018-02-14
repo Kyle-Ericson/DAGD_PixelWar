@@ -42,9 +42,8 @@ public enum Team
 public enum TileType
 {
     none,
-    plain,
-    forest,
-    mountain,
+    open,
+    blocking,
     food
 }
 
@@ -57,7 +56,8 @@ public enum Action
 }
 public enum UnitType 
 {
-    worker,
+    original,
+    scout,
     infantry,
     sniper,
     tank,

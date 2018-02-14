@@ -75,6 +75,7 @@ public class UnitData
     public int size;
     public int maxHealth;
     public int maxFood;
+    public int cost;
 }
 
 

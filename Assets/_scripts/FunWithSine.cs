@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FunWithSin : MonoBehaviour {
+public class FunWithSine : MonoBehaviour {
 
 
     public float theta = 0;
