@@ -17,6 +17,7 @@ public class Sprites {
             return _ins;
         }
     }
+    public bool loaded = false;
 
     public Dictionary<TileType, Sprite> tileSprites = new Dictionary<TileType, Sprite>();
     public Dictionary<UnitType, Sprite> unitSprites = new Dictionary<UnitType, Sprite>();
@@ -27,6 +28,7 @@ public class Sprites {
         LoadTileSprites();
         LoadActionSprites();
         LoadUnitSprites();
+        loaded = true;
     }
     public void LoadTileSprites()
     {

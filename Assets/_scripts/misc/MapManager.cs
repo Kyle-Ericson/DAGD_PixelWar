@@ -115,4 +115,31 @@ public class MapManager : ESingletonMono<MapManager>
         Destroy(unitGrid[pos].gameObject);
         unitGrid.Remove(pos);
     }
+    public void RemoveTile(Vector2 pos)
+    {
+        Destroy(currentMap[pos].gameObject);
+        currentMap.Remove(pos);
+    }
+    //
+    public void RemoveAllUnits()
+    {
+        List<Vector2> temp_list = new List<Vector2>();
+        foreach (KeyValuePair<Vector2, Unit> item in unitGrid) { temp_list.Add(item.Key); }
+        foreach (Vector2 v in temp_list) RemoveUnit(v);
+        unitGrid.Clear();
+    }
+    // remove all tiles from the scene
+    private void RemoveAllTiles()
+    {
+        List<Vector2> temp_list = new List<Vector2>();
+        foreach (KeyValuePair<Vector2, Tile> item in currentMap) { temp_list.Add(item.Key); }
+        foreach (Vector2 v in temp_list) RemoveTile(v);
+        currentMap.Clear();
+    }
+    public override void CleanUp()
+    {
+        base.CleanUp();
+        RemoveAllTiles();
+        RemoveAllUnits();
+    }
 }

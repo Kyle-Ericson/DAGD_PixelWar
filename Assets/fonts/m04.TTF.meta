@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: e3b46312e4b577f418fbfb1730158539
+timeCreated: 1518611782
+licenseType: Free
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: M04_FATAL FURY
+  fontNames:
+  - M04_FATAL FURY
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

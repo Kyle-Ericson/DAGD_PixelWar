@@ -18,7 +18,7 @@ public class Unit : ESprite
     public List<Vector2> inSplitRange = new List<Vector2>();
     public TextMesh healthText;
     public TextMesh foodText;
-    private float zoffset = -0.2f;
+    private float zoffset = -0.5f;
     public Team team = 0;
     private int health = 0;
     public int food = 0;
@@ -66,8 +66,10 @@ public class Unit : ESprite
                 target.z = zoffset;
                 transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
                 if(transform.position == target) moveIterator++;
+
+                
             }
-            if(moveIterator >= AStar.ins.path.Count || AStar.ins.path.Count == 0) 
+            if (moveIterator >= AStar.ins.path.Count)
             {
                 moveIterator = 0;
                 isMoving = false;
@@ -113,9 +115,9 @@ public class Unit : ESprite
         gameObject.transform.position = temp;
         Idle();
     }
-    public void Split()
+    public void Split(int damage)
     {
-        food = 0;
+        food -= damage;
         UpdateText();
     }
     public void Eat()
@@ -135,12 +137,13 @@ public class Unit : ESprite
         _data = Database.unitData[(int)type];
         health = _data.maxHealth;
         food = 0;
+        if(type != UnitType.original) foodText.gameObject.SetActive(false);
         UpdateText();
     }
     private void UpdateText()
     {
-        if (healthText) healthText.text = health + "/" + data.maxHealth;
-        if(foodText) foodText.text = food + "/" + data.maxFood;
+        if (healthText) healthText.text = health.ToString();
+        if(foodText) foodText.text = food.ToString();
     }
     public void Deselect()
     {
@@ -429,7 +432,7 @@ public class Unit : ESprite
 
         foreach(Vector2 v in tempSplitRange)
         {
-            if(MapManager.ins.unitGrid.ContainsKey(v) || 
+            if((MapManager.ins.unitGrid.ContainsKey(v) && visibleTiles.Contains(v)) || 
                MapManager.ins.currentMap[v].data.maxSize < 0 ||
                MapManager.ins.WorldToGrid(transform.position) == v) continue;
 
@@ -458,10 +461,10 @@ public class Unit : ESprite
         team = _team;
         switch (team)
         {
-            case Team.Player1:
+            case Team.player1:
                 SetColor(Color.red);
                 break;
-            case Team.Player2:
+            case Team.player2:
                 SetColor(Color.blue);
                 break;
         }
@@ -487,15 +490,17 @@ public class Unit : ESprite
     }
     public void Show()
     {
-        var newpos = transform.position;
-        newpos.z = zoffset;
-        transform.position = newpos;
+        // var newpos = transform.position;
+        // newpos.z = zoffset;
+        // transform.position = newpos;
+        gameObject.SetActive(true);
     }
     public void Hide()
     {
-        var newpos = transform.position;
-        newpos.z = -zoffset;
-        transform.position = newpos;
+        // var newpos = transform.position;
+        // newpos.z = -zoffset;
+        // transform.position = newpos;
+        gameObject.SetActive(false);
     }
     private int GetDistance(Vector2 g1, Vector2 g2)
     {

@@ -6,8 +6,8 @@ using Ericson;
 public class SelectionBox : MonoBehaviour
 {
 
-    private float zOffset = -1;
-    private Vector2 _gridpos = Vector2.zero * -1;
+    private float zOffset = -1f;
+    public Vector2 _gridpos = Vector2.zero;
     public Vector2 gridpos
     {
         get { return _gridpos; }
@@ -21,7 +21,16 @@ public class SelectionBox : MonoBehaviour
     public void Move()
     {
         Vector2 gridPos = MapManager.ins.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        if(gridPos != _gridpos) DoMove(gridPos);
+        if (!MapManager.ins.currentMap.ContainsKey(gridPos))
+        {
+            Hide();
+            return;
+        }
+        else
+        {
+            Show();
+            DoMove(gridPos);
+        }
     }
     public void Move(Vector2 gridPos)
     {

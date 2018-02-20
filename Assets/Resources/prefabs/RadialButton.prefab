@@ -153,7 +153,7 @@ MonoBehaviour:
   angle: 90
   speed: 100
   zOffSet: -0.5
-  radius: 1.5
+  radius: 0.75
   xAxis: 0
   yAxis: 0
   zAxis: 1

@@ -19,24 +19,21 @@ public enum UnitState
     dead
 }
 
-public enum Race
-{
-    ImmuneSys,
-    Nanobots,
-    Disease
-}
-
 public enum Scene
 {
-    GameScene
+    game,
+    options,
+    postgame,
+    pregame,
+    title
 }
 
 
 public enum Team
 {
     None = 0,
-    Player1 = 1,
-    Player2 = 2
+    player1 = 1,
+    player2 = 2
 }
 
 public enum TileType
