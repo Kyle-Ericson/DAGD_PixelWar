@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Ericson;
+using ericson;
 
-public class Unit : ESprite 
+public class Unit : e_Sprite 
 {
     public Vector2 _prevPos;
     public Vector2 _gridpos;
@@ -26,6 +26,11 @@ public class Unit : ESprite
     public bool isMoving = false;
     private int moveIterator = 0;
     private int moveSpeed = 8;
+    private List<Tile> pathToFollow = new List<Tile>();
+    public SpriteRenderer unitIcon = null;
+    private Color player1Color = Color.red * 0.75f;
+    private Color player2Color = Color.blue * 0.75f;
+    
 
 
     public Vector2 gridpos 
@@ -58,29 +63,29 @@ public class Unit : ESprite
     }
     void Update()
     {
-        if(isMoving)
-        {
-            if(AStar.ins.path.Count > 0)
-            {
-                var target = AStar.ins.path[moveIterator].transform.position;
-                target.z = zoffset;
-                transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
-                if(transform.position == target) moveIterator++;
-
-                
-            }
-            if (moveIterator >= AStar.ins.path.Count)
-            {
-                moveIterator = 0;
-                isMoving = false;
-                GameScene.ins.TempMoveUnit();
-            }
-        }
+        if(isMoving) FollowPath();
     }
-    public void LerpToPosition()
+    public void StartMoving(List <Tile> path)
     {
         SetPrevPos();
+        pathToFollow = path;
         isMoving = true;
+    }
+    public void FollowPath()
+    {
+        if (pathToFollow != null && pathToFollow.Count > 0)
+        {
+            var target = pathToFollow[moveIterator].transform.position;
+            target.z = zoffset;
+            transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
+            if (transform.position == target) moveIterator++;
+        }
+        if (moveIterator >= pathToFollow.Count)
+        {
+            moveIterator = 0;
+            isMoving = false;
+            GameScene.ins.TempMoveUnit();
+        }
     }
     public void Select()
     {   
@@ -91,8 +96,7 @@ public class Unit : ESprite
     public void Sleep()
     {
         ClearAllLists();
-        AStar.ins.path.Clear();
-        SetColor(GetComponent<SpriteRenderer>().color / 2);
+        SetColor(GetComponent<SpriteRenderer>().color * 0.5f);
         SetPrevPos();
         SetGridPos();
         ChangeState(UnitState.sleeping);
@@ -137,7 +141,8 @@ public class Unit : ESprite
         _data = Database.unitData[(int)type];
         health = _data.maxHealth;
         food = 0;
-        if(type != UnitType.original) foodText.gameObject.SetActive(false);
+        if(type != UnitType.queen) foodText.gameObject.SetActive(false);
+        unitIcon.sprite = Sprites.ins.unitSprites[type];
         UpdateText();
     }
     private void UpdateText()
@@ -166,106 +171,43 @@ public class Unit : ESprite
     }
     public void CheckMove()
     {
-        for(int d = 0; d < 8; d++)
+        inMoveRange = GetTilesInRange(data.speed);
+        for(int i = inMoveRange.Count - 1; i >= 0; i--)
         {
-            for (int i = 0; i <= data.speed; i++)
+            var path = AStar.ins.FindPath(gridpos, inMoveRange[i]);
+            if ((path != null && path.Count > data.speed) || path == null)
             {
-                Vector2 tempgPos = MapManager.ins.WorldToGrid(transform.position);
-                switch (d)
+                inMoveRange.Remove(inMoveRange[i]);
+            }
+            else if(path != null)
+            {
+                foreach (Tile t in path)
                 {
-                    case 0: // right, down
-                        tempgPos.x += i;
-                        break;
-                    case 1: // right, up
-                        tempgPos.x += i;
-                        break;
-                    case 2: // left, down
-                        tempgPos.x -= i;
-                        break;
-                    case 3: // left, up
-                        tempgPos.x -= i;
-                        break;
-                    case 4: // down, left
-                        tempgPos.y += i;
-                        break;
-                    case 5: // down, right
-                        tempgPos.y += i;
-                        break;
-                    case 6: // up, left
-                        tempgPos.y -= i;
-                        break;
-                    case 7: // up, down
-                        tempgPos.y -= i;
-                        break;
-                }
-                if (!MapManager.ins.currentMap.ContainsKey(tempgPos)) break;
-                var temptile = MapManager.ins.currentMap[tempgPos];
-                
-                if (data.size > temptile.data.maxSize) break;
-                if(MapManager.ins.unitGrid.ContainsKey(tempgPos) && MapManager.ins.unitGrid[tempgPos].team != team) break;
-                
+                    if (MapManager.ins.unitGrid.ContainsKey(t.gridpos) && MapManager.ins.unitGrid[t.gridpos].team != team)
+                    {
+                        try
+                        {
+                            inMoveRange.Remove(inMoveRange[i]);
+                        }
+                        catch
+                        {
 
-                for (int j = 0; j <= data.speed; j++)
-                {
-                    if (Mathf.Abs(i) + Mathf.Abs(j) > data.speed) continue;
-                    Vector2 gPos = MapManager.ins.WorldToGrid(transform.position);
-                    switch (d)
-                    {
-                        case 0: // right, down
-                            gPos.x += i;
-                            gPos.y += j;
-                            break;
-                        case 1: // right, up
-                            gPos.x += i;
-                            gPos.y -= j;
-                            break;
-                        case 2: // left, down
-                            gPos.x -= i;
-                            gPos.y += j;
-                            break;
-                        case 3: // left, up
-                            gPos.x -= i;
-                            gPos.y -= j;
-                            break;
-                        case 4: // down, left
-                            gPos.x -= j;
-                            gPos.y += i;
-                            break;
-                        case 5: // down, right
-                            gPos.x += j;
-                            gPos.y += i;
-                            break;
-                        case 6: // up, left
-                            gPos.x -= j;
-                            gPos.y -= i;
-                            break;
-                        case 7: // up, right
-                            gPos.x += j;
-                            gPos.y -= i;
-                            break;
+                        }
+                        
                     }
-                    if (!MapManager.ins.currentMap.ContainsKey(gPos)) break;
-                    var tile = MapManager.ins.currentMap[gPos];
-                    if (data.size > tile.data.maxSize) break;
-                    if(MapManager.ins.unitGrid.ContainsKey(gPos) && MapManager.ins.unitGrid[gPos].team != team) break;
-                    
-                    if(!inMoveRange.Contains(tile.gridpos))
-                    {
-                        inMoveRange.Add(tile.gridpos);
-                    }
-                    
                 }
             }
         }
     }
-
-    
     //
     public void CheckVision()
     {
         visibleTiles.Clear();
 
-        for(int d = 0; d < 8; d++)
+
+        CheckMove();
+
+        for (int d = 0; d < 8; d++)
         {
             for (int i = 0; i <= data.speed; i++)
             {
@@ -301,15 +243,15 @@ public class Unit : ESprite
 
                 var temptile = MapManager.ins.currentMap[tempgPos];
                 if ((data.size > temptile.data.maxSize) ||
-                    (MapManager.ins.unitGrid.ContainsKey(tempgPos) && MapManager.ins.unitGrid[tempgPos].team != team)) 
+                    (MapManager.ins.unitGrid.ContainsKey(tempgPos) && MapManager.ins.unitGrid[tempgPos].team != team))
                 {
-                    if(!visibleTiles.Contains(temptile.gridpos))
+                    if (!visibleTiles.Contains(temptile.gridpos))
                     {
                         visibleTiles.Add(temptile.gridpos);
                     }
                     break;
                 }
-                
+
 
                 for (int j = 0; j <= data.speed; j++)
                 {
@@ -374,14 +316,20 @@ public class Unit : ESprite
             }
         }
 
+        foreach (Vector2 v1 in inMoveRange)
+        {
+            if (!visibleTiles.Contains(v1)) visibleTiles.Add(v1);
+        }
     }
+    //
     public void CheckForEnemies()
     {
+       
         foreach(Vector2 v in inAttackRange)
         {
             if(MapManager.ins.unitGrid.ContainsKey(v) && MapManager.ins.unitGrid[v].team != team)
             {
-                foreach(Vector2 k in visibleTiles)
+                foreach(Vector2 k in GameScene.ins.GetAllVisibleTiles())
                 {
                     if(k == v) 
                     {
@@ -450,7 +398,8 @@ public class Unit : ESprite
                 Vector2 gPos = MapManager.ins.WorldToGrid(transform.position);
                 gPos.x += i;
                 gPos.y += j;
-                if (!MapManager.ins.currentMap.ContainsKey(gPos)) continue;
+                if (!MapManager.ins.currentMap.ContainsKey(gPos) 
+                    || MapManager.ins.currentMap[gPos].data.maxSize < data.size) continue;
                 toReturn.Add(gPos);
             }
         }
@@ -459,15 +408,7 @@ public class Unit : ESprite
     private void SetTeam(Team _team)
     {
         team = _team;
-        switch (team)
-        {
-            case Team.player1:
-                SetColor(Color.red);
-                break;
-            case Team.player2:
-                SetColor(Color.blue);
-                break;
-        }
+        SetColor(PersistentSettings.team_colors[_team]);
     }
     private void ChangeState(UnitState newstate)
     {
@@ -490,16 +431,10 @@ public class Unit : ESprite
     }
     public void Show()
     {
-        // var newpos = transform.position;
-        // newpos.z = zoffset;
-        // transform.position = newpos;
         gameObject.SetActive(true);
     }
     public void Hide()
     {
-        // var newpos = transform.position;
-        // newpos.z = -zoffset;
-        // transform.position = newpos;
         gameObject.SetActive(false);
     }
     private int GetDistance(Vector2 g1, Vector2 g2)

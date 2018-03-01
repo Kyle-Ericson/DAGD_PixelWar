@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Ericson;
+using ericson;
 
-public class OptionsScene : ESingletonMono<OptionsScene>
+public class OptionsScene : e_SingletonMono<OptionsScene>
 {
 
 

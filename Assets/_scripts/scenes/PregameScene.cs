@@ -1,15 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Ericson;
+using UnityEngine.UI;
+using ericson;
 
-public class PregameScene : ESingletonMono<PregameScene>
+public class PregameScene : e_SingletonMono<PregameScene>
 {
-
+    public GameObject ui = null;
 
 
     public override void Init()
     {
-        Instantiate(Resources.Load<GameObject>("prefabs/scenes/Pregame")).transform.SetParent(this.gameObject.transform);
+        ui = Instantiate(Resources.Load<GameObject>("prefabs/scenes/Pregame"));
+        ui.transform.SetParent(this.gameObject.transform);
     }
 }

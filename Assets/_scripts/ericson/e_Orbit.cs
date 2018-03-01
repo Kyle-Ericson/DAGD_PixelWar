@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Ericson{
-	public class EOrbit : MonoBehaviour {
+namespace ericson{
+	public class e_Orbit : MonoBehaviour {
 
 		public float angle = 0;
 		public float speed = 100f;
@@ -25,28 +25,25 @@ namespace Ericson{
 			transform.rotation = Quaternion.Euler(startRotation.x, startRotation.y, startRotation.z + angle);
 		}
 
-
 		void Update () 
 		{
-			if(activeRotation) DoRotate();		
+			if(activeRotation) Active_Orbit();		
 			else if(!objInPlace) 
 			{
-				PlaceObj();
+				Stationary_Orbit();
 			}
 		}
-		void DoRotate() 
+		void Active_Orbit() 
 		{
 			if(!invert) angle += speed * Time.deltaTime;
 			else angle -= speed * Time.deltaTime;
 			if(angle >= 360) angle = 0;
-
 			float dx = GetDistanceX();
 			float dy = GetDistanceY();
-
 			SetPosition(dx, dy);
 			transform.Rotate(new Vector3(0,0, (speed * Time.deltaTime)));
 		}
-		void PlaceObj()
+		void Stationary_Orbit()
 		{
 			float dx = Mathf.Cos(Mathf.Deg2Rad * angle) * radius;
 			float dy = Mathf.Sin(Mathf.Deg2Rad * angle) * radius;

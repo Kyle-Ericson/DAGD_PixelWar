@@ -53,7 +53,7 @@ public enum Action
 }
 public enum UnitType 
 {
-    original,
+    queen,
     scout,
     infantry,
     sniper,

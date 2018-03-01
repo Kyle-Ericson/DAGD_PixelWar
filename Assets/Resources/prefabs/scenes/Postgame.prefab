@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 224219268218190106}
   - component: {fileID: 223141679828488222}
   - component: {fileID: 114801474135906394}
-  - component: {fileID: 114381497535207776}
   m_Layer: 0
   m_Name: Postgame
   m_TagString: Untagged
@@ -158,17 +157,6 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &114381497535207776
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1264643343216270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5fb8387e5fd1284783793011b972f75, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114801474135906394
 MonoBehaviour:
   m_ObjectHideFlags: 1

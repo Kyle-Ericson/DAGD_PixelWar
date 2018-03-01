@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Ericson;
+using ericson;
 
 // this class get the desired level data, loads it and spawns the level into the scene
-public class MapManager : ESingletonMono<MapManager>
+public class MapManager : e_SingletonMono<MapManager>
 {
     // current map data
     public MapData currentMapData;

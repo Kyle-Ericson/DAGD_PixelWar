@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Ericson;
+using ericson;
 
-public class PostgameScene : ESingletonMono<PostgameScene>
+public class PostgameScene : e_SingletonMono<PostgameScene>
 {
 
 

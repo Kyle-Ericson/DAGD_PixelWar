@@ -4,11 +4,11 @@ using UnityEngine;
 
 
 
-namespace Ericson
+namespace ericson
 {
 
     [System.Serializable] 
-    public class SerialVector2
+    public class e_Serializable_Vector2
     {
         public int x;
         public int y;

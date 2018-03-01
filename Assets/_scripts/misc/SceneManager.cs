@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Ericson;
+using ericson;
 
-public class Scene_Manager : ESingletonMono<Scene_Manager> {
+public class SceneManager : e_SingletonMono<SceneManager> {
 
 
 

@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Ericson;
+using ericson;
 
 
-public class InputEvents : ESingletonMono<InputEvents> {
+public class InputEvents : e_SingletonMono<InputEvents> {
 
 
     public Vector3 prevMousePos = Vector3.zero;
@@ -39,23 +39,23 @@ public class InputEvents : ESingletonMono<InputEvents> {
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            Scene_Manager.ins.Change_Scene(Scene.title);
+            SceneManager.ins.Change_Scene(Scene.title);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            Scene_Manager.ins.Change_Scene(Scene.options);
+            SceneManager.ins.Change_Scene(Scene.options);
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            Scene_Manager.ins.Change_Scene(Scene.pregame);
+            SceneManager.ins.Change_Scene(Scene.pregame);
         }
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            Scene_Manager.ins.Change_Scene(Scene.postgame);
+            SceneManager.ins.Change_Scene(Scene.postgame);
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            Scene_Manager.ins.Start_Match(0, 2);
+            SceneManager.ins.Start_Match(0, 2);
         }
     }
     

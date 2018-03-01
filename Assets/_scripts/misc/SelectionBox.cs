@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Ericson;
+using ericson;
 
 public class SelectionBox : MonoBehaviour
 {
@@ -24,6 +24,7 @@ public class SelectionBox : MonoBehaviour
         if (!MapManager.ins.currentMap.ContainsKey(gridPos))
         {
             Hide();
+            CheckInfoBox();
             return;
         }
         else
@@ -45,10 +46,12 @@ public class SelectionBox : MonoBehaviour
             transform.position = newPos;
             UpdateGridPos();
         }
+        CheckInfoBox();
     }
     public void Hide()
     {
         gameObject.SetActive(false);
+        _gridpos = new Vector2(-1, -1);
     }
     public void Show()
     {
@@ -58,5 +61,13 @@ public class SelectionBox : MonoBehaviour
     {
         _gridpos = MapManager.ins.WorldToGrid(transform.position);
         
+    }
+    private void CheckInfoBox()
+    {
+        if (MapManager.ins.unitGrid.ContainsKey(gridpos) && MapManager.ins.unitGrid[gridpos].team == (Team)GameScene.ins.currentTurn )
+        {
+            GameScene.ins.gameUI.Show_Info(MapManager.ins.unitGrid[gridpos]);
+        }
+        else GameScene.ins.gameUI.Hide_Info();
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Ericson;
+using ericson;
 
 
-public class Tile : ESprite 
+public class Tile : e_Sprite 
 {
     private TileData _data = null;
     public TileData data { get { return _data; }}
@@ -13,6 +13,7 @@ public class Tile : ESprite
     private GameObject fog = null;
     private SpriteRenderer gridLine = null;
     private SpriteRenderer icon = null;
+    public SpriteRenderer typeIcon = null;
 
     // AStar stuff
     public float g;
@@ -35,6 +36,7 @@ public class Tile : ESprite
     public void SetType(TileType type)
     {
         GetComponent<SpriteRenderer>().sprite = Sprites.ins.tileSprites[type];
+        if (type == TileType.food) GetComponent<SpriteRenderer>().color = Color.white;
         _data = Database.tileData[(int)type];
         gridpos = MapManager.ins.WorldToGrid(transform.position);
     }

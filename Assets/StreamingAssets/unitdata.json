@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "name": "Original",
+      "name": "Queen",
       "id": 0,
       "range": 0,
       "attack": 0,
@@ -16,7 +16,7 @@
       "id": 1,
       "range": 1,
       "attack": 1,
-      "speed": 3,
+      "speed": 4,
       "size": 0,
       "maxHealth": 1,
       "maxFood": 0,
@@ -27,7 +27,7 @@
       "id": 2,
       "range": 1,
       "attack": 2,
-      "speed": 2,
+      "speed": 3,
       "size": 0,
       "maxHealth": 3,
       "maxFood": 0,
@@ -49,7 +49,7 @@
       "id": 4,
       "range": 1,
       "attack": 3,
-      "speed": 2,
+      "speed": 3,
       "size": 3,
       "maxHealth": 4,
       "maxFood": 0,

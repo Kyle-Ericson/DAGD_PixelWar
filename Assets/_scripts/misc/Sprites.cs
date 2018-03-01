@@ -38,8 +38,8 @@ public class Sprites {
     }
     public void LoadUnitSprites()
     {
-        unitSprites.Add(UnitType.scout,(Resources.Load<Sprite>("sprites/units/worker")));
-        unitSprites.Add(UnitType.original,(Resources.Load<Sprite>("sprites/units/worker")));
+        unitSprites.Add(UnitType.scout,(Resources.Load<Sprite>("sprites/units/scout")));
+        unitSprites.Add(UnitType.queen,(Resources.Load<Sprite>("sprites/units/queen")));
         unitSprites.Add(UnitType.tank,(Resources.Load<Sprite>("sprites/units/tank")));
         unitSprites.Add(UnitType.sniper,(Resources.Load<Sprite>("sprites/units/sniper")));
         unitSprites.Add(UnitType.infantry,(Resources.Load<Sprite>("sprites/units/infantry")));
