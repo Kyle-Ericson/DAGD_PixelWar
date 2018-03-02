@@ -28,8 +28,6 @@ public class Unit : e_Sprite
     private int moveSpeed = 8;
     private List<Tile> pathToFollow = new List<Tile>();
     public SpriteRenderer unitIcon = null;
-    private Color player1Color = Color.red * 0.75f;
-    private Color player2Color = Color.blue * 0.75f;
     
 
 
@@ -117,6 +115,7 @@ public class Unit : e_Sprite
         var temp = MapManager.ins.GridToWorld(_prevPos);
         temp.z = zoffset;
         gameObject.transform.position = temp;
+        SetGridPos();
         Idle();
     }
     public void Split(int damage)

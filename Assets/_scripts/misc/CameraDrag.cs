@@ -4,12 +4,23 @@ using UnityEngine;
 
 public class CameraDrag : MonoBehaviour {
 
-    public float dragSpeed = 10;
-    private bool drag = false;
+    public float dragSpeed = 5;
+    private float holdTimer = 0;
+    private float holdTimerMax = 0.06f;
 
     void Update()
     {
-        if (!Input.GetMouseButton(0)) return;
+        if (!Input.GetMouseButton(0))
+        {
+            holdTimer = 0;
+            return;
+        }
+        else
+        {
+            holdTimer += Time.deltaTime;
+            if (holdTimer < holdTimerMax) return;
+        }
+
 
         Vector3 newpos = Vector3.zero;
 
@@ -17,9 +28,5 @@ public class CameraDrag : MonoBehaviour {
         newpos.y = Input.GetAxis("Mouse Y");
 
         transform.position -= newpos * dragSpeed * Time.deltaTime;
-    }
-    public void DragCam(Vector3 mousepos)
-    {
-        drag = true;
     }
 }

@@ -114,7 +114,7 @@ public class GameScene : e_SingletonMono<GameScene>
                 }
                 else
                 {
-                    Move_Camera(Input.mousePosition);
+
                 }
                 break;
 
@@ -135,7 +135,15 @@ public class GameScene : e_SingletonMono<GameScene>
                 break;
             case GameState.awaitingSplit:
                 if(currentSelected.inSplitRange.Contains(selectionbox.gridpos) && !MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos))
+                {
                     ConfirmSplit(selectionbox.gridpos);
+                }
+                else if(MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos))
+                {
+
+                }
+                    
+
                 break;
 
             case GameState.awaitingAttack:
@@ -218,9 +226,7 @@ public class GameScene : e_SingletonMono<GameScene>
     // confirm the temporary move
     private void ConfirmMove()
     {
-        MapManager.ins.unitGrid.Remove(_currentSelected.prevPos);
         currentSelected.Sleep();
-        MapManager.ins.unitGrid.Add(_currentSelected.gridpos, _currentSelected);
         _currentSelected = null;
         DeselectAll();
         UpdateFog();
@@ -455,6 +461,9 @@ public class GameScene : e_SingletonMono<GameScene>
     // temporary unit move, can still be undon
     public void TempMoveUnit()
     {
+        MapManager.ins.unitGrid.Remove(_currentSelected.prevPos);
+        _currentSelected.SetGridPos();
+        MapManager.ins.unitGrid.Add(_currentSelected.gridpos, _currentSelected);
         _currentSelected.CheckEverything();
         _currentSelected.AwaitAction();
         DeselectAllTiles();
@@ -597,7 +606,9 @@ public class GameScene : e_SingletonMono<GameScene>
     
     private void Undo()
     {
-        if(_currentSelected) _currentSelected.Undo();
+        MapManager.ins.unitGrid.Remove(_currentSelected.gridpos);
+        MapManager.ins.unitGrid.Add(_currentSelected.prevPos, _currentSelected);
+        if (_currentSelected) _currentSelected.Undo();
         DeselectAll();
         actionMenu.Clear();
     }
@@ -613,11 +624,6 @@ public class GameScene : e_SingletonMono<GameScene>
     public List<Vector2> GetAllVisibleTiles()
     {
         return allVisibleTiles;
-    }
-    public void Move_Camera(Vector3 mouse_pos)
-    {
-        CameraDrag cam_drag = Camera.main.gameObject.GetComponent<CameraDrag>();
-        cam_drag.DragCam(mouse_pos);
     }
     public int GetTeamFoodCount()
     {
