@@ -8,8 +8,8 @@ using TMPro;
 public class GameUI : MonoBehaviour
 {
     public Button endTurn;
-    public Transition_Lerp transition1 = null;
-    public Transition_Lerp transition2 = null;
+    public TransitionLerp transition1 = null;
+    public TransitionLerp transition2 = null;
     public Image transition1Image = null;
     public Image transition2Image = null;
     public TextMeshProUGUI playerText = null;
@@ -35,9 +35,9 @@ public class GameUI : MonoBehaviour
         playerText.text = "Player " + GameScene.ins.currentTurn.ToString();
         turnText.text = "Turn " + GameScene.ins.turnCount.ToString();
 
-        transition1Image.color = PersistentSettings.team_colors[(Team)GameScene.ins.currentTurn];
-        transition2Image.color = PersistentSettings.team_colors[(Team)GameScene.ins.currentTurn];
-        turnBarImage.color = PersistentSettings.team_colors[(Team)GameScene.ins.currentTurn];
+        transition1Image.color = PersistentSettings.teamColors[(Team)GameScene.ins.currentTurn];
+        transition2Image.color = PersistentSettings.teamColors[(Team)GameScene.ins.currentTurn];
+        turnBarImage.color = PersistentSettings.teamColors[(Team)GameScene.ins.currentTurn];
 
         foodCountText.text = "Food:";
         armyValueText.text = "Army Value:";

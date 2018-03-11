@@ -636,12 +636,12 @@ public class GameScene : e_SingletonMono<GameScene>
     }
     private List<Unit> GetAllUnits()
     {
-        List<Unit> unit_list = new List<Unit>();
+        List<Unit> units = new List<Unit>();
         foreach (KeyValuePair<Vector2, Unit> k in MapManager.ins.unitGrid)
         {
-            unit_list.Add(k.Value);
+            units.Add(k.Value);
         }
-        return unit_list;
+        return units;
     }
 }
 

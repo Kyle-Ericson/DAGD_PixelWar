@@ -52,6 +52,7 @@ public class MapManager : e_SingletonMono<MapManager>
 
                 // set the type of tile based on the level data retrieved
                 tile.SetType((TileType)oneDGrid);
+                if (!PersistentSettings.useGrid) tile.HideGrid();
                 //tile.GetComponent<SpriteRenderer>().sortingOrder = y;
 
                 // add the new tile to the tiles dictionary

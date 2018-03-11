@@ -15,12 +15,13 @@ namespace ericson
         private GameObject radialButtonFab = null;
         private List<Button> buttons = new List<Button>();
         private List<Button> radialButtons = new List<Button>();
+        private int buttonGap = 10;
 
         private void Start()
         {
             basicButtonFab = Resources.Load<GameObject>("prefabs/BasicButton");
             radialButtonFab = Resources.Load<GameObject>("prefabs/RadialButton");
-            gameObject.SetActive(false);
+            //gameObject.SetActive(false);
         }
 
         public void Clear()
@@ -46,18 +47,20 @@ namespace ericson
                 radialButtons.Clear();
             }
         }
-        private void UpdateMenu()
+        public void UpdateMenu()
         {
             float buttonH = basicButtonFab.GetComponent<RectTransform>().rect.height;
             var panelRT = GetComponent<RectTransform>();
-            panelRT.sizeDelta = new Vector2(200, buttons.Count * buttonH);
+            panelRT.sizeDelta = new Vector2(400, buttons.Count * (buttonH + buttonGap));
             float menuH = panelRT.rect.height;
 
             for (int i = 0; i < buttons.Count; i++)
             {
                 RectTransform rT = buttons[i].GetComponent<RectTransform>();
-                rT.offsetMin = new Vector2(0, ((menuH / 2) - (buttonH / 2)) - (buttonH * i) - 20);
-                rT.offsetMax = new Vector2(0, rT.offsetMin.y + buttonH);
+                rT.offsetMin = new Vector2(-panelRT.rect.width / 2, -(buttonH / 2));
+                rT.offsetMax = new Vector2(panelRT.rect.width / 2, (buttonH / 2));
+                rT.transform.localPosition = new Vector3(rT.rect.width * 0.5f, -((buttonH + buttonGap) * i));
+                
             }
         }
         public void UpdateRadialMenu()
@@ -72,9 +75,8 @@ namespace ericson
         }
         public Button AddBasicButton(string label)
         {
-            if (basicButtonFab == null) basicButtonFab = Resources.Load<GameObject>("prefabs/EButton");
+            if (basicButtonFab == null) basicButtonFab = Resources.Load<GameObject>("prefabs/BasicButton");
             Button newButton = Instantiate(basicButtonFab).GetComponent<Button>();
-            newButton.GetComponent<RadialButton>().Hide();
             newButton.gameObject.transform.SetParent(gameObject.transform);
             newButton.transform.localScale = Vector3.one;
             newButton.transform.localPosition = Vector3.zero;

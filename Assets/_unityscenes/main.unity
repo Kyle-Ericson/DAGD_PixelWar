@@ -316,4 +316,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 911189cddedd51444b94c7618ef3b010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dragSpeed: 10
+  dragSpeed: 25
+  zoomSpeed: 50

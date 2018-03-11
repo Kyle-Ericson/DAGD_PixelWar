@@ -143,8 +143,8 @@ GameObject:
   - component: {fileID: 224577423946613950}
   - component: {fileID: 222428975771048420}
   - component: {fileID: 114593980994585406}
-  - component: {fileID: 114387439917747422}
   - component: {fileID: 23971214222526820}
+  - component: {fileID: 114387439917747422}
   m_Layer: 5
   m_Name: TurnTransition
   m_TagString: Untagged
@@ -715,9 +715,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6548cb56e22d8e0418e80bd556d94cd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  do_lerp: 0
-  max_lerp_time: 2.5
+  doLerp: 0
+  maxLerpTime: 2
   target: {x: 0, y: 0, z: 0}
+  offset: 200
 --- !u!114 &114378389148648410
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -756,9 +757,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6548cb56e22d8e0418e80bd556d94cd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  do_lerp: 0
-  max_lerp_time: 2.5
+  doLerp: 0
+  maxLerpTime: 2
   target: {x: 0, y: 0, z: 0}
+  offset: 200
 --- !u!114 &114428213405864142
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -770,9 +772,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6548cb56e22d8e0418e80bd556d94cd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  do_lerp: 0
-  max_lerp_time: 2.5
+  doLerp: 0
+  maxLerpTime: 1
   target: {x: 0, y: 0, z: 0}
+  offset: 100
 --- !u!114 &114482765916895258
 MonoBehaviour:
   m_ObjectHideFlags: 1

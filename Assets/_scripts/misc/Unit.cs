@@ -407,7 +407,7 @@ public class Unit : e_Sprite
     private void SetTeam(Team _team)
     {
         team = _team;
-        SetColor(PersistentSettings.team_colors[_team]);
+        SetColor(PersistentSettings.teamColors[_team]);
     }
     private void ChangeState(UnitState newstate)
     {

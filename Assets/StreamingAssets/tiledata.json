@@ -19,7 +19,7 @@
       "name": "Blocking",
       "defense": 1,
       "moveCost": 1,
-      "maxSize": 10
+      "maxSize": -1
     },
     {
       "type": 3,
