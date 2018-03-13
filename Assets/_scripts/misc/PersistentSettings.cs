@@ -10,10 +10,55 @@ public class PersistentSettings {
         { Team.player2, Color.blue * 0.9f }
     };
 
-    public static float volume = 1f;
-    public static int dragSpeed = 25;
-    public static float zoomSpeed = 50;
-    public static bool useGrid = true;
-    public static float maxZoom = 3;
-    public static float minZoom = 7;
+    private static float _volume = 0.5f;
+    private static float _dragSpeed = 25;
+    private static float _dragSensitivity = 0.5f;
+    private static float _zoomSpeed = 50;
+    private static bool _useGrid = true;
+    private static float _maxZoom = 3;
+    private static float _minZoom = 7;
+
+    public static float volume
+    {
+        get { return _volume; }
+    }
+    public static float dragSpeed
+    {
+        get { return _dragSpeed * _dragSensitivity; }
+    }
+    public static float zoomSpeed
+    {
+        get { return _zoomSpeed; }
+    }
+    public static bool useGrid
+    {
+        get { return _useGrid; }
+    }
+    public static float maxZoom
+    {
+        get { return _maxZoom; }
+    }
+    public static float minZoom
+    {
+        get { return _minZoom; }
+    }
+
+
+    public static void SetVolume(float value)
+    {
+        _volume = value;
+        Debug.Log("Volume:" + _volume);
+    }
+    public static void SetGridLines(bool value)
+    {
+        _useGrid = value;
+        Debug.Log("UseGrid?:" + _useGrid);
+    }
+    public static void SetDragSensitivity(float value)
+    {
+        _dragSensitivity = value;
+        Debug.Log("Drag:" + _dragSensitivity);
+    }
+
+
 }

@@ -36,6 +36,6 @@ public class PregameScene : e_SingletonMono<PregameScene>
     }
     private void HandleStart()
     {
-        if(mapToLoad >= 0) SceneManager.ins.Start_Match(mapToLoad, 2);
+        if(mapToLoad >= 0) SceneManager.ins.StartMatch(mapToLoad, 2);
     }
 }

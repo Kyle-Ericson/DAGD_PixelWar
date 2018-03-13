@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using ericson;
+using UnityEngine.UI;
 
 public class OptionsScene : e_SingletonMono<OptionsScene>
 {

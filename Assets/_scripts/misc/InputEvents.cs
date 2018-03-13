@@ -39,23 +39,23 @@ public class InputEvents : e_SingletonMono<InputEvents> {
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            SceneManager.ins.Change_Scene(Scene.title);
+            SceneManager.ins.ChangeScene(Scene.title);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            SceneManager.ins.Change_Scene(Scene.options);
+            SceneManager.ins.ChangeScene(Scene.options);
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            SceneManager.ins.Change_Scene(Scene.pregame);
+            SceneManager.ins.ChangeScene(Scene.pregame);
         }
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            SceneManager.ins.Change_Scene(Scene.postgame);
+            SceneManager.ins.ChangeScene(Scene.postgame);
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            SceneManager.ins.Start_Match(0, 2);
+            SceneManager.ins.StartMatch(0, 2);
         }
     }
     

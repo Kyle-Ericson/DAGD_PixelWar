@@ -28,12 +28,12 @@ public class TitleScene : e_SingletonMono<TitleScene>
 
     public void HandleStart()
     {
-        SceneManager.ins.Change_Scene(Scene.pregame);
+        SceneManager.ins.ChangeScene(Scene.pregame);
         //SceneManager.ins.Start_Match(0, 2);
     }
     public void HandleOptions()
     {
-        SceneManager.ins.Change_Scene(Scene.options);
+        SceneManager.ins.ChangeScene(Scene.options);
     }
     public void HandleQuit()
     {

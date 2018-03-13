@@ -15,7 +15,7 @@ public class SceneManager : e_SingletonMono<SceneManager> {
     {
         InputEvents.ins.Init();
         Initialize_Scenes();
-        Change_Scene(Scene.title);
+        ChangeScene(Scene.title);
     }
     void Initialize_Scenes()
     {
@@ -32,14 +32,14 @@ public class SceneManager : e_SingletonMono<SceneManager> {
         OptionsScene.ins.gameObject.transform.SetParent(this.gameObject.transform);
     } 
 
-    private void Load_Scenes()
+    private void LoadScenes()
     {
 
     }
 
-    public void Change_Scene(Scene new_scene)
+    public void ChangeScene(Scene new_scene)
     {
-        Hide_All();
+        HideAll();
         switch (new_scene)
         {
             case Scene.title:
@@ -56,7 +56,7 @@ public class SceneManager : e_SingletonMono<SceneManager> {
                 break;
         }
     }
-    public void Hide_All()
+    public void HideAll()
     {
         GameScene.ins.CleanUp();
         GameScene.ins.Hide();
@@ -65,9 +65,9 @@ public class SceneManager : e_SingletonMono<SceneManager> {
         OptionsScene.ins.Hide();
         PostgameScene.ins.Hide();
     }
-    public void Start_Match(int map, int players)
+    public void StartMatch(int map, int players)
     {
-        Hide_All();
+        HideAll();
         GameScene.ins.Show();
         GameScene.ins.SetupMatch(map, players);
     }

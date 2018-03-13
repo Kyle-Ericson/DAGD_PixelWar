@@ -7,23 +7,36 @@ using UnityEngine.UI;
 public class ShiftOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
     public int shiftAmount = 80;
+    private Button button;
+    private Vector3 startpos;
     
 	
-	void Start ()
+	void Awake()
     {
-    
-	}
+        button = GetComponent<Button>();
+        //if (transform.localPosition != startpos) startpos = transform.localPosition;
+    }
 
     public void OnPointerEnter(PointerEventData data)
     {
-        var start_pos = transform.position;
-        start_pos.x += shiftAmount;
-        transform.position = start_pos;
+        //if (transform.localPosition != startpos) startpos = transform.localPosition;
+        //var tempstartpos = startpos;
+        //tempstartpos.x += shiftAmount;
+        //transform.localPosition = tempstartpos;
+        transform.localScale *= 1.5f;
     }
     public void OnPointerExit(PointerEventData data)
     {
-        var start_pos = transform.position;
-        start_pos.x -= shiftAmount;
-        transform.position = start_pos;
+        Reset();
     }
+    public void OnEnable()
+    {
+        Reset();
+    }
+    public void Reset()
+    {
+        //transform.localPosition = startpos;
+        transform.localScale = new Vector3(1,1,1);
+    }
+
 }
