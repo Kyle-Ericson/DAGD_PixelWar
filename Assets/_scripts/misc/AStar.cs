@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ericson;
 
-    public class AStar : e_SingletonMono<AStar>
+    public class AStar : eSingletonMono<AStar>
     {
         public AStar() { }
 

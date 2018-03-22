@@ -4,7 +4,7 @@ using UnityEngine;
 using ericson;
 using UnityEngine.UI;
 
-public class OptionsScene : e_SingletonMono<OptionsScene>
+public class OptionsScene : eSingletonMono<OptionsScene>
 {
 
 

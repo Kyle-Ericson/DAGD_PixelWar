@@ -4,7 +4,7 @@ using UnityEngine;
 using ericson;
 
 
-public class Tile : e_Sprite 
+public class Tile : eSprite 
 {
     private TileData _data = null;
     public TileData data { get { return _data; }}

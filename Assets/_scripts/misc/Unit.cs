@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ericson;
 
-public class Unit : e_Sprite 
+public class Unit : eSprite 
 {
     public Vector2 _prevPos;
     public Vector2 _gridpos;
@@ -20,14 +20,16 @@ public class Unit : e_Sprite
     public TextMesh foodText;
     private float zoffset = -0.5f;
     public Team team = 0;
+    public UnitType type;
     private int health = 0;
     public int food = 0;
-    private int actionPoints = 3;
+    //private int actionPoints = 3;
     public bool isMoving = false;
     private int moveIterator = 0;
     private int moveSpeed = 8;
     private List<Tile> pathToFollow = new List<Tile>();
-    public SpriteRenderer unitIcon = null;
+    public UnitGraphic unitGraphic = null;
+    private Color healthBGColor;
     
 
 
@@ -53,11 +55,13 @@ public class Unit : e_Sprite
     {
         healthText = gameObject.transform.Find("Health").gameObject.GetComponent<TextMesh>();
         foodText = gameObject.transform.Find("Food").gameObject.GetComponent<TextMesh>();
+        healthBGColor = healthText.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color;
     }
     public void Init(UnitType type, Team team)
     {
         SetType(type);
         SetTeam(team);
+        
     }
     void Update()
     {
@@ -89,20 +93,37 @@ public class Unit : e_Sprite
     {   
         ClearAllLists();     
         ChangeState(UnitState.selected);
+        unitGraphic.Walk();
         SetGridPos();
     }
     public void Sleep()
     {
         ClearAllLists();
-        SetColor(GetComponent<SpriteRenderer>().color * 0.5f);
+        unitGraphic.Idle();
+        unitGraphic.Sleep();
+        
+
+        var newColor1 = healthText.color * 0.25f;
+        newColor1.a = 1;
+        healthText.color = newColor1;
+
+        var healthBG = healthText.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        var newColor2 = healthBG.color * 0.25f;
+        newColor2.a = 1;
+        healthBG.color = newColor2;
+
         SetPrevPos();
         SetGridPos();
         ChangeState(UnitState.sleeping);
     }
     public void Idle()
     {
+        var healthBG = healthText.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        healthBG.color = healthBGColor;
+        healthText.color = Color.white;
+        unitGraphic.WakeUp();
+        unitGraphic.Idle();
         ClearAllLists();
-        if(state == UnitState.sleeping) SetColor(GetComponent<SpriteRenderer>().color * 2);
         ChangeState(UnitState.idle);
     }
     public void AwaitAction()
@@ -140,8 +161,12 @@ public class Unit : e_Sprite
         _data = Database.unitData[(int)type];
         health = _data.maxHealth;
         food = 0;
-        if(type != UnitType.queen) foodText.gameObject.SetActive(false);
-        unitIcon.sprite = Sprites.ins.unitSprites[type];
+        if(type != UnitType.worker) foodText.gameObject.SetActive(false);
+        var spriteObject = Instantiate(Sprites.ins.unitPrefabs[type]);
+        unitGraphic = spriteObject.GetComponent<UnitGraphic>();
+        spriteObject.transform.SetParent(transform);
+        spriteObject.transform.localPosition = new Vector3(0, 0, 0);
+        this.type = type;
         UpdateText();
     }
     private void UpdateText()
@@ -348,7 +373,7 @@ public class Unit : e_Sprite
             var thisgPos = MapManager.ins.WorldToGrid(transform.position);
             var dx = thisgPos.x - v.x;
             var dy = thisgPos.y - v.y;
-            if(Mathf.Abs(dx) + Mathf.Abs(dy) == 1 && data.range > 1) continue;
+            if((dx == 0 && dy == 0) || Mathf.Abs(dx) + Mathf.Abs(dy) == 1 && data.range > 1) continue;
             inAttackRange.Add(v);
         }
     }

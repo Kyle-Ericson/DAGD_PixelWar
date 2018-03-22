@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using ericson;
 
 // this class get the desired level data, loads it and spawns the level into the scene
-public class MapManager : e_SingletonMono<MapManager>
+public class MapManager : eSingletonMono<MapManager>
 {
     // current map data
     public MapData currentMapData;

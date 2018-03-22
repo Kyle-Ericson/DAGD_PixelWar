@@ -39,8 +39,8 @@ public class MapData
     public string name;
     public int cols;
     public int rows;
-    public e_SerializableVector2 start1;
-    public e_SerializableVector2 start2;
+    public eSerializableVector2 start1;
+    public eSerializableVector2 start2;
     public List<int> grid = new List<int>();
 }
 

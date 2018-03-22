@@ -53,11 +53,11 @@ public enum Action
 }
 public enum UnitType 
 {
-    queen,
+    worker,
     scout,
-    infantry,
+    soldier,
     sniper,
-    tank,
+    tank
 }
 public enum Icon 
 {

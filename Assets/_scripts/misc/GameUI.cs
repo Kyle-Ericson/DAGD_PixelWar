@@ -20,7 +20,7 @@ public class GameUI : MonoBehaviour
     public TextMeshProUGUI armyValueText = null;
     public TextMeshProUGUI foodCountText = null;
 
-    public InfoBox info_box = null;
+    public InfoBox infobox = null;
 
     private void Start()
     {
@@ -76,12 +76,12 @@ public class GameUI : MonoBehaviour
     {
         foodCountText.text = "Food: " + GameScene.ins.GetTeamFoodCount();
     }
-    public void Show_Info(Unit unit)
+    public void ShowInfo(Unit unit)
     {
-        info_box.Show(unit);
+        infobox.Show(unit);
     }
-    public void Hide_Info()
+    public void HideInfo()
     {
-        info_box.Hide();
+        infobox.Hide();
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 public class InfoBox : MonoBehaviour {
 
-    public e_Lerp elerp = null;
+    public eLerp elerp = null;
     public TextMeshProUGUI text;
     public Image sprite = null;
 	
@@ -19,7 +19,7 @@ public class InfoBox : MonoBehaviour {
     public void Show(Unit unit)
     {
         elerp.LerpForward();
-        sprite.sprite = unit.unitIcon.sprite;
+        sprite.sprite = Sprites.ins.unitsSprites[unit.type];
         text.text =
             unit.data.name + "\n\n"
             + "Cost: " + unit.data.cost + "\n"

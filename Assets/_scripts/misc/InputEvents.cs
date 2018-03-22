@@ -4,7 +4,7 @@ using UnityEngine;
 using ericson;
 
 
-public class InputEvents : e_SingletonMono<InputEvents> {
+public class InputEvents : eSingletonMono<InputEvents> {
 
 
     public Vector3 prevMousePos = Vector3.zero;

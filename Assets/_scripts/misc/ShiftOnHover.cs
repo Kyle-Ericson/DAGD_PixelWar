@@ -7,13 +7,11 @@ using UnityEngine.UI;
 public class ShiftOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
     public int shiftAmount = 80;
-    private Button button;
     private Vector3 startpos;
     
 	
 	void Awake()
     {
-        button = GetComponent<Button>();
         //if (transform.localPosition != startpos) startpos = transform.localPosition;
     }
 

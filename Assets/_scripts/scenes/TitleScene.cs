@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ericson;
 
-public class TitleScene : e_SingletonMono<TitleScene>
+public class TitleScene : eSingletonMono<TitleScene>
 {
     private GameObject ui = null;
     private Button startButton = null;

@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using ericson;
 
-public class PregameScene : e_SingletonMono<PregameScene>
+public class PregameScene : eSingletonMono<PregameScene>
 {
     public GameObject ui = null;
-    public e_Menu maplist = null;
+    public eMenu maplist = null;
     public int mapToLoad = -1;
     public Button startMatchButton = null;
 
@@ -15,7 +15,7 @@ public class PregameScene : e_SingletonMono<PregameScene>
     {
         ui = Instantiate(Resources.Load<GameObject>("prefabs/scenes/Pregame"));
         ui.transform.SetParent(this.gameObject.transform);
-        maplist = ui.transform.GetChild(1).GetComponent<e_Menu>();
+        maplist = ui.transform.GetChild(1).GetComponent<eMenu>();
         startMatchButton = ui.transform.GetChild(2).GetComponent<Button>();
         startMatchButton.onClick.AddListener(HandleStart);
         maplist.Show();

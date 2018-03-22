@@ -45,8 +45,9 @@ public class SelectionBox : MonoBehaviour
             newPos.z = zOffset;
             transform.position = newPos;
             UpdateGridPos();
+            CheckInfoBox();
         }
-        CheckInfoBox();
+        
     }
     public void Hide()
     {
@@ -66,8 +67,8 @@ public class SelectionBox : MonoBehaviour
     {
         if (MapManager.ins.unitGrid.ContainsKey(gridpos) && MapManager.ins.unitGrid[gridpos].team == (Team)GameScene.ins.currentTurn )
         {
-            GameScene.ins.gameUI.Show_Info(MapManager.ins.unitGrid[gridpos]);
+            GameScene.ins.gameUI.ShowInfo(MapManager.ins.unitGrid[gridpos]);
         }
-        else GameScene.ins.gameUI.Hide_Info();
+        else GameScene.ins.gameUI.HideInfo();
     }
 }

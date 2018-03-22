@@ -2,14 +2,14 @@
 using UnityEngine;
 using ericson;
 
-public class GameScene : e_SingletonMono<GameScene>
+public class GameScene : eSingletonMono<GameScene>
 {
     public GameObject unitPrefab;
     public SelectionBox selectionbox;
     public Unit _currentSelected = null;
     public GameState _gameState = GameState.awaitingInput;
     public GameUI gameUI = null;
-    public e_Menu actionMenu = null;
+    public eMenu actionMenu = null;
     public Vector2 tempGridPos;
     public bool running = true;
     private float zoffset = -0.2f;
@@ -45,7 +45,7 @@ public class GameScene : e_SingletonMono<GameScene>
         // load and setup prefabs
         selectionbox = Instantiate(Resources.Load<GameObject>("prefabs/Cursor").GetComponent<SelectionBox>());
         gameUI = Instantiate(Resources.Load<GameObject>("prefabs/GameUI").GetComponent<GameUI>());
-        actionMenu = Instantiate(Resources.Load<GameObject>("prefabs/RadialMenu")).GetComponent<e_Menu>();
+        actionMenu = Instantiate(Resources.Load<GameObject>("prefabs/RadialMenu")).GetComponent<eMenu>();
         unitPrefab = Resources.Load<GameObject>("prefabs/Unit");
 
         // set this object as each componenets parent
@@ -77,8 +77,8 @@ public class GameScene : e_SingletonMono<GameScene>
     private void LoadMap(int mapID)
     {
         MapManager.ins.SpawnMap(mapID);
-        SpawnUnit(UnitType.queen, Team.player1, MapManager.ins.currentMapData.start1.ToVector2());
-        SpawnUnit(UnitType.queen, Team.player2, MapManager.ins.currentMapData.start2.ToVector2());
+        SpawnUnit(UnitType.worker, Team.player1, MapManager.ins.currentMapData.start1.ToVector2());
+        SpawnUnit(UnitType.worker, Team.player2, MapManager.ins.currentMapData.start2.ToVector2());
     }
     #endregion
 
@@ -203,6 +203,7 @@ public class GameScene : e_SingletonMono<GameScene>
         MapManager.ins.unitGrid[splitPos].Sleep();
         currentSelected.Split(Database.unitData[(int)nextSplitType].cost);
         gameUI.UpdateArmyText();
+        gameUI.UpdateFoodText();
         ConfirmMove();        
     }
 
@@ -290,11 +291,11 @@ public class GameScene : e_SingletonMono<GameScene>
             });    
         }
         // add infantry button
-        if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.infantry].cost)
+        if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.soldier].cost)
         {
-            actionMenu.AddRadialInfantry().onClick.AddListener(() => 
+            actionMenu.AddRadialSolider().onClick.AddListener(() => 
             { 
-                nextSplitType = UnitType.infantry; 
+                nextSplitType = UnitType.soldier; 
                 StateAwaitSplit();
             });
         }
@@ -308,11 +309,11 @@ public class GameScene : e_SingletonMono<GameScene>
             });
         }
         // add sniper
-        if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.queen].cost)
+        if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.worker].cost)
         {
-            actionMenu.AddRadialOriginal().onClick.AddListener(() => 
+            actionMenu.AddRadialWorker().onClick.AddListener(() => 
             { 
-                nextSplitType = UnitType.queen;
+                nextSplitType = UnitType.worker;
                 StateAwaitSplit();
             });
         }
@@ -478,10 +479,10 @@ public class GameScene : e_SingletonMono<GameScene>
         actionMenu.Clear();
         actionMenu.AddRadialWait().onClick.AddListener(HandleWait);
         
-        if(_currentSelected.data.type == UnitType.queen)
+        if(_currentSelected.data.type == UnitType.worker)
         {
             if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialEat().onClick.AddListener(HandleEat);
-            if (_currentSelected.food > 0 && _currentSelected.inSplitRange.Count > 0) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
+            if (GetTeamFoodCount() > 0 && _currentSelected.inSplitRange.Count > 0) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
         }
         if(_currentSelected.enemiesInRange.Count > 0) actionMenu.AddRadialAttack().onClick.AddListener(HandleAttack);
         actionMenu.UpdateRadialMenu();

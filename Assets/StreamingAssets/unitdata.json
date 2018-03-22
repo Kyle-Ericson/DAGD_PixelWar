@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "name": "Queen",
+      "name": "Worker",
       "id": 0,
       "range": 0,
       "attack": 0,
@@ -23,7 +23,7 @@
       "cost": 1
     },
     {
-      "name": "Infantry",
+      "name": "Soldier",
       "id": 2,
       "range": 1,
       "attack": 2,

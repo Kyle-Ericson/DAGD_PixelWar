@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ericson;
 
-public class SceneManager : e_SingletonMono<SceneManager> {
+public class SceneManager : eSingletonMono<SceneManager> {
 
 
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ericson;
 
-public class PostgameScene : e_SingletonMono<PostgameScene>
+public class PostgameScene : eSingletonMono<PostgameScene>
 {
 
 
