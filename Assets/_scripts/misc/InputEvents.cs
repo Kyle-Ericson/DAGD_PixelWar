@@ -21,11 +21,11 @@ public class InputEvents : eSingletonMono<InputEvents> {
         if (GameScene.ins.gameState == GameState.paused) return;
         if(GameScene.ins.running)
         {
-            Check_Game_Inputs();
+            CheckInputs();
         }
-        Testing_Inputs();
+        TestingInputs();
     }
-    private void Check_Game_Inputs()
+    private void CheckInputs()
     {
         if (Input.GetMouseButtonDown(0) && OnMouseLClick != null) OnMouseLClick();
         if (Input.GetMouseButtonDown(1) && OnMouseRClick != null) OnMouseRClick();
@@ -35,27 +35,37 @@ public class InputEvents : eSingletonMono<InputEvents> {
             prevMousePos = Input.mousePosition;
         }
     }
-    private void Testing_Inputs()
+    private void TestingInputs()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            SceneManager.ins.ChangeScene(Scene.title);
+            if (MapManager.ins.unitGrid.ContainsKey(GameScene.ins.selectionbox.gridpos)) return;
+            GameScene.ins.SpawnUnit(UnitType.scout, (Team)GameScene.ins.currentTurn, GameScene.ins.selectionbox.gridpos);
         }
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-            SceneManager.ins.ChangeScene(Scene.options);
+            if (MapManager.ins.unitGrid.ContainsKey(GameScene.ins.selectionbox.gridpos)) return;
+            GameScene.ins.SpawnUnit(UnitType.soldier, (Team)GameScene.ins.currentTurn, GameScene.ins.selectionbox.gridpos);
         }
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            SceneManager.ins.ChangeScene(Scene.pregame);
+            if (MapManager.ins.unitGrid.ContainsKey(GameScene.ins.selectionbox.gridpos)) return;
+            GameScene.ins.SpawnUnit(UnitType.sniper, (Team)GameScene.ins.currentTurn, GameScene.ins.selectionbox.gridpos);
         }
         if (Input.GetKeyDown(KeyCode.Alpha4))
         {
-            SceneManager.ins.ChangeScene(Scene.postgame);
+            if (MapManager.ins.unitGrid.ContainsKey(GameScene.ins.selectionbox.gridpos)) return;
+            GameScene.ins.SpawnUnit(UnitType.tank, (Team)GameScene.ins.currentTurn, GameScene.ins.selectionbox.gridpos);
         }
         if (Input.GetKeyDown(KeyCode.Alpha5))
         {
-            SceneManager.ins.StartMatch(0, 2);
+            if (MapManager.ins.unitGrid.ContainsKey(GameScene.ins.selectionbox.gridpos)) return;
+            GameScene.ins.SpawnUnit(UnitType.worker, (Team)GameScene.ins.currentTurn, GameScene.ins.selectionbox.gridpos);
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            eCameraJuice2D camjuice = Camera.main.gameObject.GetComponent<eCameraJuice2D>();
+            if (camjuice) camjuice.AddJuice(0.2f);
         }
     }
     

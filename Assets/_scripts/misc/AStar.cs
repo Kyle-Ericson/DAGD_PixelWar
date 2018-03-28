@@ -41,7 +41,8 @@ using ericson;
                 {
                     if (!MapManager.ins.unitGrid[start].inMoveRange.Contains(MapManager.ins.WorldToGrid(t.transform.position)) 
                     || MapManager.ins.unitGrid[start].data.size > t.data.maxSize 
-                    || closedSet.Contains(t) || !MapManager.ins.currentMap.ContainsKey(t.gridpos)) continue;
+                    || closedSet.Contains(t) 
+                    || !MapManager.ins.currentMap.ContainsKey(t.gridpos)) continue;
                     
 
                     float newCost = currentTile.g + 1;

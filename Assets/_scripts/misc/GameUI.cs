@@ -19,6 +19,8 @@ public class GameUI : MonoBehaviour
     public TextMeshProUGUI turnBarText = null;
     public TextMeshProUGUI armyValueText = null;
     public TextMeshProUGUI foodCountText = null;
+    public GameObject tutorialPanel = null;
+    public TextMeshProUGUI tutorialText = null;
 
     public InfoBox infobox = null;
 
@@ -59,6 +61,14 @@ public class GameUI : MonoBehaviour
             transition1.OnLerpComplete -= CheckTransition;
             transition2.OnLerpComplete -= CheckTransition;
         }
+    }
+    public void ShowTutorial()
+    {
+        tutorialPanel.SetActive(true);
+    }
+    public void HideTutorial()
+    {
+        tutorialPanel.SetActive(false);
     }
     public void ShowEndButton()
     {

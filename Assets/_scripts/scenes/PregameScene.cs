@@ -29,7 +29,6 @@ public class PregameScene : eSingletonMono<PregameScene>
             maplist.AddBasicButton(mapdata.name).onClick.AddListener(() =>
             {
                 mapToLoad = mapdata.id;
-                Debug.Log(mapToLoad);
             });
         }
         maplist.UpdateMenu();

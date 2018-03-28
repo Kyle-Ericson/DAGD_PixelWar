@@ -30,7 +30,6 @@ public class Unit : eSprite
     private List<Tile> pathToFollow = new List<Tile>();
     public UnitGraphic unitGraphic = null;
     private Color healthBGColor;
-    
 
 
     public Vector2 gridpos 
@@ -198,8 +197,9 @@ public class Unit : eSprite
         inMoveRange = GetTilesInRange(data.speed);
         for(int i = inMoveRange.Count - 1; i >= 0; i--)
         {
+            if (i == inMoveRange.Count) continue;
             var path = AStar.ins.FindPath(gridpos, inMoveRange[i]);
-            if ((path != null && path.Count > data.speed) || path == null)
+            if (path == null || path.Count > data.speed)
             {
                 inMoveRange.Remove(inMoveRange[i]);
             }
@@ -211,7 +211,7 @@ public class Unit : eSprite
                     {
                         try
                         {
-                            inMoveRange.Remove(inMoveRange[i]);
+                            inMoveRange.Remove(t.gridpos);
                         }
                         catch
                         {
@@ -227,8 +227,6 @@ public class Unit : eSprite
     public void CheckVision()
     {
         visibleTiles.Clear();
-
-
         CheckMove();
 
         for (int d = 0; d < 8; d++)
@@ -432,6 +430,10 @@ public class Unit : eSprite
     private void SetTeam(Team _team)
     {
         team = _team;
+        if (team == Team.player1)
+        {
+            unitGraphic.FlipSprite();
+        }
         SetColor(PersistentSettings.teamColors[_team]);
     }
     private void ChangeState(UnitState newstate)

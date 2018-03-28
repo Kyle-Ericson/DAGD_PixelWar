@@ -5,6 +5,7 @@ using ericson;
 public class GameScene : eSingletonMono<GameScene>
 {
     public GameObject unitPrefab;
+    public Unit gettingAttacked = null;
     public SelectionBox selectionbox;
     public Unit _currentSelected = null;
     public GameState _gameState = GameState.awaitingInput;
@@ -19,6 +20,7 @@ public class GameScene : eSingletonMono<GameScene>
     private UnitType nextSplitType;
     private GameObject unitHolder;
     public List<Vector2> allVisibleTiles = new List<Vector2>();
+    private bool tutorialMode = false;
 
 
 
@@ -61,9 +63,10 @@ public class GameScene : eSingletonMono<GameScene>
         Database.Load();
 
     }
-    public void SetupMatch(int map, int players)
+    public void SetupMatch(int map, int players, bool tutorialFlag)
     {
         running = true;
+        tutorialMode = tutorialFlag;
         LoadMap(map);
         selectionbox.Show();
         selectionbox.Move(Vector2.zero);
@@ -71,6 +74,7 @@ public class GameScene : eSingletonMono<GameScene>
         numOfPlayers = players;
         gameUI.UpdateArmyText();
         gameUI.UpdateFoodText();
+        MatchStats.ResetAll();
 
     }
     //
@@ -79,6 +83,11 @@ public class GameScene : eSingletonMono<GameScene>
         MapManager.ins.SpawnMap(mapID);
         SpawnUnit(UnitType.worker, Team.player1, MapManager.ins.currentMapData.start1.ToVector2());
         SpawnUnit(UnitType.worker, Team.player2, MapManager.ins.currentMapData.start2.ToVector2());
+        if(tutorialMode)
+        {
+            gameUI.ShowTutorial();
+        }
+        else gameUI.HideTutorial();
     }
     #endregion
 
@@ -147,8 +156,12 @@ public class GameScene : eSingletonMono<GameScene>
                 break;
 
             case GameState.awaitingAttack:
-                if(currentSelected.inAttackRange.Contains(selectionbox.gridpos))
-                    ConfirmAttack(selectionbox.gridpos);
+                if (currentSelected.inAttackRange.Contains(selectionbox.gridpos)
+                    && MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos))
+                {
+                    BeginAttack();
+                    gettingAttacked = MapManager.ins.unitGrid[selectionbox.gridpos];
+                }
                 break;
                 
             case GameState.awaitingEat:
@@ -202,18 +215,30 @@ public class GameScene : eSingletonMono<GameScene>
         SpawnUnit(nextSplitType, currentSelected.team, splitPos);
         MapManager.ins.unitGrid[splitPos].Sleep();
         currentSelected.Split(Database.unitData[(int)nextSplitType].cost);
+
+        
+        MatchStats.UpdateSpent((Team)currentTurn, Database.unitData[(int)nextSplitType].cost);
+
         gameUI.UpdateArmyText();
         gameUI.UpdateFoodText();
         ConfirmMove();        
     }
-
-    // confirm the attack action
-    private void ConfirmAttack(Vector2 attackPos)
+    public void BeginAttack()
     {
-        var attacked = MapManager.ins.unitGrid[attackPos];
-        attacked.TakeDamage(currentSelected.data.attack);
-        if(attacked.state == UnitState.dead) KillUnit(attackPos);
-        ConfirmMove();
+        currentSelected.unitGraphic.Attack();
+    }
+    // confirm the attack action
+    public void ConfirmAttack()
+    {
+        
+        gettingAttacked.TakeDamage(currentSelected.data.attack);
+        if(gettingAttacked.state == UnitState.dead)
+        {
+            var saveTeam = gettingAttacked.team;
+            KillUnit(gettingAttacked.gridpos);
+            CheckForWin(saveTeam);
+        }
+        GameScene.ins.ConfirmMove();
     }
 
     // confirm the eat action
@@ -222,13 +247,15 @@ public class GameScene : eSingletonMono<GameScene>
         currentSelected.Eat();
         ConfirmMove();
         gameUI.UpdateFoodText();
+        MatchStats.UpdateGathered((Team)currentTurn, 1);
     }
 
     // confirm the temporary move
-    private void ConfirmMove()
+    public void ConfirmMove()
     {
         currentSelected.Sleep();
         _currentSelected = null;
+        gettingAttacked = null;
         DeselectAll();
         UpdateFog();
     }
@@ -479,7 +506,7 @@ public class GameScene : eSingletonMono<GameScene>
         actionMenu.Clear();
         actionMenu.AddRadialWait().onClick.AddListener(HandleWait);
         
-        if(_currentSelected.data.type == UnitType.worker)
+        if(_currentSelected.data.id == UnitType.worker)
         {
             if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialEat().onClick.AddListener(HandleEat);
             if (GetTeamFoodCount() > 0 && _currentSelected.inSplitRange.Count > 0) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
@@ -495,7 +522,7 @@ public class GameScene : eSingletonMono<GameScene>
     }
     
     //
-    private void SpawnUnit(UnitType type, Team team, Vector2 gridPos)
+    public void SpawnUnit(UnitType type, Team team, Vector2 gridPos)
     {
         Vector3 worldPos = MapManager.ins.GridToWorld(gridPos);
         worldPos.z = zoffset;
@@ -593,6 +620,7 @@ public class GameScene : eSingletonMono<GameScene>
         WakeUpAll();
         StateAwaitInput();
         UpdateFog();
+        MatchStats.UpdateArmyValue((Team)currentTurn, GetArmyValue());
     }
     public void NextTurn()
     {
@@ -622,6 +650,15 @@ public class GameScene : eSingletonMono<GameScene>
         }
         return value;
     }
+    public int GetArmyValue(Team team)
+    {
+        int value = 0;
+        foreach (Unit u in GetAllUnits())
+        {
+            if (u.team == team) value += u.data.cost;
+        }
+        return value;
+    }
     public List<Vector2> GetAllVisibleTiles()
     {
         return allVisibleTiles;
@@ -643,6 +680,18 @@ public class GameScene : eSingletonMono<GameScene>
             units.Add(k.Value);
         }
         return units;
+    }
+    private void CheckForWin(Team team)
+    {
+        // check to see if all units on a team are dead
+        if (GetArmyValue(team) == 0)
+        {
+            MatchStats.UpdateWinner((Team)currentTurn);
+            MatchStats.UpdateMapName();
+            MatchStats.UpdateTurnCount(turnCount);
+            SceneManager.ins.ChangeScene(Scene.postgame);
+        }
+
     }
 }
 

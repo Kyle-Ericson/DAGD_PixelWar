@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: 43aa81430aa7fd0499d111f1e717b5c8
-timeCreated: 1521697747
+guid: a92e757688f0a1d4f846daeda2fab516
+timeCreated: 1521765994
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: worker_idle1
-    21300002: worker_idle2
-    21300004: worker_walk1
-    21300006: worker_walk2
+    21300000: worker_0
+    21300002: worker_1
+    21300004: worker_2
+    21300006: worker_3
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -64,7 +64,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -74,7 +74,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -84,7 +84,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -94,7 +94,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -104,7 +104,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -114,11 +114,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: worker_idle1
+      name: worker_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 36
+        y: 64
         width: 16
         height: 16
       alignment: 0
@@ -128,11 +128,11 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: worker_idle2
+      name: worker_1
       rect:
         serializedVersion: 2
-        x: 17
-        y: 36
+        x: 19
+        y: 64
         width: 16
         height: 16
       alignment: 0
@@ -142,11 +142,11 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: worker_walk1
+      name: worker_2
       rect:
         serializedVersion: 2
         x: 0
-        y: 19
+        y: 45
         width: 16
         height: 16
       alignment: 0
@@ -156,11 +156,11 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: worker_walk2
+      name: worker_3
       rect:
         serializedVersion: 2
-        x: 17
-        y: 19
+        x: 19
+        y: 45
         width: 16
         height: 16
       alignment: 0

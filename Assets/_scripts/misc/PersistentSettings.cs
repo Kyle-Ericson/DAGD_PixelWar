@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PersistentSettings {
+public static class PersistentSettings {
 
     public static Dictionary<Team, Color> teamColors = new Dictionary<Team, Color>()
     {

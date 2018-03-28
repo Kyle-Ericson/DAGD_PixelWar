@@ -6,10 +6,17 @@ using ericson;
 public class PostgameScene : eSingletonMono<PostgameScene>
 {
 
+    private GameObject postUI;
 
     public override void Init()
     {
-        Instantiate(Resources.Load<GameObject>("prefabs/scenes/Postgame")).transform.SetParent(this.gameObject.transform);
+        postUI = Instantiate(Resources.Load<GameObject>("prefabs/scenes/Postgame"));
+        postUI.transform.SetParent(this.gameObject.transform);
+        
+    }
+    public void UpdateUI()
+    {
+        postUI.GetComponent<PostUI>().UpdateAll();
     }
 
 }

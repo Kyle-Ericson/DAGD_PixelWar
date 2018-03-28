@@ -1,17 +1,17 @@
 fileFormatVersion: 2
-guid: f9c7f57c05873c24180a6d5aac318686
-timeCreated: 1521699562
+guid: 3f0a13f60abc12046b9e86468b24dbc2
+timeCreated: 1521765981
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: tank_idle1
-    21300002: tank_idle2
-    21300004: tank_walk1
-    21300006: tank_walk2
-    21300008: tank_attack1
-    21300010: tank_attack2
-    21300012: tank_attack3
-    21300014: tank_attack4
+    21300000: tank_0
+    21300002: tank_1
+    21300004: tank_2
+    21300006: tank_3
+    21300008: tank_4
+    21300010: tank_5
+    21300012: tank_6
+    21300014: tank_7
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -68,7 +68,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -78,7 +78,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -88,7 +88,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -98,7 +98,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -108,7 +108,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -118,113 +118,113 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: tank_idle1
+      name: tank_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 36
+        y: 64
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: tank_idle2
+      name: tank_1
       rect:
         serializedVersion: 2
-        x: 17
-        y: 36
+        x: 19
+        y: 64
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: tank_walk1
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 19
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: tank_walk2
-      rect:
-        serializedVersion: 2
-        x: 17
-        y: 19
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-    - serializedVersion: 2
-      name: tank_attack1
+      name: tank_2
       rect:
         serializedVersion: 2
         x: 0
-        y: 2
+        y: 45
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: tank_attack2
+      name: tank_3
       rect:
         serializedVersion: 2
-        x: 17
-        y: 2
+        x: 19
+        y: 45
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: tank_attack3
+      name: tank_4
       rect:
         serializedVersion: 2
-        x: 34
-        y: 2
+        x: 0
+        y: 26
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: tank_attack4
+      name: tank_5
       rect:
         serializedVersion: 2
-        x: 51
-        y: 2
+        x: 19
+        y: 26
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tank_6
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 26
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tank_7
+      rect:
+        serializedVersion: 2
+        x: 57
+        y: 26
         width: 16
         height: 16
       alignment: 9
-      pivot: {x: 0.56, y: 0.5}
+      pivot: {x: 0.5714364, y: 0.49450493}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

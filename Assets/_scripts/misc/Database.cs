@@ -68,7 +68,7 @@ public class UnitJson { public List<UnitData> data = new List<UnitData>(); }
 public class UnitData
 {
     public string name;
-    public UnitType type;
+    public UnitType id;
     public int range;
     public int attack;
     public int speed;
