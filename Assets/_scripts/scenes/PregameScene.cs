@@ -26,6 +26,7 @@ public class PregameScene : eSingletonMono<PregameScene>
     {
         foreach(MapData mapdata in Database.mapData)
         {
+            if(mapdata.id == 0) continue;
             maplist.AddBasicButton(mapdata.name).onClick.AddListener(() =>
             {
                 mapToLoad = mapdata.id;

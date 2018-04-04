@@ -28,8 +28,8 @@ public class CameraDrag : MonoBehaviour {
 
         Vector3 newpos = Vector3.zero;
 
-        newpos.x = Input.GetAxis("Mouse X");
-        newpos.y = Input.GetAxis("Mouse Y");
+        newpos.x = Input.GetAxisRaw("Mouse X");
+        newpos.y = Input.GetAxisRaw("Mouse Y");
 
         transform.position -= newpos * PersistentSettings.dragSpeed * Time.deltaTime;
        

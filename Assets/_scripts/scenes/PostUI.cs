@@ -29,7 +29,7 @@ public class PostUI : MonoBehaviour {
 
     public void UpdateAll()
     {
-        winner.text = MatchStats.winner.ToString().ToUpper() + " Wins!";
+        winner.text = "Player " + ((int)MatchStats.winner).ToString().ToUpper() + " Wins!";
 
         p1Text.text = "Red";
         p2Text.text = "Blue";

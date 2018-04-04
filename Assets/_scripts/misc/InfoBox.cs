@@ -8,6 +8,7 @@ public class InfoBox : MonoBehaviour {
     public eLerp elerp = null;
     public TextMeshProUGUI text;
     public Image sprite = null;
+    public TextMeshProUGUI unitText;
 	
 	
 	
@@ -20,9 +21,9 @@ public class InfoBox : MonoBehaviour {
     {
         elerp.LerpForward();
         sprite.sprite = Sprites.ins.unitsSprites[unit.type];
+        unitText.text = unit.data.name;
         text.text =
-            unit.data.name + "\n\n"
-            + "Cost: " + unit.data.cost + "\n"
+            "\n\nCost: " + unit.data.cost + "\n"
             + "Attack: " + unit.data.attack + "\n"
             + "Range: " + unit.data.range + "\n"
             + "Speed: " + unit.data.speed + "\n"

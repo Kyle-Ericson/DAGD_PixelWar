@@ -33,6 +33,7 @@ namespace ericson
         
         public void Hide()
         {
+            CleanUp();
             gameObject.SetActive(false);
         }
         public void Show()
@@ -42,7 +43,7 @@ namespace ericson
 
         public virtual void CleanUp()
         {
-
+            
         }
     }
 }

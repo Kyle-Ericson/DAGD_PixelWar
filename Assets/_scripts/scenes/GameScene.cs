@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using ericson;
+using System.Net.Sockets;
 
 public class GameScene : eSingletonMono<GameScene>
 {
@@ -21,6 +22,7 @@ public class GameScene : eSingletonMono<GameScene>
     private GameObject unitHolder;
     public List<Vector2> allVisibleTiles = new List<Vector2>();
     private bool tutorialMode = false;
+    public TutorialPhase tutorialPhase = TutorialPhase.phase1;
 
 
 
@@ -74,6 +76,8 @@ public class GameScene : eSingletonMono<GameScene>
         numOfPlayers = players;
         gameUI.UpdateArmyText();
         gameUI.UpdateFoodText();
+        gameUI.ResetTransitions();
+        if(gameUI.menuOpen) gameUI.CloseMenu();
         MatchStats.ResetAll();
 
     }
@@ -86,6 +90,8 @@ public class GameScene : eSingletonMono<GameScene>
         if(tutorialMode)
         {
             gameUI.ShowTutorial();
+            tutorialPhase = TutorialPhase.phase1;
+            gameUI.UpdateTutorial();
         }
         else gameUI.HideTutorial();
     }
@@ -111,7 +117,7 @@ public class GameScene : eSingletonMono<GameScene>
     // handle a left mouse button click
     private void HandleMouseLClick()
     {
-
+        if(tutorialMode && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
         switch (_gameState)
         {
             case GameState.awaitingInput:
@@ -123,7 +129,7 @@ public class GameScene : eSingletonMono<GameScene>
                 }
                 else
                 {
-
+                    DeselectAllTiles();
                 }
                 break;
 
@@ -175,7 +181,7 @@ public class GameScene : eSingletonMono<GameScene>
     // handle when the right mouse button is clicked
     private void HandleMouseRClick()
     {
-
+        if(tutorialMode && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
         switch(_gameState)
         {
             case GameState.awaitingInput:
@@ -248,6 +254,7 @@ public class GameScene : eSingletonMono<GameScene>
         ConfirmMove();
         gameUI.UpdateFoodText();
         MatchStats.UpdateGathered((Team)currentTurn, 1);
+        if(tutorialMode && tutorialPhase == TutorialPhase.phase3) NextTutorialPhase();
     }
 
     // confirm the temporary move
@@ -299,48 +306,59 @@ public class GameScene : eSingletonMono<GameScene>
     {
         actionMenu.Clear();
         
-        // add worker button
-        if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.scout].cost)
+        if(_currentSelected.type == UnitType.worker)
         {
-            actionMenu.AddRadialScout().onClick.AddListener(() => 
-            { 
-                nextSplitType = UnitType.scout;
-                StateAwaitSplit();
-            });
+            // add worker button
+            if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.scout].cost)
+            {
+                actionMenu.AddRadialScout().onClick.AddListener(() => 
+                { 
+                    nextSplitType = UnitType.scout;
+                    StateAwaitSplit();
+                });
+            }
+            // add tank button
+            if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.tank].cost)
+            {
+                actionMenu.AddRadialTank().onClick.AddListener(() => 
+                { 
+                    nextSplitType = UnitType.tank; 
+                    StateAwaitSplit();
+                });    
+            }
+            // add infantry button
+            if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.soldier].cost)
+            {
+                actionMenu.AddRadialSoldier().onClick.AddListener(() => 
+                { 
+                    nextSplitType = UnitType.soldier; 
+                    StateAwaitSplit();
+                });
+            }
+            // add sniper
+            if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.sniper].cost)
+            {
+                actionMenu.AddRadialSniper().onClick.AddListener(() => 
+                { 
+                    nextSplitType = UnitType.sniper;
+                    StateAwaitSplit();
+                });
+            }
+            // add sniper
+            if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.worker].cost)
+            {
+                actionMenu.AddRadialWorker().onClick.AddListener(() => 
+                { 
+                    nextSplitType = UnitType.worker;
+                    StateAwaitSplit();
+                });
+            }
         }
-        // add tank button
-        if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.tank].cost)
+        else 
         {
-            actionMenu.AddRadialTank().onClick.AddListener(() => 
-            { 
-                nextSplitType = UnitType.tank; 
-                StateAwaitSplit();
-            });    
-        }
-        // add infantry button
-        if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.soldier].cost)
-        {
-            actionMenu.AddRadialSolider().onClick.AddListener(() => 
-            { 
-                nextSplitType = UnitType.soldier; 
-                StateAwaitSplit();
-            });
-        }
-        // add sniper
-        if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.sniper].cost)
-        {
-            actionMenu.AddRadialSniper().onClick.AddListener(() => 
-            { 
-                nextSplitType = UnitType.sniper;
-                StateAwaitSplit();
-            });
-        }
-        // add sniper
-        if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.worker].cost)
-        {
-            actionMenu.AddRadialWorker().onClick.AddListener(() => 
-            { 
-                nextSplitType = UnitType.worker;
+            actionMenu.AddRadialUnit(_currentSelected.type).onClick.AddListener(() => 
+            {
+                nextSplitType = _currentSelected.type;
                 StateAwaitSplit();
             });
         }
@@ -375,6 +393,11 @@ public class GameScene : eSingletonMono<GameScene>
         InputEvents.ins.OnMouseMoved -= selectionbox.Move;
         selectionbox.Hide();
         actionMenu.Show();
+        if(tutorialMode && (tutorialPhase == TutorialPhase.phase2 || tutorialPhase == TutorialPhase.phase5))
+        {
+            NextTutorialPhase();
+        }
+         
         _gameState = GameState.awaitingAction;
     }
     public void StateAwaitSplit()
@@ -472,6 +495,7 @@ public class GameScene : eSingletonMono<GameScene>
     {
         if(running)
         {
+            gameUI.CleanUp();
             MapManager.ins.CleanUp();
             RemoveListeners();
             selectionbox.Hide();
@@ -511,6 +535,8 @@ public class GameScene : eSingletonMono<GameScene>
             if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialEat().onClick.AddListener(HandleEat);
             if (GetTeamFoodCount() > 0 && _currentSelected.inSplitRange.Count > 0) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
         }
+        else if (GetTeamFoodCount() >= _currentSelected.data.cost) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
+
         if(_currentSelected.enemiesInRange.Count > 0) actionMenu.AddRadialAttack().onClick.AddListener(HandleAttack);
         actionMenu.UpdateRadialMenu();
     }
@@ -549,6 +575,10 @@ public class GameScene : eSingletonMono<GameScene>
             {
                 if (v != _currentSelected.gridpos) MapManager.ins.currentMap[v].Highlight();
             }
+        }
+        if(tutorialMode && (tutorialPhase == TutorialPhase.phase1 || tutorialPhase == TutorialPhase.phase5)) 
+        {
+            NextTutorialPhase();
         }
         StateUnitSelected();
     }
@@ -621,6 +651,12 @@ public class GameScene : eSingletonMono<GameScene>
         StateAwaitInput();
         UpdateFog();
         MatchStats.UpdateArmyValue((Team)currentTurn, GetArmyValue());
+        if(tutorialMode)
+        {
+            if((Team)currentTurn != Team.player1) gameUI.BeginTurnTransition();
+
+            if(tutorialPhase == TutorialPhase.phase4 || tutorialPhase == TutorialPhase.phase6) NextTutorialPhase();
+        }
     }
     public void NextTurn()
     {
@@ -681,7 +717,7 @@ public class GameScene : eSingletonMono<GameScene>
         }
         return units;
     }
-    private void CheckForWin(Team team)
+    public void CheckForWin(Team team)
     {
         // check to see if all units on a team are dead
         if (GetArmyValue(team) == 0)
@@ -689,9 +725,28 @@ public class GameScene : eSingletonMono<GameScene>
             MatchStats.UpdateWinner((Team)currentTurn);
             MatchStats.UpdateMapName();
             MatchStats.UpdateTurnCount(turnCount);
-            SceneManager.ins.ChangeScene(Scene.postgame);
+            gameUI.BeginEndGameTransition();
         }
 
+    }
+    public void Surrender()
+    {
+        // foreach(KeyValuePair<Vector2, Unit> key in MapManager.ins.unitGrid)
+        // {
+        //     if(key.Value.team == (Team)currentTurn) 
+        //     { 
+        //         KillUnit(key.Value.gridpos);
+        //     }
+        // }
+        NextTurn();
+        gameUI.BeginEndGameTransition();
+        MatchStats.UpdateWinner((Team)currentTurn);
+        MatchStats.UpdateMapName();
+    }
+    private void NextTutorialPhase()
+    {
+        tutorialPhase++;
+        gameUI.UpdateTutorial();
     }
 }
 

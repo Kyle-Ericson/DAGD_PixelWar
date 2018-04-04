@@ -30,7 +30,7 @@ public class Unit : eSprite
     private List<Tile> pathToFollow = new List<Tile>();
     public UnitGraphic unitGraphic = null;
     private Color healthBGColor;
-
+    private eParticleEmitter pm = null;
 
     public Vector2 gridpos 
     {
@@ -55,6 +55,7 @@ public class Unit : eSprite
         healthText = gameObject.transform.Find("Health").gameObject.GetComponent<TextMesh>();
         foodText = gameObject.transform.Find("Food").gameObject.GetComponent<TextMesh>();
         healthBGColor = healthText.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color;
+        pm = transform.GetChild(2).GetComponent<eParticleEmitter>();
     }
     public void Init(UnitType type, Team team)
     {
@@ -154,6 +155,7 @@ public class Unit : eSprite
         health -= damage;
         if(health <= 0) ChangeState(UnitState.dead);
         if(state != UnitState.dead) UpdateText();
+        else pm.EmitParticles();
     }
     private void SetType(UnitType type)
     {
@@ -197,8 +199,11 @@ public class Unit : eSprite
         inMoveRange = GetTilesInRange(data.speed);
         for(int i = inMoveRange.Count - 1; i >= 0; i--)
         {
-            if (i == inMoveRange.Count) continue;
-            var path = AStar.ins.FindPath(gridpos, inMoveRange[i]);
+            if (i == inMoveRange.Count || inMoveRange.Count == 0) continue;
+            var path = new List<Tile>();
+            try { path = AStar.ins.FindPath(gridpos, inMoveRange[i]); }
+            catch { }
+
             if (path == null || path.Count > data.speed)
             {
                 inMoveRange.Remove(inMoveRange[i]);
@@ -377,7 +382,6 @@ public class Unit : eSprite
     }
     public void CheckForFood()
     {
-        if(food == _data.maxFood) return;
         for (int i = -1; i <= 1; i++)
         {
             for (int j = -1; j <= 1; j++)

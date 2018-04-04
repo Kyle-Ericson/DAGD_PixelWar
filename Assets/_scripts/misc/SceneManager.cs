@@ -7,6 +7,9 @@ public class SceneManager : eSingletonMono<SceneManager> {
 
 
 
+    public bool isOptionsOpen = false;
+    private Connection socket;
+
     void Start ()
     {
         Init();
@@ -30,11 +33,22 @@ public class SceneManager : eSingletonMono<SceneManager> {
         PregameScene.ins.gameObject.transform.SetParent(this.gameObject.transform);
         PostgameScene.ins.gameObject.transform.SetParent(this.gameObject.transform);
         OptionsScene.ins.gameObject.transform.SetParent(this.gameObject.transform);
-    } 
+    }
 
-    private void LoadScenes()
+
+    public void Connect()
     {
-
+        socket = new Connection();
+        //socket.ConnectOnline(); // use this for connecting to AWS EC2
+        socket.ConnectLocal(); // use this for local teting
+    }
+    public void Send()
+    {
+        socket.Send();
+    }
+    public void Disconnect()
+    {
+        socket.Close();
     }
 
     public void ChangeScene(Scene newScene)
@@ -52,18 +66,15 @@ public class SceneManager : eSingletonMono<SceneManager> {
             case Scene.pregame:
                 PregameScene.ins.Show();
                 break;
-            case Scene.options:
-                OptionsScene.ins.Show();
-                break;
         }
     }
     public void HideAll()
     {
-        GameScene.ins.CleanUp();
         GameScene.ins.Hide();
         TitleScene.ins.Hide();
         PregameScene.ins.Hide();
         OptionsScene.ins.Hide();
+        isOptionsOpen = false;
         PostgameScene.ins.Hide();
     }
     public void StartMatch(int map, int players)
@@ -77,5 +88,10 @@ public class SceneManager : eSingletonMono<SceneManager> {
         HideAll();
         GameScene.ins.Show();
         GameScene.ins.SetupMatch(0, 2, true);
+    }
+    public void ToggleOptions()
+    {
+        isOptionsOpen = !isOptionsOpen;
+        OptionsScene.ins.gameObject.SetActive(isOptionsOpen);
     }
 }

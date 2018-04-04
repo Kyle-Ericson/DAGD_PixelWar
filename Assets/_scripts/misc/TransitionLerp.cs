@@ -9,6 +9,7 @@ namespace ericson
 
 
         public bool doLerp = false;
+        public bool doHalf = false;
         public float maxLerpTime = 1.0f;
         private float currentLerpTime = 0f;
         private Vector3 start;
@@ -33,7 +34,12 @@ namespace ericson
             {
                 currentLerpTime += Time.deltaTime;
                 var t = currentLerpTime / maxLerpTime;
-                if (t > 1)
+                if(doHalf && t > 0.5f)
+                {
+                    PauseLerp();
+                    return;
+                }
+                else if (t > 1)
                 {
                     Stop();
                     return;
@@ -46,10 +52,32 @@ namespace ericson
         {
             doLerp = true;
         }
+        public void BeginHalfLerp()
+        {
+            doLerp = true;
+            doHalf = true;
+        }
         public void Stop()
         {
             doLerp = false;
+            Reset();
+            currentLerpTime = 0;
+            if (OnLerpComplete != null)
+            {
+                OnLerpComplete();
+            }
+        }
+        public void Reset()
+        {
+            doLerp = false;
+            doHalf = false;
+            currentLerpTime = 0;
             transform.localPosition = start;
+        }
+        public void PauseLerp()
+        {
+            doLerp = false;
+            doHalf = false;
             currentLerpTime = 0;
             if (OnLerpComplete != null)
             {

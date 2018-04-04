@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class BackButton : MonoBehaviour {
 
     private Button button;
-
+    public bool isOptions = false;
 
 
     public void Start()
@@ -15,7 +15,9 @@ public class BackButton : MonoBehaviour {
     }
     private void HandleClick()
     {
-        SceneManager.ins.ChangeScene(Scene.title);
+
+        if(!isOptions) SceneManager.ins.ChangeScene(Scene.title);
+        else SceneManager.ins.ToggleOptions();
     }
 
 }

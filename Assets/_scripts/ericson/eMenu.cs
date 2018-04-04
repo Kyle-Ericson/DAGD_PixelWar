@@ -71,6 +71,9 @@ namespace ericson
                 eOrbit orbit = radialButtons[i].gameObject.GetComponent<eOrbit>();
                 orbit.activeRotation = false;
                 orbit.angle = i * newAngle;
+                var text = radialButtons[i].transform.GetChild(1);
+                text.transform.Rotate(0,0, ((i * newAngle) - 135) * -1);
+                
             }
         }
         public Button AddBasicButton(string label)
@@ -101,8 +104,22 @@ namespace ericson
             if (radialButtonFab == null) radialButtonFab = Resources.Load<GameObject>("prefabs/RadialButton");
             Button newButton = Instantiate(radialButtonFab).GetComponent<Button>();
             newButton.transform.position = gameObject.transform.position;
+            newButton.transform.GetChild(0).gameObject.SetActive(true);
+            newButton.transform.GetChild(1).gameObject.SetActive(false);
             newButton.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().sprite = sprite;
             newButton.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+            newButton.gameObject.transform.SetParent(gameObject.transform);
+            radialButtons.Add(newButton);
+            return newButton;
+        }
+        public Button AddRadialButton(string text)
+        {
+            if (radialButtonFab == null) radialButtonFab = Resources.Load<GameObject>("prefabs/RadialButton");
+            Button newButton = Instantiate(radialButtonFab).GetComponent<Button>();
+            newButton.transform.position = gameObject.transform.position;
+            newButton.transform.GetChild(0).gameObject.SetActive(false);
+            newButton.transform.GetChild(1).gameObject.SetActive(true);
+            newButton.transform.GetChild(1).gameObject.GetComponent<TextMeshProUGUI>().text = text;
             newButton.gameObject.transform.SetParent(gameObject.transform);
             radialButtons.Add(newButton);
             return newButton;
@@ -115,27 +132,32 @@ namespace ericson
         {
             gameObject.SetActive(true);
         }
+
+        
         public Button AddRadialWait()
         {
-            return AddRadialButton(Sprites.ins.iconSprites[Icon.wait]);
+            return AddRadialButton("Wait");
         }
         public Button AddRadialEat()
         {
-            return AddRadialButton(Sprites.ins.iconSprites[Icon.eat]);
+            return AddRadialButton("Eat");
         }
         public Button AddRadialSplit()
         {
-            return AddRadialButton(Sprites.ins.iconSprites[Icon.split]);
+            return AddRadialButton("Split");
         }
         public Button AddRadialAttack()
         {
-            return AddRadialButton(Sprites.ins.iconSprites[Icon.attack]);
+            return AddRadialButton("Attack");
         }
+
+
+
         public Button AddRadialTank()
         {
             return AddRadialButton(Sprites.ins.unitsSprites[UnitType.tank]);
         }
-        public Button AddRadialSolider()
+        public Button AddRadialSoldier()
         {
             return AddRadialButton(Sprites.ins.unitsSprites[UnitType.soldier]);
         }
@@ -150,6 +172,23 @@ namespace ericson
         public Button AddRadialWorker()
         {
             return AddRadialButton(Sprites.ins.unitsSprites[UnitType.worker]);
+        }
+        public Button AddRadialUnit(UnitType type)
+        {
+            switch(type)
+            {
+                case UnitType.worker:
+                    return AddRadialWorker();
+                case UnitType.soldier:
+                    return AddRadialSoldier();                    
+                case UnitType.scout:
+                    return AddRadialScout();
+                case UnitType.tank:
+                    return AddRadialTank();
+                case UnitType.sniper:
+                    return AddRadialSniper();
+            }
+            return null;
         }
 
 

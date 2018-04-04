@@ -67,6 +67,18 @@ public class InputEvents : eSingletonMono<InputEvents> {
             eCameraJuice2D camjuice = Camera.main.gameObject.GetComponent<eCameraJuice2D>();
             if (camjuice) camjuice.AddJuice(0.2f);
         }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            SceneManager.ins.Connect();
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            SceneManager.ins.Send();
+        }
+         if (Input.GetKeyDown(KeyCode.D))
+         {
+             SceneManager.ins.Disconnect();
+         }
     }
     
 }

@@ -1,0 +1,18 @@
+{
+  "data": [
+    
+    "Let's start by selecting our WORKER unit. Simply LEFT CLICK on units to select them.",
+
+    "You may have noticed that you can hover over units to see their stats on the left side of the screen.  Workers are the only units that can gather food, so they are essential for a strong economy. Now lets move that worker next to that food source. Click on one of the blinking circles to move a unit. If you don't like your choice, you can always RIGHT CLICK to reset the current unit.",
+
+    "These new buttons are the Action Menu. This menu changes depending on the tiles you are next to or how many resources you have to use. Let's gather some food by selecting EAT, then LEFT CLICK on the blinking green circle.",
+
+    "Check the top of the screen. Here you can see the current turn, your avaible resources and your army value. Use this to keep track of your resources so you can spend them effectively. Since our units can only move once and perform one action per turn, that is all we can do for now. Hit the End Turn button in the top right.",
+    
+    "Now lets start building our army! Worker units can split into a copy of themselves or an entirely new unit as long as there is enough food available. Other units can only split into a copy of themselves. Select the worker unit like before, then click it again to remain in that same grid position.",
+
+    "Now select SPLIT, and create a scout. Hover over the scout to view it's stats. Here you can see the food cost, speed (movement and vision range), attack power, health and attack range. You can also right click on a unit to view their attack range from that location. End your turn to continue.",
+
+    "Go ahead and use the scout to finish off the enemy! Move the scout into range and attack! Play around some more with other unts in this tutorial to see how they work. GLHF!"
+  ]
+}

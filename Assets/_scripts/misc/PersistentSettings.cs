@@ -6,8 +6,8 @@ public static class PersistentSettings {
 
     public static Dictionary<Team, Color> teamColors = new Dictionary<Team, Color>()
     {
-        { Team.player1, Color.red * 0.9f },
-        { Team.player2, Color.blue * 0.9f }
+        { Team.player1, Color.red },
+        { Team.player2, Color.blue }
     };
 
     private static float _volume = 0.5f;

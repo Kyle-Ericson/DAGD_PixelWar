@@ -18,6 +18,8 @@ public class Sprites {
             return _ins;
         }
     }
+
+
     public bool loaded = false;
 
     public Dictionary<TileType, Sprite> tileSprites = new Dictionary<TileType, Sprite>();
@@ -25,33 +27,48 @@ public class Sprites {
     public Dictionary<UnitType, Sprite> unitsSprites = new Dictionary<UnitType, Sprite>();
     public Dictionary<Icon, Sprite> iconSprites = new Dictionary<Icon, Sprite>();
 
+    private string tileSpriteOpenPath = "sprites/tiles/open";
+    private string tileSpriteFoodPath = "sprites/tiles/food";
+    private string tileSpriteBlockingPath = "sprites/tiles/blocking";
+    private string prefabScoutPath = "prefabs/unitgraphics/scout";
+    private string prefabSoldierPath = "prefabs/unitgraphics/soldier";
+    private string prefabTankPath = "prefabs/unitgraphics/tank";
+    private string prefabWorkerPath = "prefabs/unitgraphics/worker";
+    private string prefabSniperPath = "prefabs/unitgraphics/sniper";
+    
+    private string spriteSoldierPath = "sprites/units/soldier";
+    private string spriteWorkerPath = "sprites/units/worker";
+    private string spriteTankPath = "sprites/units/tank";
+    private string spriteSniperPath = "sprites/units/sniper";
+    private string spriteScoutPath = "sprites/units/scout";
+    
+
+
     public void LoadSprites()
     {
         LoadTileSprites();
-        LoadActionSprites();
         LoadUnitSprites();
         loaded = true;
     }
     public void LoadTileSprites()
     {
-        tileSprites.Add(TileType.open, (Resources.Load<Sprite>("sprites/tiles/open")));
-        tileSprites.Add(TileType.food, (Resources.Load<Sprite>("sprites/tiles/food"))); 
-        tileSprites.Add(TileType.blocking, (Resources.Load<Sprite>("sprites/tiles/blocking")));
+        tileSprites.Add(TileType.open, (Resources.Load<Sprite>(tileSpriteOpenPath)));
+        tileSprites.Add(TileType.food, (Resources.Load<Sprite>(tileSpriteFoodPath))); 
+        tileSprites.Add(TileType.blocking, (Resources.Load<Sprite>(tileSpriteBlockingPath)));
     }
     public void LoadUnitSprites()
     {
-        unitPrefabs.Add(UnitType.scout,(Resources.Load<GameObject>("prefabs/unitgraphics/scout")));
-        unitPrefabs.Add(UnitType.worker,(Resources.Load<GameObject>("prefabs/unitgraphics/worker")));
-        unitPrefabs.Add(UnitType.tank,(Resources.Load<GameObject>("prefabs/unitgraphics/tank")));
-        unitPrefabs.Add(UnitType.sniper,(Resources.Load<GameObject>("prefabs/unitgraphics/sniper")));
-        unitPrefabs.Add(UnitType.soldier,(Resources.Load<GameObject>("prefabs/unitgraphics/soldier")));
+        unitPrefabs.Add(UnitType.scout,(Resources.Load<GameObject>(prefabScoutPath)));
+        unitPrefabs.Add(UnitType.worker,(Resources.Load<GameObject>(prefabWorkerPath)));
+        unitPrefabs.Add(UnitType.tank,(Resources.Load<GameObject>(prefabTankPath)));
+        unitPrefabs.Add(UnitType.sniper,(Resources.Load<GameObject>(prefabSniperPath)));
+        unitPrefabs.Add(UnitType.soldier,(Resources.Load<GameObject>(prefabSoldierPath)));
 
-        Sprite[] soldier = Resources.LoadAll<Sprite>("sprites/units/soldier");
-        Sprite[] worker = Resources.LoadAll<Sprite>("sprites/units/worker");
-        Sprite[] tank = Resources.LoadAll<Sprite>("sprites/units/tank");
-        Sprite[] sniper = Resources.LoadAll<Sprite>("sprites/units/sniper");
-        Sprite[] scout = Resources.LoadAll<Sprite>("sprites/units/scout");
-
+        Sprite[] soldier = Resources.LoadAll<Sprite>(spriteSoldierPath);
+        Sprite[] worker = Resources.LoadAll<Sprite>(spriteWorkerPath);
+        Sprite[] tank = Resources.LoadAll<Sprite>(spriteTankPath);
+        Sprite[] sniper = Resources.LoadAll<Sprite>(spriteSniperPath);
+        Sprite[] scout = Resources.LoadAll<Sprite>(spriteScoutPath);
 
         unitsSprites.Add(UnitType.scout, scout[0]);
         unitsSprites.Add(UnitType.worker, worker[0]);
@@ -60,14 +77,6 @@ public class Sprites {
         unitsSprites.Add(UnitType.soldier, soldier[0]);
 
 
-    }
-    public void LoadActionSprites()
-    {
-        iconSprites.Add(Icon.split, (Resources.Load<Sprite>("sprites/actions/split")));
-        iconSprites.Add(Icon.wait, (Resources.Load<Sprite>("sprites/actions/wait")));
-        iconSprites.Add(Icon.attack, (Resources.Load<Sprite>("sprites/actions/attack")));
-        iconSprites.Add(Icon.eat, (Resources.Load<Sprite>("sprites/actions/eat")));
-        
     }
 }
 

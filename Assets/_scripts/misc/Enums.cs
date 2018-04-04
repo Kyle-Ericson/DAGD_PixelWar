@@ -66,3 +66,13 @@ public enum Icon
     attack,
     split
 }
+public enum TutorialPhase
+{
+    phase1,
+    phase2,
+    phase3,
+    phase4,
+    phase5,
+    phase6,
+    phase7
+}

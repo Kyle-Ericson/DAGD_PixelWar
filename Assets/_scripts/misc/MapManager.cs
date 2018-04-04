@@ -27,6 +27,7 @@ public class MapManager : eSingletonMono<MapManager>
     public void SpawnMap(int mapID)
     {
         currentMapData = Database.mapData[mapID];
+        currentMap.Clear();
         // if there is no grid, return
         if (currentMapData.grid.Count == 0) { return; }
 

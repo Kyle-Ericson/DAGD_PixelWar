@@ -17,7 +17,7 @@ public class eLerp : MonoBehaviour {
 
     private void Start()
     {
-        transform.localPosition = pos1;
+        pos1 = transform.localPosition;
     }
     void Update()
     {
