@@ -118,6 +118,9 @@ public class GameScene : eSingletonMono<GameScene>
     private void HandleMouseLClick()
     {
         if(tutorialMode && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
+
+        if(Application.platform == RuntimePlatform.Android) selectionbox.Move();
+
         switch (_gameState)
         {
             case GameState.awaitingInput:

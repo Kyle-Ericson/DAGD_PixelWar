@@ -37,7 +37,7 @@ public class TitleScene : eSingletonMono<TitleScene>
     }
     public void HandleOnline()
     {
-        SceneManager.ins.Connect();
+        SocketManager.ins.ConnectLocal();
     }
     public void HandleOffline()
     {

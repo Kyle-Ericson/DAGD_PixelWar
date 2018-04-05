@@ -69,15 +69,19 @@ public class InputEvents : eSingletonMono<InputEvents> {
         }
         if (Input.GetKeyDown(KeyCode.O))
         {
-            SceneManager.ins.Connect();
+            SocketManager.ins.ConnectOnline();
+        }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            SocketManager.ins.ConnectLocal();
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
-            SceneManager.ins.Send();
+            SocketManager.ins.Send(PacketFactory.buildJoinRequest());
         }
          if (Input.GetKeyDown(KeyCode.D))
          {
-             SceneManager.ins.Disconnect();
+             SocketManager.ins.Disconnect();
          }
     }
     

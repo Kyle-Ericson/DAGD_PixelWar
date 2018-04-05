@@ -8,7 +8,6 @@ public class SceneManager : eSingletonMono<SceneManager> {
 
 
     public bool isOptionsOpen = false;
-    private Connection socket;
 
     void Start ()
     {
@@ -35,21 +34,6 @@ public class SceneManager : eSingletonMono<SceneManager> {
         OptionsScene.ins.gameObject.transform.SetParent(this.gameObject.transform);
     }
 
-
-    public void Connect()
-    {
-        socket = new Connection();
-        //socket.ConnectOnline(); // use this for connecting to AWS EC2
-        socket.ConnectLocal(); // use this for local teting
-    }
-    public void Send()
-    {
-        socket.Send();
-    }
-    public void Disconnect()
-    {
-        socket.Close();
-    }
 
     public void ChangeScene(Scene newScene)
     {
