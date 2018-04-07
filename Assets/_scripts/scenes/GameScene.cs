@@ -291,15 +291,17 @@ public class GameScene : eSingletonMono<GameScene>
         }
         StateAwaitAttack();
     }
-
+    public void HandleUndo()
+    {
+        Undo();
+    }
     // handle eat button
     public void HandleEat()
     {
         foreach(Vector2 v in _currentSelected.foodInRange)
         {
             Tile tile = MapManager.ins.currentMap[v];
-            tile.Highlight();
-            tile.SetIconColor(Color.green);
+            tile.Highlight("Gather");
         }
         StateAwaitEat();
     }
@@ -314,7 +316,7 @@ public class GameScene : eSingletonMono<GameScene>
             // add worker button
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.scout].cost)
             {
-                actionMenu.AddRadialScout().onClick.AddListener(() => 
+                actionMenu.AddRadialUnit(UnitType.scout).onClick.AddListener(() => 
                 { 
                     nextSplitType = UnitType.scout;
                     StateAwaitSplit();
@@ -323,7 +325,7 @@ public class GameScene : eSingletonMono<GameScene>
             // add tank button
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.tank].cost)
             {
-                actionMenu.AddRadialTank().onClick.AddListener(() => 
+                actionMenu.AddRadialUnit(UnitType.tank).onClick.AddListener(() => 
                 { 
                     nextSplitType = UnitType.tank; 
                     StateAwaitSplit();
@@ -332,7 +334,7 @@ public class GameScene : eSingletonMono<GameScene>
             // add infantry button
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.soldier].cost)
             {
-                actionMenu.AddRadialSoldier().onClick.AddListener(() => 
+                actionMenu.AddRadialUnit(UnitType.soldier).onClick.AddListener(() => 
                 { 
                     nextSplitType = UnitType.soldier; 
                     StateAwaitSplit();
@@ -341,7 +343,7 @@ public class GameScene : eSingletonMono<GameScene>
             // add sniper
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.sniper].cost)
             {
-                actionMenu.AddRadialSniper().onClick.AddListener(() => 
+                actionMenu.AddRadialUnit(UnitType.sniper).onClick.AddListener(() => 
                 { 
                     nextSplitType = UnitType.sniper;
                     StateAwaitSplit();
@@ -350,7 +352,7 @@ public class GameScene : eSingletonMono<GameScene>
             // add sniper
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.worker].cost)
             {
-                actionMenu.AddRadialWorker().onClick.AddListener(() => 
+                actionMenu.AddRadialUnit(UnitType.worker).onClick.AddListener(() => 
                 { 
                     nextSplitType = UnitType.worker;
                     StateAwaitSplit();
@@ -410,8 +412,8 @@ public class GameScene : eSingletonMono<GameScene>
         foreach (Vector2 v in currentSelected.inSplitRange)
         {
             Tile tile = MapManager.ins.currentMap[v];
-            tile.Highlight();
-            tile.SetIconColor(Color.yellow);
+            if(_currentSelected.type == UnitType.worker) tile.Highlight("Build");
+            else tile.Highlight("Paste");
         }
         selectionbox.Show();
         actionMenu.Hide();
@@ -531,16 +533,18 @@ public class GameScene : eSingletonMono<GameScene>
     {
         actionMenu.transform.position = selectionbox.transform.position;
         actionMenu.Clear();
-        actionMenu.AddRadialWait().onClick.AddListener(HandleWait);
+        
         
         if(_currentSelected.data.id == UnitType.worker)
         {
-            if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialEat().onClick.AddListener(HandleEat);
-            if (GetTeamFoodCount() > 0 && _currentSelected.inSplitRange.Count > 0) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
+            if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialButton("Gather").onClick.AddListener(HandleEat);
+            if (GetTeamFoodCount() > 0 && _currentSelected.inSplitRange.Count > 0) actionMenu.AddRadialButton("Build").onClick.AddListener(HandleSplit);
         }
-        else if (GetTeamFoodCount() >= _currentSelected.data.cost) actionMenu.AddRadialSplit().onClick.AddListener(HandleSplit);
+        else if (GetTeamFoodCount() >= _currentSelected.data.cost) actionMenu.AddRadialButton("Copy").onClick.AddListener(HandleSplit);
 
-        if(_currentSelected.enemiesInRange.Count > 0) actionMenu.AddRadialAttack().onClick.AddListener(HandleAttack);
+        if(_currentSelected.enemiesInRange.Count > 0) actionMenu.AddRadialButton("Attack").onClick.AddListener(HandleAttack);
+        actionMenu.AddRadialButton("Wait").onClick.AddListener(HandleWait);
+        actionMenu.AddRadialButton("Undo").onClick.AddListener(HandleUndo);
         actionMenu.UpdateRadialMenu();
     }
 
@@ -594,12 +598,28 @@ public class GameScene : eSingletonMono<GameScene>
     // when the mouse moves show the path that will be followed
     private void ShowPath()
     {
-  
-        foreach (Vector2 v in currentSelected.inMoveRange) MapManager.ins.currentMap[v].SetIconColor(Color.white);
+        foreach (Vector2 v in currentSelected.inMoveRange) 
+        {
+            MapManager.ins.currentMap[v].SetIconColor(Color.white);
+            MapManager.ins.currentMap[v].Highlight();
+
+        }
         if (_currentSelected.inMoveRange.Contains(selectionbox.gridpos))
         {
             var path = AStar.ins.FindPath(_currentSelected.gridpos, selectionbox.gridpos);
-            foreach (Tile t in path) t.SetIconColor(Color.red);
+            foreach (Tile t in path) 
+            {
+                if(selectionbox.gridpos == t.gridpos) 
+                {
+                    t.Highlight("Move");
+                }
+                else
+                {
+                    t.SetIconColor(Color.red); 
+                    t.Highlight();
+                }
+                
+            }
         }
     }
 

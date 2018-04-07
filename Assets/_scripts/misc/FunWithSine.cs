@@ -12,9 +12,15 @@ public class FunWithSine : MonoBehaviour {
     public Vector3 newScale;
     public bool doScale = false;
     public bool doAlpha = false;
+    public bool startRandom = false;
 	
+    void Start()
+    {
+        if(startRandom) theta = Random.Range(0f, 360f);
+    }
 	void Update ()
     {
+        
         theta += Time.deltaTime * speed;
         if (doScale) DoScale(theta);
         if (doAlpha) DoAlpha(theta);
@@ -28,7 +34,7 @@ public class FunWithSine : MonoBehaviour {
     {
         SpriteRenderer sr = gameObject.GetComponent<SpriteRenderer>();
         Color newColor = sr.color;
-        newColor.a = (Mathf.Sin(theta) * 0.25f) + 0.75f;
+        newColor.a = (Mathf.Sin(theta) * amplitude) + baseLine;
         sr.color = newColor;
     }
 }

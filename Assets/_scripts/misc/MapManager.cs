@@ -15,6 +15,8 @@ public class MapManager : eSingletonMono<MapManager>
     public float _tileScale = 1;
     // tile game obj
     private GameObject tilePrefab;
+    private GameObject water;
+    private GameObject waterHolder;
 
 
 
@@ -23,6 +25,8 @@ public class MapManager : eSingletonMono<MapManager>
     void Awake()
     {
         tilePrefab = Resources.Load<GameObject>("prefabs/Tile");
+        water = Resources.Load<GameObject>("prefabs/water");
+        waterHolder = new GameObject("Water");
     }
     public void SpawnMap(int mapID)
     {
@@ -37,11 +41,17 @@ public class MapManager : eSingletonMono<MapManager>
             // for each column in the grid...
             for (var x = 0; x < currentMapData.cols; x++)
             {
-                int oneDGrid = currentMapData.grid[OneDGridPos(x,y)];
+                int tileType = currentMapData.grid[OneDGridPos(x,y)];
 
                 // skip this interation if the grid number is 0
-                if (oneDGrid == 0) continue;
-
+                if (tileType == 0) 
+                {
+                    Vector2 wp = GridToWorld(new Vector2(x, y));
+                    GameObject t = Instantiate(water, new Vector3(wp.x, wp.y, 0), Quaternion.identity);
+                    t.transform.position = new Vector3(wp.x, wp.y, 0);
+                    t.transform.SetParent(waterHolder.transform);
+                    continue;
+                }
 
                 // world space postition based on grid position
                 Vector2 worldPos = GridToWorld(new Vector2(x, y));
@@ -52,7 +62,21 @@ public class MapManager : eSingletonMono<MapManager>
                 tile.name = "(" + x + ", " + y + ")";
 
                 // set the type of tile based on the level data retrieved
-                tile.SetType((TileType)oneDGrid);
+                
+                switch(tileType)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        tile.SetType(TileType.grassMid);
+                        break;
+                    case 2:
+                        tile.SetType(TileType.wall);
+                        break;
+                    case 3:
+                        tile.SetType(TileType.food);
+                        break;
+                }
                 if (!PersistentSettings.useGrid) tile.HideGrid();
                 //tile.GetComponent<SpriteRenderer>().sortingOrder = y;
 
@@ -136,6 +160,10 @@ public class MapManager : eSingletonMono<MapManager>
         List<Vector2> temp_list = new List<Vector2>();
         foreach (KeyValuePair<Vector2, Tile> item in currentMap) { temp_list.Add(item.Key); }
         foreach (Vector2 v in temp_list) RemoveTile(v);
+        for(int i = waterHolder.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(waterHolder.transform.GetChild(i).gameObject);
+        }
         currentMap.Clear();
     }
     public override void CleanUp()

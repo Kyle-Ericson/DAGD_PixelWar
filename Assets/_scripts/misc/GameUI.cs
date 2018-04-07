@@ -49,7 +49,7 @@ public class GameUI : MonoBehaviour
         transition2Image.color = PersistentSettings.teamColors[(Team)GameScene.ins.currentTurn];
         turnBarImage.color = PersistentSettings.teamColors[(Team)GameScene.ins.currentTurn];
 
-        foodCountText.text = "Food:";
+        foodCountText.text = "Money:";
         armyValueText.text = "Army Value:";
         transition1.maxLerpTime = 2f;
         transition2.maxLerpTime = 2f;
@@ -156,7 +156,7 @@ public class GameUI : MonoBehaviour
     }
     public void UpdateFoodText()
     {
-        foodCountText.text = "Food: " + GameScene.ins.GetTeamFoodCount();
+        foodCountText.text = "Money: " + GameScene.ins.GetTeamFoodCount();
     }
     public void ShowInfo(Unit unit)
     {

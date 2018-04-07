@@ -92,10 +92,12 @@ namespace ericson
             if (radialButtonFab == null) radialButtonFab = Resources.Load<GameObject>("prefabs/RadialButton");
             Button newButton = Instantiate(radialButtonFab).GetComponent<Button>();
             newButton.transform.position = gameObject.transform.position;
-            var spriteObject = Instantiate(Sprites.ins.unitPrefabs[type]);
-            spriteObject.transform.SetParent(newButton.transform);
-            spriteObject.transform.localPosition = new Vector3(0, 0, 0);
+            newButton.transform.GetChild(0).gameObject.SetActive(true);
+            newButton.transform.GetChild(1).gameObject.SetActive(false);
+            newButton.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().sprite = Sprites.ins.unitsSprites[type];
+            newButton.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().color = Color.white;
             newButton.gameObject.transform.SetParent(gameObject.transform);
+            if(type == UnitType.tank) newButton.transform.GetChild(0).transform.localScale = new Vector3(0.75f, 0.75f, 1);
             radialButtons.Add(newButton);
             return newButton;
         }
@@ -132,63 +134,9 @@ namespace ericson
         {
             gameObject.SetActive(true);
         }
-
-        
-        public Button AddRadialWait()
-        {
-            return AddRadialButton("Wait");
-        }
-        public Button AddRadialEat()
-        {
-            return AddRadialButton("Eat");
-        }
-        public Button AddRadialSplit()
-        {
-            return AddRadialButton("Split");
-        }
-        public Button AddRadialAttack()
-        {
-            return AddRadialButton("Attack");
-        }
-
-
-
-        public Button AddRadialTank()
-        {
-            return AddRadialButton(Sprites.ins.unitsSprites[UnitType.tank]);
-        }
-        public Button AddRadialSoldier()
-        {
-            return AddRadialButton(Sprites.ins.unitsSprites[UnitType.soldier]);
-        }
-        public Button AddRadialScout()
-        {
-            return AddRadialButton(Sprites.ins.unitsSprites[UnitType.scout]);
-        }
-        public Button AddRadialSniper()
-        {
-            return AddRadialButton(Sprites.ins.unitsSprites[UnitType.sniper]);
-        }
-        public Button AddRadialWorker()
-        {
-            return AddRadialButton(Sprites.ins.unitsSprites[UnitType.worker]);
-        }
         public Button AddRadialUnit(UnitType type)
         {
-            switch(type)
-            {
-                case UnitType.worker:
-                    return AddRadialWorker();
-                case UnitType.soldier:
-                    return AddRadialSoldier();                    
-                case UnitType.scout:
-                    return AddRadialScout();
-                case UnitType.tank:
-                    return AddRadialTank();
-                case UnitType.sniper:
-                    return AddRadialSniper();
-            }
-            return null;
+            return AddRadialButton(type);
         }
 
 

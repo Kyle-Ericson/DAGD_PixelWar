@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using ericson;
 
 public class Unit : eSprite 
@@ -16,9 +17,9 @@ public class Unit : eSprite
     public List<Vector2> inAttackRange = new List<Vector2>();
     public List<Vector2> enemiesInRange = new List<Vector2>();
     public List<Vector2> inSplitRange = new List<Vector2>();
-    public TextMesh healthText;
+    public TextMeshPro healthText;
     public TextMesh foodText;
-    private float zoffset = -0.5f;
+    public float zoffset = -1f;
     public Team team = 0;
     public UnitType type;
     private int health = 0;
@@ -30,6 +31,7 @@ public class Unit : eSprite
     private List<Tile> pathToFollow = new List<Tile>();
     public UnitGraphic unitGraphic = null;
     private Color healthBGColor;
+    public SpriteRenderer healthBG  = null;
     private eParticleEmitter pm = null;
 
     public Vector2 gridpos 
@@ -52,9 +54,8 @@ public class Unit : eSprite
 
     public void Awake()
     {
-        healthText = gameObject.transform.Find("Health").gameObject.GetComponent<TextMesh>();
         foodText = gameObject.transform.Find("Food").gameObject.GetComponent<TextMesh>();
-        healthBGColor = healthText.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().color;
+        healthBGColor = healthBG.color;
         pm = transform.GetChild(2).GetComponent<eParticleEmitter>();
     }
     public void Init(UnitType type, Team team)
@@ -107,7 +108,6 @@ public class Unit : eSprite
         newColor1.a = 1;
         healthText.color = newColor1;
 
-        var healthBG = healthText.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         var newColor2 = healthBG.color * 0.25f;
         newColor2.a = 1;
         healthBG.color = newColor2;
@@ -118,7 +118,6 @@ public class Unit : eSprite
     }
     public void Idle()
     {
-        var healthBG = healthText.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         healthBG.color = healthBGColor;
         healthText.color = Color.white;
         unitGraphic.WakeUp();
@@ -434,7 +433,7 @@ public class Unit : eSprite
     private void SetTeam(Team _team)
     {
         team = _team;
-        if (team == Team.player1)
+        if (team == Team.player2)
         {
             unitGraphic.FlipSprite();
         }

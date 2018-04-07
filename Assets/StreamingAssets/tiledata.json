@@ -9,14 +9,14 @@
     },
     {
       "type": 1,
-      "name": "Open",
+      "name": "Field",
       "defense": 0,
       "moveCost": 0,
       "maxSize": 10
     },
     {
       "type": 2,
-      "name": "Blocking",
+      "name": "Wall",
       "defense": 1,
       "moveCost": 1,
       "maxSize": -1
@@ -27,6 +27,20 @@
       "defense": 0,
       "moveCost": 0,
       "maxSize": -1
+    },
+    {
+      "type": 1,
+      "name": "Field",
+      "defense": 0,
+      "moveCost": 0,
+      "maxSize": 10
+    },
+    {
+      "type": 1,
+      "name": "Field",
+      "defense": 0,
+      "moveCost": 0,
+      "maxSize": 10
     }
   ]
     

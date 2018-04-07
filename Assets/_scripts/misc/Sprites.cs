@@ -27,20 +27,19 @@ public class Sprites {
     public Dictionary<UnitType, Sprite> unitsSprites = new Dictionary<UnitType, Sprite>();
     public Dictionary<Icon, Sprite> iconSprites = new Dictionary<Icon, Sprite>();
 
-    private string tileSpriteOpenPath = "sprites/tiles/open";
+    private string tileSpritesPath = "sprites/tiles/Tile_Sprites";
     private string tileSpriteFoodPath = "sprites/tiles/food";
-    private string tileSpriteBlockingPath = "sprites/tiles/blocking";
     private string prefabScoutPath = "prefabs/unitgraphics/scout";
     private string prefabSoldierPath = "prefabs/unitgraphics/soldier";
     private string prefabTankPath = "prefabs/unitgraphics/tank";
     private string prefabWorkerPath = "prefabs/unitgraphics/worker";
     private string prefabSniperPath = "prefabs/unitgraphics/sniper";
     
-    private string spriteSoldierPath = "sprites/units/soldier";
-    private string spriteWorkerPath = "sprites/units/worker";
-    private string spriteTankPath = "sprites/units/tank";
-    private string spriteSniperPath = "sprites/units/sniper";
-    private string spriteScoutPath = "sprites/units/scout";
+    private string spriteSoldierPath = "sprites/units/infantry_idle";
+    private string spriteWorkerPath = "sprites/units/miner_idle";
+    private string spriteTankPath = "sprites/units/tank_idle";
+    private string spriteSniperPath = "sprites/units/sniper_idle";
+    private string spriteScoutPath = "sprites/units/scout_idle";
     
 
 
@@ -52,9 +51,14 @@ public class Sprites {
     }
     public void LoadTileSprites()
     {
-        tileSprites.Add(TileType.open, (Resources.Load<Sprite>(tileSpriteOpenPath)));
+        Sprite[] tiles = Resources.LoadAll<Sprite>(tileSpritesPath);
+
+        tileSprites.Add(TileType.grassCorner, tiles[0]);
+        tileSprites.Add(TileType.grassEdge, tiles[1]);
+        tileSprites.Add(TileType.grassMid, tiles[3]);
+        tileSprites.Add(TileType.wall, tiles[4]);
         tileSprites.Add(TileType.food, (Resources.Load<Sprite>(tileSpriteFoodPath))); 
-        tileSprites.Add(TileType.blocking, (Resources.Load<Sprite>(tileSpriteBlockingPath)));
+        
     }
     public void LoadUnitSprites()
     {

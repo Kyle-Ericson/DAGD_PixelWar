@@ -39,9 +39,12 @@ public enum Team
 public enum TileType
 {
     none,
-    open,
-    blocking,
-    food
+    grassMid,
+    wall,
+    food,
+    grassCorner,
+    grassEdge,
+    water
 }
 
 public enum Action
