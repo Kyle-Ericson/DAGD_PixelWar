@@ -11,17 +11,19 @@ namespace ericson
         private static T _ins = null;
         public static T ins
         {
+
             get
             {
-                GameObject check = GameObject.Find((typeof(T).ToString()));
-                if (check != null)
-                {
-                    _ins = check.GetComponent<T>();
-                }
-                
+                //GameObject check = GameObject.Find((typeof(T).ToString()));
+
                 if (_ins == null)
                 {
-                    _ins = (new GameObject((typeof(T)).ToString())).AddComponent<T>();
+                    _ins = FindObjectOfType<T>();
+
+                    if (_ins == null)
+                    {
+                        _ins = (new GameObject((typeof(T)).ToString())).AddComponent<T>();
+                    }
                 }
                 return _ins;
             }

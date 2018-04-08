@@ -16,8 +16,26 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	string localhost = "127.0.0.1";
 	string ec2_HelloWorld = "18.188.129.215";
 	int serverPort = 5643;
+	List<string> packetBuffer = new List<string>();
 
-	
+	public void Update()
+	{
+		if(packetBuffer.Count > 0)
+		{
+			lock(packetBuffer)
+			{
+				string nextPacket = packetBuffer[0];
+				JsonType typeChecker = JsonUtility.FromJson<JsonType>(nextPacket);
+				switch(typeChecker.type)
+				{
+					case "JRES":
+						HandleJoinResponse(nextPacket);
+						break;
+				}
+				packetBuffer.Remove(nextPacket);
+			}
+		}
+	}
 	public void ConnectLocal() 
 	{
 		if(client != null && client.Client.Connected) return;
@@ -58,14 +76,7 @@ public class SocketManager : eSingletonMono<SocketManager> {
 			byte [] received = client.EndReceive(result, ref serverEndPoint);
 			string packet = System.Text.Encoding.UTF8.GetString(received);
 			JsonType json = JsonUtility.FromJson<JsonType>(packet);
-
-			switch(json.type)
-			{
-				case "JRES":
-					Debug.Log("Join Response");
-
-					break;
-			}
+			if(json.type != null) AddToBuffer(packet);
 			client.BeginReceive(new AsyncCallback(Receive), client);
 		}
 		catch (Exception e)
@@ -86,8 +97,14 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	{
 		return (Application.internetReachability == NetworkReachability.NotReachable);
 	}
-
-
-	
-	
+	private void HandleJoinResponse(string packet)
+	{
+		JoinResponse json = JsonUtility.FromJson<JoinResponse>(packet);
+		Debug.Log(json.response);
+	}
+	private void AddToBuffer(string packet)
+	{
+		Debug.Log("Join Response");
+		packetBuffer.Add(packet);
+	}
 }

@@ -36,5 +36,5 @@ public class JoinRequest
 public class JoinResponse
 {
 	public string type;
-	public string response;
+	public int response; // 0: Deny 1: Accept
 }

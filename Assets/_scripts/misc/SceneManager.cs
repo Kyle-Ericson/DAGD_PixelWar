@@ -26,6 +26,7 @@ public class SceneManager : eSingletonMono<SceneManager> {
         PregameScene.ins.Init();
         PostgameScene.ins.Init();
         OptionsScene.ins.Init();
+        SocketManager.ins.Init();
 
         GameScene.ins.gameObject.transform.SetParent(this.gameObject.transform);
         TitleScene.ins.gameObject.transform.SetParent(this.gameObject.transform);
