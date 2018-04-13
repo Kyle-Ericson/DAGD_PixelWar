@@ -14,6 +14,7 @@ public static class MatchStats {
     public static int maxArmyValueP1 = 0;
     public static int maxArmyValueP2 = 0;
     public static int turnCount = 0;
+    public static Dictionary<Team, int> currentFood = new Dictionary<Team, int>();
 
 
     public static void ResetAll()
@@ -27,6 +28,8 @@ public static class MatchStats {
         maxArmyValueP2 = 0;
         turnCount = 0;
         winner = 0;
+        currentFood[Team.player1] = 0;
+        currentFood[Team.player2] = 0;
     }
     public static void UpdateArmyValue(Team team, int value)
     {
@@ -78,6 +81,14 @@ public static class MatchStats {
     public static void UpdateWinner(Team team)
     {
         winner = team;
+    }
+    public static void AddFood(Team team, int amount)
+    {
+        currentFood[team] += amount;
+    }
+    public static void SubtractFood(Team team, int amount)
+    {
+        currentFood[team] -= amount;
     }
 
 

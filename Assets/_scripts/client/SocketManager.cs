@@ -22,18 +22,25 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	{
 		if(packetBuffer.Count > 0)
 		{
-			lock(packetBuffer)
+			ReadFromBuffer();
+		}
+	}
+	private void ReadFromBuffer()
+	{
+		lock(packetBuffer)
+		{
+			string nextPacket = packetBuffer[0];
+			JsonType typeChecker = JsonUtility.FromJson<JsonType>(nextPacket);
+			switch(typeChecker.type)
 			{
-				string nextPacket = packetBuffer[0];
-				JsonType typeChecker = JsonUtility.FromJson<JsonType>(nextPacket);
-				switch(typeChecker.type)
-				{
-					case "JRES":
-						HandleJoinResponse(nextPacket);
-						break;
-				}
-				packetBuffer.Remove(nextPacket);
+				case "JRES":
+					PacketHandler.HandleJoinResponse(nextPacket);
+					break;
+				case "ENDT":
+					PacketHandler.HandleEndTurn(nextPacket);
+					break;
 			}
+			packetBuffer.Remove(nextPacket);
 		}
 	}
 	public void ConnectLocal() 
@@ -96,11 +103,6 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	public bool NotOnline() 
 	{
 		return (Application.internetReachability == NetworkReachability.NotReachable);
-	}
-	private void HandleJoinResponse(string packet)
-	{
-		JoinResponse json = JsonUtility.FromJson<JoinResponse>(packet);
-		Debug.Log(json.response);
 	}
 	private void AddToBuffer(string packet)
 	{

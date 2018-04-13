@@ -10,6 +10,7 @@ public static class PersistentSettings {
         { Team.player2, Color.blue }
     };
 
+    private static bool isOnline = false;
     private static float _volume = 0.5f;
     private static float _dragSpeed = 25;
     private static float _dragSensitivity = 0.5f;
@@ -52,12 +53,21 @@ public static class PersistentSettings {
     public static void SetGridLines(bool value)
     {
         _useGrid = value;
-        Debug.Log("UseGrid?:" + _useGrid);
+        if(_useGrid) GameScene.ins.ShowLines();
+        else GameScene.ins.HideLines();
     }
     public static void SetDragSensitivity(float value)
     {
         _dragSensitivity = value;
         Debug.Log("Drag:" + _dragSensitivity);
+    }
+    public static void GoOnline()
+    {
+        isOnline = true;   
+    }
+    public static void GoOffline()
+    {
+        isOnline = false;
     }
 
 

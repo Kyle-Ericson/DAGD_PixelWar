@@ -77,7 +77,7 @@ public class InputEvents : eSingletonMono<InputEvents> {
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
-            SocketManager.ins.Send(PacketFactory.buildJoinRequest());
+            SocketManager.ins.Send(PacketFactory.BuildJoinRequest());
         }
          if (Input.GetKeyDown(KeyCode.D))
          {

@@ -20,7 +20,6 @@ public class PregameScene : eSingletonMono<PregameScene>
         startMatchButton.onClick.AddListener(HandleStart);
         maplist.Show();
         AddButtons();
-        maplist.UpdateMenu();
     }
     public void AddButtons()
     {
@@ -30,6 +29,7 @@ public class PregameScene : eSingletonMono<PregameScene>
             maplist.AddBasicButton(mapdata.name).onClick.AddListener(() =>
             {
                 mapToLoad = mapdata.id;
+                MapManager.ins.SpawnMap(mapToLoad, 1000, true);
             });
         }
         maplist.UpdateMenu();

@@ -62,6 +62,7 @@ public class GameScene : eSingletonMono<GameScene>
 
         // load the sprites and load the database
         if(!Sprites.ins.loaded) Sprites.ins.LoadSprites();
+        MatchStats.ResetAll();
         Database.Load();
 
     }
@@ -78,13 +79,14 @@ public class GameScene : eSingletonMono<GameScene>
         gameUI.UpdateFoodText();
         gameUI.ResetTransitions();
         if(gameUI.menuOpen) gameUI.CloseMenu();
+        currentTurn = 1;
         MatchStats.ResetAll();
 
     }
     //
     private void LoadMap(int mapID)
     {
-        MapManager.ins.SpawnMap(mapID);
+        MapManager.ins.SpawnMap(mapID, 0, false);
         SpawnUnit(UnitType.worker, Team.player1, MapManager.ins.currentMapData.start1.ToVector2());
         SpawnUnit(UnitType.worker, Team.player2, MapManager.ins.currentMapData.start2.ToVector2());
         if(tutorialMode)
@@ -160,21 +162,21 @@ public class GameScene : eSingletonMono<GameScene>
                 {
 
                 }
-                    
-
                 break;
-
             case GameState.awaitingAttack:
                 if (currentSelected.inAttackRange.Contains(selectionbox.gridpos)
                     && MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos))
                 {
                     BeginAttack();
-                    gettingAttacked = MapManager.ins.unitGrid[selectionbox.gridpos];
+                    if(currentSelected.type != UnitType.worker) gettingAttacked = MapManager.ins.unitGrid[selectionbox.gridpos];
+                    else gettingAttacked = null;
                 }
                 break;
-                
             case GameState.awaitingEat:
-                if(currentSelected.foodInRange.Contains(selectionbox.gridpos)) ConfirmEat(selectionbox.gridpos);
+                if(currentSelected.foodInRange.Contains(selectionbox.gridpos)) 
+                {
+                    BeginAttack();
+                }
                 break;
             case GameState.paused:
                 break;
@@ -239,19 +241,21 @@ public class GameScene : eSingletonMono<GameScene>
     // confirm the attack action
     public void ConfirmAttack()
     {
-        
-        gettingAttacked.TakeDamage(currentSelected.data.attack);
-        if(gettingAttacked.state == UnitState.dead)
+        if(gettingAttacked != null)
         {
-            var saveTeam = gettingAttacked.team;
-            KillUnit(gettingAttacked.gridpos);
-            CheckForWin(saveTeam);
+            gettingAttacked.TakeDamage(currentSelected.data.attack);
+            if(gettingAttacked.state == UnitState.dead)
+            {
+                var saveTeam = gettingAttacked.team;
+                KillUnit(gettingAttacked.gridpos);
+                CheckForWin(saveTeam);
+            }
         }
         GameScene.ins.ConfirmMove();
     }
 
     // confirm the eat action
-    private void ConfirmEat(Vector2 eatPos)
+    public void ConfirmEat()
     {
         currentSelected.Eat();
         ConfirmMove();
@@ -316,11 +320,13 @@ public class GameScene : eSingletonMono<GameScene>
             // add worker button
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.scout].cost)
             {
-                actionMenu.AddRadialUnit(UnitType.scout).onClick.AddListener(() => 
+                var button = actionMenu.AddRadialUnit(UnitType.scout);
+                button.onClick.AddListener(() => 
                 { 
                     nextSplitType = UnitType.scout;
                     StateAwaitSplit();
                 });
+                
             }
             // add tank button
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.tank].cost)
@@ -724,12 +730,7 @@ public class GameScene : eSingletonMono<GameScene>
     }
     public int GetTeamFoodCount()
     {
-        int food = 0;
-        foreach(Unit u in GetAllUnits())
-        {
-            if(u.team == (Team)currentTurn) food += u.food;
-        }
-        return food;
+        return MatchStats.currentFood[(Team)currentTurn];        
     }
     private List<Unit> GetAllUnits()
     {
@@ -754,13 +755,6 @@ public class GameScene : eSingletonMono<GameScene>
     }
     public void Surrender()
     {
-        // foreach(KeyValuePair<Vector2, Unit> key in MapManager.ins.unitGrid)
-        // {
-        //     if(key.Value.team == (Team)currentTurn) 
-        //     { 
-        //         KillUnit(key.Value.gridpos);
-        //     }
-        // }
         NextTurn();
         gameUI.BeginEndGameTransition();
         MatchStats.UpdateWinner((Team)currentTurn);
@@ -771,6 +765,21 @@ public class GameScene : eSingletonMono<GameScene>
         tutorialPhase++;
         gameUI.UpdateTutorial();
     }
+    public void HideLines()
+    {
+        foreach(KeyValuePair<Vector2, Tile> t in MapManager.ins.currentMap)
+        {
+            t.Value.HideGrid();
+        }
+    }
+    public void ShowLines()
+    {
+        foreach(KeyValuePair<Vector2, Tile> t in MapManager.ins.currentMap)
+        {
+            t.Value.ShowGrid();
+        }
+    }
+
 }
 
 

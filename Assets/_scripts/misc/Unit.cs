@@ -7,9 +7,15 @@ using ericson;
 
 public class Unit : eSprite 
 {
+    private UnitData _data = null;
+    private int moveIterator = 0;
+    private int moveSpeed = 8;
+    private List<Tile> pathToFollow = new List<Tile>();
+    private Color healthBGColor;
+    private eParticleEmitter pm = null;
+
     public Vector2 _prevPos;
     public Vector2 _gridpos;
-    private UnitData _data = null;
     public UnitState state = UnitState.idle;
     public List<Vector2> inMoveRange = new List<Vector2>();
     public List<Vector2> visibleTiles = new List<Vector2>();
@@ -22,17 +28,11 @@ public class Unit : eSprite
     public float zoffset = -1f;
     public Team team = 0;
     public UnitType type;
-    private int health = 0;
-    public int food = 0;
-    //private int actionPoints = 3;
+    public int health = 0;
     public bool isMoving = false;
-    private int moveIterator = 0;
-    private int moveSpeed = 8;
-    private List<Tile> pathToFollow = new List<Tile>();
     public UnitGraphic unitGraphic = null;
-    private Color healthBGColor;
     public SpriteRenderer healthBG  = null;
-    private eParticleEmitter pm = null;
+    
 
     public Vector2 gridpos 
     {
@@ -60,9 +60,8 @@ public class Unit : eSprite
     }
     public void Init(UnitType type, Team team)
     {
-        SetType(type);
-        SetTeam(team);
-        
+        SetTeam(team);  
+        SetType(type); 
     }
     void Update()
     {
@@ -129,7 +128,6 @@ public class Unit : eSprite
     {
         ChangeState(UnitState.awaitingAction);
     }
-
     public void Undo()
     {
         var temp = MapManager.ins.GridToWorld(_prevPos);
@@ -140,12 +138,12 @@ public class Unit : eSprite
     }
     public void Split(int damage)
     {
-        food -= damage;
+        MatchStats.SubtractFood(team, damage);
         UpdateText();
     }
     public void Eat()
     {
-        food += 1;
+        MatchStats.AddFood(team, 1);
         foodInRange.Clear();
         UpdateText();
     }
@@ -160,10 +158,16 @@ public class Unit : eSprite
     {
         _data = Database.unitData[(int)type];
         health = _data.maxHealth;
-        food = 0;
         if(type != UnitType.worker) foodText.gameObject.SetActive(false);
-        var spriteObject = Instantiate(Sprites.ins.unitPrefabs[type]);
+        GameObject spriteObject; 
+        if(team == Team.player2) spriteObject = Instantiate(Sprites.ins.bUnitPrefabs[type]);
+        else spriteObject = Instantiate(Sprites.ins.unitPrefabs[type]);
         unitGraphic = spriteObject.GetComponent<UnitGraphic>();
+        if (team == Team.player2)
+        {
+            unitGraphic.FlipSprite();
+        }
+        SetColor(PersistentSettings.teamColors[team]);
         spriteObject.transform.SetParent(transform);
         spriteObject.transform.localPosition = new Vector3(0, 0, 0);
         this.type = type;
@@ -172,7 +176,6 @@ public class Unit : eSprite
     private void UpdateText()
     {
         if (healthText) healthText.text = health.ToString();
-        if(foodText) foodText.text = food.ToString();
     }
     public void Deselect()
     {
@@ -347,7 +350,6 @@ public class Unit : eSprite
             if (!visibleTiles.Contains(v1)) visibleTiles.Add(v1);
         }
     }
-    //
     public void CheckForEnemies()
     {
        
@@ -433,11 +435,6 @@ public class Unit : eSprite
     private void SetTeam(Team _team)
     {
         team = _team;
-        if (team == Team.player2)
-        {
-            unitGraphic.FlipSprite();
-        }
-        SetColor(PersistentSettings.teamColors[_team]);
     }
     private void ChangeState(UnitState newstate)
     {

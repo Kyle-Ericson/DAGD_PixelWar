@@ -59,7 +59,8 @@ public class UnitGraphic : MonoBehaviour {
     public void DoneAnimating()
     {
         isAnimating = false;
-        GameScene.ins.ConfirmAttack();
+        if(GameScene.ins.currentSelected.type != UnitType.worker) GameScene.ins.ConfirmAttack();
+        else GameScene.ins.ConfirmEat();
     }
     public void FlipSprite()
     {

@@ -8,6 +8,7 @@ public class MapManager : eSingletonMono<MapManager>
 {
     // current map data
     public MapData currentMapData;
+    private GameObject miniMapCam = null;
     // current map's tiles
     public Dictionary<Vector2, Tile> currentMap = new Dictionary<Vector2, Tile>();
     public Dictionary<Vector2, Unit> unitGrid = new Dictionary<Vector2, Unit>();
@@ -24,12 +25,17 @@ public class MapManager : eSingletonMono<MapManager>
 
     void Awake()
     {
+        miniMapCam = GameObject.Find("MiniMapCamera");
         tilePrefab = Resources.Load<GameObject>("prefabs/Tile");
         water = Resources.Load<GameObject>("prefabs/water");
         waterHolder = new GameObject("Water");
+        //waterHolder.transform.SetParent(this.transform);
     }
-    public void SpawnMap(int mapID)
+    public void SpawnMap(int mapID, float offset, bool isMiniMap)
     {
+        if(currentMap.Count > 0) RemoveAllTiles();
+        if(unitGrid.Count > 0) RemoveAllUnits();
+
         currentMapData = Database.mapData[mapID];
         currentMap.Clear();
         // if there is no grid, return
@@ -47,8 +53,8 @@ public class MapManager : eSingletonMono<MapManager>
                 if (tileType == 0) 
                 {
                     Vector2 wp = GridToWorld(new Vector2(x, y));
-                    GameObject t = Instantiate(water, new Vector3(wp.x, wp.y, 0), Quaternion.identity);
-                    t.transform.position = new Vector3(wp.x, wp.y, 0);
+                    GameObject t = Instantiate(water, new Vector3(wp.x + offset, wp.y, 0), Quaternion.identity);
+                    t.transform.position = new Vector3(wp.x + offset, wp.y, 0);
                     t.transform.SetParent(waterHolder.transform);
                     continue;
                 }
@@ -57,8 +63,8 @@ public class MapManager : eSingletonMono<MapManager>
                 Vector2 worldPos = GridToWorld(new Vector2(x, y));
                 
                 // get tile script from tile obj
-                Tile tile = Instantiate(tilePrefab, new Vector3(worldPos.x, worldPos.y, 0), Quaternion.identity).GetComponent<Tile>();
-                tile.gameObject.transform.SetParent(gameObject.transform);
+                Tile tile = Instantiate(tilePrefab, new Vector3(worldPos.x + offset, worldPos.y, 0), Quaternion.identity).GetComponent<Tile>();
+                if(!isMiniMap) tile.gameObject.transform.SetParent(gameObject.transform);
                 tile.name = "(" + x + ", " + y + ")";
 
                 // set the type of tile based on the level data retrieved
@@ -77,14 +83,15 @@ public class MapManager : eSingletonMono<MapManager>
                         tile.SetType(TileType.food);
                         break;
                 }
-                if (!PersistentSettings.useGrid) tile.HideGrid();
+                if (!PersistentSettings.useGrid || isMiniMap) tile.HideGrid();
                 //tile.GetComponent<SpriteRenderer>().sortingOrder = y;
 
                 // add the new tile to the tiles dictionary
                 currentMap.Add(new Vector2(x, y), tile);
             }
         }
-        SetCamera();
+        if(isMiniMap)SetMiniMapCamera();
+        else SetCamera();
     }
     // TODO: Move this somewhere that makes more sense.
     // Move the camera to the center of the map.
@@ -93,6 +100,17 @@ public class MapManager : eSingletonMono<MapManager>
         float camX = (currentMapData.cols * _tileScale) / 2;
         float camY = -(currentMapData.rows * _tileScale) / 2;
         Camera.main.transform.position = new Vector3(camX, camY, -10);
+    }
+    private void SetMiniMapCamera()
+    {
+        float camX = ((currentMapData.cols * _tileScale) / 2) + 1000;
+        float camY = -(currentMapData.rows * _tileScale) / 2;
+        miniMapCam.transform.position = new Vector3(camX, camY, -10);
+        if(currentMapData.rows > currentMapData.cols) 
+        {
+            miniMapCam.GetComponent<Camera>().orthographicSize = (currentMapData.rows / 2) + 1;
+        }
+        else miniMapCam.GetComponent<Camera>().orthographicSize = (currentMapData.cols / 2) + 1;
     }
     // The json file stores the map's grid data as a one dimensional array.
     // We can access it with (x, y) coords using this method.
