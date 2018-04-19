@@ -36,6 +36,14 @@ public class PregameScene : eSingletonMono<PregameScene>
     }
     private void HandleStart()
     {
-        if(mapToLoad >= 0) SceneManager.ins.StartMatch(mapToLoad, 2);
+        if(mapToLoad >= 0) 
+        {
+            if(PersistentSettings.gameMode == GameMode.online) 
+            {
+                SocketManager.ins.Send(PacketFactory.BuildNewGame(mapToLoad, PersistentSettings.isPrivate));
+                SceneManager.ins.ToWait();
+            }
+            else SceneManager.ins.StartMatch(mapToLoad);
+        }
     }
 }

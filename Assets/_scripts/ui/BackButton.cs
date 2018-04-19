@@ -16,7 +16,7 @@ public class BackButton : MonoBehaviour {
     private void HandleClick()
     {
 
-        if(!isOptions) SceneManager.ins.ChangeScene(Scene.title);
+        if(!isOptions) SceneManager.ins.ToTitle();
         else SceneManager.ins.ToggleOptions();
     }
 

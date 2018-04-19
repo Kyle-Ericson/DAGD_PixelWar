@@ -16,6 +16,8 @@ namespace ericson
         public Vector3 target;
         public delegate void LerpComplete();
         public event LerpComplete OnLerpComplete;
+        public delegate void HalfLerpComplete();
+        public event LerpComplete OnHalfLerpComplete;
         public float offset = 150f;
 
 
@@ -29,7 +31,6 @@ namespace ericson
         }
         void Update()
         {
-
             if (doLerp)
             {
                 currentLerpTime += Time.deltaTime;
@@ -37,16 +38,17 @@ namespace ericson
                 if(doHalf && t > 0.5f)
                 {
                     PauseLerp();
+                    if (OnHalfLerpComplete != null) OnHalfLerpComplete();
                     return;
                 }
                 else if (t > 1)
                 {
                     Stop();
+                    if (OnLerpComplete != null) OnLerpComplete();
                     return;
                 }
                 transform.localPosition = Vector3.Lerp(start, target, Inverse_Smooth_Step(t));
             }
-
         }
         public void BeginLerp()
         {
@@ -62,10 +64,6 @@ namespace ericson
             doLerp = false;
             Reset();
             currentLerpTime = 0;
-            if (OnLerpComplete != null)
-            {
-                OnLerpComplete();
-            }
         }
         public void Reset()
         {
@@ -78,11 +76,6 @@ namespace ericson
         {
             doLerp = false;
             doHalf = false;
-            currentLerpTime = 0;
-            if (OnLerpComplete != null)
-            {
-                OnLerpComplete();
-            }
         }
         public float Inverse_Smooth_Step(float t)
         {

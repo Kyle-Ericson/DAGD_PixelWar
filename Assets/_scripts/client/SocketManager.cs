@@ -16,6 +16,7 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	string localhost = "127.0.0.1";
 	string ec2_HelloWorld = "18.188.129.215";
 	int serverPort = 5643;
+	int clientPort = 5646;
 	List<string> packetBuffer = new List<string>();
 
 	public void Update()
@@ -39,6 +40,9 @@ public class SocketManager : eSingletonMono<SocketManager> {
 				case "ENDT":
 					PacketHandler.HandleEndTurn(nextPacket);
 					break;
+				case "GMST":
+					PacketHandler.HandleGameStart(nextPacket);
+					break;
 			}
 			packetBuffer.Remove(nextPacket);
 		}
@@ -47,7 +51,7 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	{
 		if(client != null && client.Client.Connected) return;
 		serverEndPoint = new IPEndPoint(IPAddress.Parse(localhost), serverPort);
-		client = new UdpClient(5644);
+		client = new UdpClient(clientPort);
 		client.Connect(serverEndPoint);
 		client.Client.Blocking = false;
         client.BeginReceive(new AsyncCallback(Receive), client);

@@ -107,7 +107,6 @@ GameObject:
   - component: {fileID: 223141679828488222}
   - component: {fileID: 114801474135906394}
   - component: {fileID: 114856985616199748}
-  - component: {fileID: 114428403115419208}
   m_Layer: 0
   m_Name: Postgame
   m_TagString: Untagged
@@ -482,8 +481,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
@@ -595,8 +594,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
@@ -1045,28 +1044,6 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &114428403115419208
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1264643343216270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60743cd00d83ec24181e2c722bb18674, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  exitButton: {fileID: 0}
-  rematchButton: {fileID: 0}
-  winner: {fileID: 114377656395107466}
-  p1Text: {fileID: 114670825341896520}
-  p2Text: {fileID: 114735893028897930}
-  p1Gathered: {fileID: 114479250299833026}
-  p2Gathered: {fileID: 114501961102540064}
-  p1Spent: {fileID: 114897711826353268}
-  p2Spent: {fileID: 114768363892599398}
-  p1MaxArmy: {fileID: 114586485111877814}
-  p2MaxArmy: {fileID: 114391488624698820}
 --- !u!114 &114451794802800938
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1332,7 +1309,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114428403115419208}
+      - m_Target: {fileID: 0}
         m_MethodName: ExitMatch
         m_Mode: 1
         m_Arguments:
@@ -1723,7 +1700,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114428403115419208}
+      - m_Target: {fileID: 0}
         m_MethodName: Rematch
         m_Mode: 1
         m_Arguments:
@@ -1748,7 +1725,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1890,7 +1867,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

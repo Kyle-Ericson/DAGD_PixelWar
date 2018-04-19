@@ -12,13 +12,15 @@ public static class PacketHandler {
 	public static void HandleGameStart(string packet)
 	{
 		GameStart json = JsonUtility.FromJson<GameStart>(packet);
+		PersistentSettings.gameKey = json.gameKey;
+		SceneManager.ins.StartOnlineMatch(json.mapID);
 	}
 	public static void HandleEndTurn(string packet)
 	{
 		EndTurn json = JsonUtility.FromJson<EndTurn>(packet);
 		MapManager.ins.RemoveAllUnits();
 		GameScene.ins.NextTurn();
-		
+		GameScene.ins.gameUI.UnpauseTransition();
 		foreach(UnitStats u in json.units)
 		{
 			var gpos = u.position.ToVector2();

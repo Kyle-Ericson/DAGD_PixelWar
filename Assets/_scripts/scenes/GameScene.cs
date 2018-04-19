@@ -5,6 +5,13 @@ using System.Net.Sockets;
 
 public class GameScene : eSingletonMono<GameScene>
 {
+
+    private float zoffset = -0.2f;
+    private UnitType nextSplitType;
+    private GameObject unitHolder;
+    private Team clientTeam;
+    
+    
     public GameObject unitPrefab;
     public Unit gettingAttacked = null;
     public SelectionBox selectionbox;
@@ -14,14 +21,9 @@ public class GameScene : eSingletonMono<GameScene>
     public eMenu actionMenu = null;
     public Vector2 tempGridPos;
     public bool running = true;
-    private float zoffset = -0.2f;
-    public int numOfPlayers = 0;
     public int currentTurn = 1;
     public int turnCount = 1;
-    private UnitType nextSplitType;
-    private GameObject unitHolder;
     public List<Vector2> allVisibleTiles = new List<Vector2>();
-    private bool tutorialMode = false;
     public TutorialPhase tutorialPhase = TutorialPhase.phase1;
 
 
@@ -45,13 +47,11 @@ public class GameScene : eSingletonMono<GameScene>
     public override void Init()
     {
         unitHolder = new GameObject("Units");
-
         // load and setup prefabs
         selectionbox = Instantiate(Resources.Load<GameObject>("prefabs/Cursor").GetComponent<SelectionBox>());
         gameUI = Instantiate(Resources.Load<GameObject>("prefabs/GameUI").GetComponent<GameUI>());
         actionMenu = Instantiate(Resources.Load<GameObject>("prefabs/RadialMenu")).GetComponent<eMenu>();
         unitPrefab = Resources.Load<GameObject>("prefabs/Unit");
-
         // set this object as each componenets parent
         gameUI.gameObject.transform.SetParent(this.gameObject.transform);
         unitHolder.gameObject.transform.SetParent(this.gameObject.transform);
@@ -59,22 +59,24 @@ public class GameScene : eSingletonMono<GameScene>
         actionMenu.gameObject.transform.SetParent(this.gameObject.transform);
         MapManager.ins.gameObject.transform.SetParent(this.gameObject.transform);
         AStar.ins.gameObject.transform.SetParent(this.gameObject.transform);
-
         // load the sprites and load the database
         if(!Sprites.ins.loaded) Sprites.ins.LoadSprites();
         MatchStats.ResetAll();
         Database.Load();
-
     }
-    public void SetupMatch(int map, int players, bool tutorialFlag)
+    public void SetupMatch(int map, GameMode mode)
     {
         running = true;
-        tutorialMode = tutorialFlag;
+        PersistentSettings.gameMode = mode;
+        if(PersistentSettings.gameMode == GameMode.online)
+        {
+            if(PersistentSettings.isHost) clientTeam = Team.player1;
+            else clientTeam = Team.player2;
+        }
         LoadMap(map);
         selectionbox.Show();
         selectionbox.Move(Vector2.zero);
         AddListeners();
-        numOfPlayers = players;
         gameUI.UpdateArmyText();
         gameUI.UpdateFoodText();
         gameUI.ResetTransitions();
@@ -82,6 +84,10 @@ public class GameScene : eSingletonMono<GameScene>
         currentTurn = 1;
         MatchStats.ResetAll();
 
+        if(PersistentSettings.gameMode == GameMode.online) 
+        {
+            CheckTurnOnline();
+        }
     }
     //
     private void LoadMap(int mapID)
@@ -89,7 +95,7 @@ public class GameScene : eSingletonMono<GameScene>
         MapManager.ins.SpawnMap(mapID, 0, false);
         SpawnUnit(UnitType.worker, Team.player1, MapManager.ins.currentMapData.start1.ToVector2());
         SpawnUnit(UnitType.worker, Team.player2, MapManager.ins.currentMapData.start2.ToVector2());
-        if(tutorialMode)
+        if(PersistentSettings.gameMode == GameMode.tutorial)
         {
             gameUI.ShowTutorial();
             tutorialPhase = TutorialPhase.phase1;
@@ -119,7 +125,7 @@ public class GameScene : eSingletonMono<GameScene>
     // handle a left mouse button click
     private void HandleMouseLClick()
     {
-        if(tutorialMode && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
+        if(PersistentSettings.gameMode == GameMode.tutorial && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
 
         if(Application.platform == RuntimePlatform.Android) selectionbox.Move();
 
@@ -186,7 +192,7 @@ public class GameScene : eSingletonMono<GameScene>
     // handle when the right mouse button is clicked
     private void HandleMouseRClick()
     {
-        if(tutorialMode && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
+        if(PersistentSettings.gameMode == GameMode.tutorial && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
         switch(_gameState)
         {
             case GameState.awaitingInput:
@@ -261,7 +267,7 @@ public class GameScene : eSingletonMono<GameScene>
         ConfirmMove();
         gameUI.UpdateFoodText();
         MatchStats.UpdateGathered((Team)currentTurn, 1);
-        if(tutorialMode && tutorialPhase == TutorialPhase.phase3) NextTutorialPhase();
+        if(PersistentSettings.gameMode == GameMode.tutorial && tutorialPhase == TutorialPhase.phase3) NextTutorialPhase();
     }
 
     // confirm the temporary move
@@ -404,7 +410,7 @@ public class GameScene : eSingletonMono<GameScene>
         InputEvents.ins.OnMouseMoved -= selectionbox.Move;
         selectionbox.Hide();
         actionMenu.Show();
-        if(tutorialMode && (tutorialPhase == TutorialPhase.phase2 || tutorialPhase == TutorialPhase.phase5))
+        if(PersistentSettings.gameMode == GameMode.tutorial && (tutorialPhase == TutorialPhase.phase2 || tutorialPhase == TutorialPhase.phase5))
         {
             NextTutorialPhase();
         }
@@ -589,7 +595,7 @@ public class GameScene : eSingletonMono<GameScene>
                 if (v != _currentSelected.gridpos) MapManager.ins.currentMap[v].Highlight();
             }
         }
-        if(tutorialMode && (tutorialPhase == TutorialPhase.phase1 || tutorialPhase == TutorialPhase.phase5)) 
+        if(PersistentSettings.gameMode == GameMode.tutorial && (tutorialPhase == TutorialPhase.phase1 || tutorialPhase == TutorialPhase.phase5)) 
         {
             NextTutorialPhase();
         }
@@ -680,9 +686,12 @@ public class GameScene : eSingletonMono<GameScene>
         StateAwaitInput();
         UpdateFog();
         MatchStats.UpdateArmyValue((Team)currentTurn, GetArmyValue());
-        if(tutorialMode)
+        if(PersistentSettings.gameMode == GameMode.tutorial)
         {
-            if((Team)currentTurn != Team.player1) gameUI.BeginTurnTransition();
+            if((Team)currentTurn != Team.player1) 
+            {
+                gameUI.BeginTurnTransition();
+            }
 
             if(tutorialPhase == TutorialPhase.phase4 || tutorialPhase == TutorialPhase.phase6) NextTutorialPhase();
         }
@@ -690,7 +699,7 @@ public class GameScene : eSingletonMono<GameScene>
     public void NextTurn()
     {
         currentTurn++;
-        if (currentTurn > numOfPlayers)
+        if (currentTurn > 2)
         {
             currentTurn = 1;
             turnCount++;
@@ -779,7 +788,14 @@ public class GameScene : eSingletonMono<GameScene>
             t.Value.ShowGrid();
         }
     }
-
+    public void CheckTurnOnline()
+    {
+        if(currentTurn != (int)clientTeam) 
+        {
+            AllFogOn();
+            AllUnitsOff();
+        }
+    }
 }
 
 
