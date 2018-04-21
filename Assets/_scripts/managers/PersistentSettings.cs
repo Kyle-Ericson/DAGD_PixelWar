@@ -14,7 +14,8 @@ public static class PersistentSettings {
     public static string gameKey = "";
     public static bool isHost = false;
     public static bool isPrivate = false;
-    private static float _volume = 0.5f;
+    private static float _musicVolume = 0.5f;
+    private static float _sfxVolume = 0.5f;
     private static float _dragSpeed = 25;
     private static float _dragSensitivity = 0.5f;
     private static float _zoomSpeed = 50;
@@ -22,9 +23,13 @@ public static class PersistentSettings {
     private static float _maxZoom = 3;
     private static float _minZoom = 7;
 
-    public static float volume
+    public static float musicVolume
     {
-        get { return _volume; }
+        get { return _musicVolume; }
+    }
+    public static float sfxVolume
+    {
+        get { return _sfxVolume; }
     }
     public static float dragSpeed
     {
@@ -48,10 +53,17 @@ public static class PersistentSettings {
     }
 
 
-    public static void SetVolume(float value)
+    public static void SetMusicVolume(float value)
     {
-        _volume = value;
-        Debug.Log("Volume:" + _volume);
+        _musicVolume = value;
+        SoundManager.ins.SetMusicVolume();
+        Debug.Log("Music Volume:" + _musicVolume);
+    }
+    public static void SetSFXVolume(float value)
+    {
+        _sfxVolume = value;
+        SoundManager.ins.SetSFXVolume();
+        Debug.Log("SFX Volume:" + _sfxVolume);
     }
     public static void SetGridLines(bool value)
     {

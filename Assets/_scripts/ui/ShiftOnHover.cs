@@ -22,6 +22,7 @@ public class ShiftOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         //tempstartpos.x += shiftAmount;
         //transform.localPosition = tempstartpos;
         transform.localScale *= 1.5f;
+        SoundManager.ins.PlayHoverButton();
     }
     public void OnPointerExit(PointerEventData data)
     {

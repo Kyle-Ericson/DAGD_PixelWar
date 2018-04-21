@@ -27,5 +27,6 @@ public static class PacketHandler {
 			GameScene.ins.SpawnUnit((UnitType)u.unitType, (Team)u.team, gpos);
 			MapManager.ins.unitGrid[gpos].health = u.health;
 		}
+		GameScene.ins.CheckForWin((Team)GameScene.ins.clientTeam);
 	}
 }

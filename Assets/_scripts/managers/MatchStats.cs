@@ -90,7 +90,4 @@ public static class MatchStats {
     {
         currentFood[team] -= amount;
     }
-
-
-
 }

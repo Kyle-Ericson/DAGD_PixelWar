@@ -21,6 +21,7 @@ public class SelectionBox : MonoBehaviour
     public void Move()
     {
         Vector2 gridPos = MapManager.ins.WorldToGrid(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        if(gridPos == gridpos) return;
         if (!MapManager.ins.currentMap.ContainsKey(gridPos))
         {
             Hide();
@@ -30,6 +31,7 @@ public class SelectionBox : MonoBehaviour
         else
         {
             Show();
+            SoundManager.ins.PlayeMoveCursor();
             DoMove(gridPos);
         }
     }

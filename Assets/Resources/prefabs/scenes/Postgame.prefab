@@ -125,6 +125,7 @@ GameObject:
   - component: {fileID: 222859357497128206}
   - component: {fileID: 114760485533575638}
   - component: {fileID: 114672299313951988}
+  - component: {fileID: 114006886101982886}
   m_Layer: 0
   m_Name: Rematch
   m_TagString: Untagged
@@ -279,6 +280,7 @@ GameObject:
   - component: {fileID: 222038856831440882}
   - component: {fileID: 114729787132974112}
   - component: {fileID: 114489350718167056}
+  - component: {fileID: 114888551401111164}
   m_Layer: 0
   m_Name: Exit
   m_TagString: Untagged
@@ -337,6 +339,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &114006886101982886
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1303725975478540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab6370ea761b5764e8856864fb039901, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shiftAmount: 25
 --- !u!114 &114013857423728632
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2145,6 +2159,18 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &114888551401111164
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1826815491748604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab6370ea761b5764e8856864fb039901, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shiftAmount: 25
 --- !u!114 &114897711826353268
 MonoBehaviour:
   m_ObjectHideFlags: 1

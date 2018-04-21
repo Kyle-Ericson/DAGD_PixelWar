@@ -9,7 +9,7 @@ public class GameScene : eSingletonMono<GameScene>
     private float zoffset = -0.2f;
     private UnitType nextSplitType;
     private GameObject unitHolder;
-    private Team clientTeam;
+    public Team clientTeam;
     
     
     public GameObject unitPrefab;
@@ -77,12 +77,13 @@ public class GameScene : eSingletonMono<GameScene>
         selectionbox.Show();
         selectionbox.Move(Vector2.zero);
         AddListeners();
+        MatchStats.ResetAll();
         gameUI.UpdateArmyText();
         gameUI.UpdateFoodText();
         gameUI.ResetTransitions();
         if(gameUI.menuOpen) gameUI.CloseMenu();
         currentTurn = 1;
-        MatchStats.ResetAll();
+        
 
         if(PersistentSettings.gameMode == GameMode.online) 
         {
@@ -755,10 +756,13 @@ public class GameScene : eSingletonMono<GameScene>
         // check to see if all units on a team are dead
         if (GetArmyValue(team) == 0)
         {
+            if(team == (Team)currentTurn) NextTurn();
+            else SocketManager.ins.Send(PacketFactory.BuildEndTurn());
             MatchStats.UpdateWinner((Team)currentTurn);
             MatchStats.UpdateMapName();
             MatchStats.UpdateTurnCount(turnCount);
             gameUI.BeginEndGameTransition();
+            
         }
 
     }

@@ -71,4 +71,12 @@ public class UnitGraphic : MonoBehaviour {
     {
         Camera.main.gameObject.GetComponent<eCameraJuice2D>().AddJuice(juice);
     }
+    public void PlayDeathSound()
+    {
+        SoundManager.ins.PlayDeath();
+    }
+    public void PlayShootSound()
+    {
+        SoundManager.ins.PlayShoot();
+    }
 }

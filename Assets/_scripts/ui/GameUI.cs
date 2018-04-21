@@ -109,7 +109,7 @@ public class GameUI : MonoBehaviour
                 SceneManager.ins.ToPost();
             }
             GameScene.ins.EndTurn();
-            turnBarText.text = turnText.text;
+            turnBarText.text = "Turn " + GameScene.ins.currentTurn;
             UpdateArmyText();
             UpdateFoodText();
             transitionCount = 0;

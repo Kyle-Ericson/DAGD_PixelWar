@@ -16,6 +16,7 @@ public class SceneManager : eSingletonMono<SceneManager> {
     public override void Init()
     {
         InputEvents.ins.Init();
+        SoundManager.ins.Init();
         InitializeScenes();
         ToTitle();
     }
@@ -45,6 +46,7 @@ public class SceneManager : eSingletonMono<SceneManager> {
     {
         HideAll();
         TitleScene.ins.Show();
+        SoundManager.ins.PlayTitleMusic();
     }
     public void ToPost()
     {
