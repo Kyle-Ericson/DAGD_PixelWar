@@ -37,8 +37,9 @@ public class TitleScene : eSingletonMono<TitleScene>
     }
     public void HandleOnline()
     {
-        //SocketManager.ins.ConnectLocal();
-        SocketManager.ins.ConnectOnline();
+        SocketManager.ins.ConnectLocal();
+        //SocketManager.ins.ConnectOnline();
+        PersistentSettings.gameMode = GameMode.online;
         SceneManager.ins.ToLobby();
     }
     public void HandleOffline()
@@ -48,7 +49,8 @@ public class TitleScene : eSingletonMono<TitleScene>
     }
     public void HandleLearn()
     {
-        SceneManager.ins.StartTutorial();
+        PersistentSettings.gameMode = GameMode.tutorial;
+        SceneManager.ins.StartMatch(0);
     }
     public void HandleOptions()
     {
@@ -56,7 +58,6 @@ public class TitleScene : eSingletonMono<TitleScene>
     }
     public void HandleQuit()
     {
-        SocketManager.ins.Disconnect();
         Application.Quit();
     }
 }

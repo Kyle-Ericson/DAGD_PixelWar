@@ -13,7 +13,7 @@ public static class PacketHandler {
 	{
 		GameStart json = JsonUtility.FromJson<GameStart>(packet);
 		PersistentSettings.gameKey = json.gameKey;
-		SceneManager.ins.StartOnlineMatch(json.mapID);
+		SceneManager.ins.StartMatch(json.mapID);
 	}
 	public static void HandleEndTurn(string packet)
 	{
@@ -27,6 +27,18 @@ public static class PacketHandler {
 			GameScene.ins.SpawnUnit((UnitType)u.unitType, (Team)u.team, gpos);
 			MapManager.ins.unitGrid[gpos].health = u.health;
 		}
-		GameScene.ins.CheckForWin((Team)GameScene.ins.clientTeam);
+		if(!GameScene.ins.CheckForWin((Team)GameScene.ins.clientTeam)) {
+			GameScene.ins.CheckForWin(GameScene.ins.OtherTeam());
+		}
+	}
+	public static void HandleEndGame()
+	{
+		SceneManager.ins.ToTitle();
+	}
+	public static void HandleGameKey (string packet)
+	{
+		GameKey json = JsonUtility.FromJson<GameKey>(packet);
+		PersistentSettings.gameKey = json.gameKey;
+		Debug.Log(PersistentSettings.gameKey);
 	}
 }

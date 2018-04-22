@@ -9,14 +9,13 @@ public class GameScene : eSingletonMono<GameScene>
     private float zoffset = -0.2f;
     private UnitType nextSplitType;
     private GameObject unitHolder;
+    private Unit _currentSelected = null;
+    
     public Team clientTeam;
-    
-    
     public GameObject unitPrefab;
     public Unit gettingAttacked = null;
     public SelectionBox selectionbox;
-    public Unit _currentSelected = null;
-    public GameState _gameState = GameState.awaitingInput;
+    public GameState _gameState;
     public GameUI gameUI = null;
     public eMenu actionMenu = null;
     public Vector2 tempGridPos;
@@ -26,8 +25,6 @@ public class GameScene : eSingletonMono<GameScene>
     public List<Vector2> allVisibleTiles = new List<Vector2>();
     public TutorialPhase tutorialPhase = TutorialPhase.phase1;
 
-
-
     public Unit currentSelected
     {
         get { return _currentSelected; }
@@ -36,38 +33,29 @@ public class GameScene : eSingletonMono<GameScene>
     {
         get { return _gameState; }
     }
-    
 
 
-    
-
-
-    #region Game Setup
-    //
     public override void Init()
     {
         unitHolder = new GameObject("Units");
-        // load and setup prefabs
         selectionbox = Instantiate(Resources.Load<GameObject>("prefabs/Cursor").GetComponent<SelectionBox>());
         gameUI = Instantiate(Resources.Load<GameObject>("prefabs/GameUI").GetComponent<GameUI>());
         actionMenu = Instantiate(Resources.Load<GameObject>("prefabs/RadialMenu")).GetComponent<eMenu>();
         unitPrefab = Resources.Load<GameObject>("prefabs/Unit");
-        // set this object as each componenets parent
         gameUI.gameObject.transform.SetParent(this.gameObject.transform);
         unitHolder.gameObject.transform.SetParent(this.gameObject.transform);
         selectionbox.gameObject.transform.SetParent(this.gameObject.transform);
         actionMenu.gameObject.transform.SetParent(this.gameObject.transform);
         MapManager.ins.gameObject.transform.SetParent(this.gameObject.transform);
         AStar.ins.gameObject.transform.SetParent(this.gameObject.transform);
-        // load the sprites and load the database
         if(!Sprites.ins.loaded) Sprites.ins.LoadSprites();
         MatchStats.ResetAll();
         Database.Load();
     }
-    public void SetupMatch(int map, GameMode mode)
+    public void SetupMatch(int map)
     {
         running = true;
-        PersistentSettings.gameMode = mode;
+        _gameState = new AwaitingInput();
         if(PersistentSettings.gameMode == GameMode.online)
         {
             if(PersistentSettings.isHost) clientTeam = Team.player1;
@@ -83,12 +71,7 @@ public class GameScene : eSingletonMono<GameScene>
         gameUI.ResetTransitions();
         if(gameUI.menuOpen) gameUI.CloseMenu();
         currentTurn = 1;
-        
-
-        if(PersistentSettings.gameMode == GameMode.online) 
-        {
-            CheckTurnOnline();
-        }
+        if(PersistentSettings.gameMode == GameMode.online) CheckTurnOnline();
     }
     //
     private void LoadMap(int mapID)
@@ -104,10 +87,8 @@ public class GameScene : eSingletonMono<GameScene>
         }
         else gameUI.HideTutorial();
     }
-    #endregion
 
     
-    #region Input Handling
     //
     private void AddListeners()
     {
@@ -127,22 +108,14 @@ public class GameScene : eSingletonMono<GameScene>
     private void HandleMouseLClick()
     {
         if(PersistentSettings.gameMode == GameMode.tutorial && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
-
         if(Application.platform == RuntimePlatform.Android) selectionbox.Move();
+        _gameState.HandleLeftClick();
 
+        /*    
         switch (_gameState)
         {
             case GameState.awaitingInput:
-                if (MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos) &&
-                    MapManager.ins.unitGrid[selectionbox.gridpos].state != UnitState.sleeping &&
-                    MapManager.ins.unitGrid[selectionbox.gridpos].team == (Team)currentTurn)
-                {
-                    SelectUnit();
-                }
-                else
-                {
-                    DeselectAllTiles();
-                }
+                
                 break;
 
             case GameState.unitSelected:
@@ -188,12 +161,16 @@ public class GameScene : eSingletonMono<GameScene>
             case GameState.paused:
                 break;
         }
+        */
     }
 
     // handle when the right mouse button is clicked
     private void HandleMouseRClick()
     {
         if(PersistentSettings.gameMode == GameMode.tutorial && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
+        _gameState.HandleRightClick();
+        
+        /*
         switch(_gameState)
         {
             case GameState.awaitingInput:
@@ -216,14 +193,10 @@ public class GameScene : eSingletonMono<GameScene>
                 Undo();
                 break;
         }
+        */
     }
-    #endregion
 
-
-    #region Action Confirmation
-
-    // confirm the split action
-    private void ConfirmSplit(Vector2 splitPos)
+    public void ConfirmSplit(Vector2 splitPos)
     {
         if(MapManager.ins.unitGrid.ContainsKey(splitPos))
         {
@@ -245,7 +218,6 @@ public class GameScene : eSingletonMono<GameScene>
     {
         currentSelected.unitGraphic.Attack();
     }
-    // confirm the attack action
     public void ConfirmAttack()
     {
         if(gettingAttacked != null)
@@ -260,8 +232,6 @@ public class GameScene : eSingletonMono<GameScene>
         }
         GameScene.ins.ConfirmMove();
     }
-
-    // confirm the eat action
     public void ConfirmEat()
     {
         currentSelected.Eat();
@@ -270,8 +240,6 @@ public class GameScene : eSingletonMono<GameScene>
         MatchStats.UpdateGathered((Team)currentTurn, 1);
         if(PersistentSettings.gameMode == GameMode.tutorial && tutorialPhase == TutorialPhase.phase3) NextTutorialPhase();
     }
-
-    // confirm the temporary move
     public void ConfirmMove()
     {
         currentSelected.Sleep();
@@ -280,18 +248,10 @@ public class GameScene : eSingletonMono<GameScene>
         DeselectAll();
         UpdateFog();
     }
-    #endregion
-
-
-    #region Action Menu Handlers
-
-    // handle wait button
     public void HandleWait()
     {
         ConfirmMove();
     }
-
-    // handle attack button
     public void HandleAttack()
     {
         foreach(Vector2 v in _currentSelected.enemiesInRange)
@@ -306,7 +266,6 @@ public class GameScene : eSingletonMono<GameScene>
     {
         Undo();
     }
-    // handle eat button
     public void HandleEat()
     {
         foreach(Vector2 v in _currentSelected.foodInRange)
@@ -316,15 +275,12 @@ public class GameScene : eSingletonMono<GameScene>
         }
         StateAwaitEat();
     }
-
-    // handle the split button being clicked
     public void HandleSplit()
     {
         actionMenu.Clear();
         
         if(_currentSelected.type == UnitType.worker)
         {
-            // add worker button
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.scout].cost)
             {
                 var button = actionMenu.AddRadialUnit(UnitType.scout);
@@ -333,9 +289,7 @@ public class GameScene : eSingletonMono<GameScene>
                     nextSplitType = UnitType.scout;
                     StateAwaitSplit();
                 });
-                
             }
-            // add tank button
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.tank].cost)
             {
                 actionMenu.AddRadialUnit(UnitType.tank).onClick.AddListener(() => 
@@ -344,7 +298,6 @@ public class GameScene : eSingletonMono<GameScene>
                     StateAwaitSplit();
                 });    
             }
-            // add infantry button
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.soldier].cost)
             {
                 actionMenu.AddRadialUnit(UnitType.soldier).onClick.AddListener(() => 
@@ -353,7 +306,6 @@ public class GameScene : eSingletonMono<GameScene>
                     StateAwaitSplit();
                 });
             }
-            // add sniper
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.sniper].cost)
             {
                 actionMenu.AddRadialUnit(UnitType.sniper).onClick.AddListener(() => 
@@ -362,7 +314,6 @@ public class GameScene : eSingletonMono<GameScene>
                     StateAwaitSplit();
                 });
             }
-            // add sniper
             if(GetTeamFoodCount() >= Database.unitData[(int)UnitType.worker].cost)
             {
                 actionMenu.AddRadialUnit(UnitType.worker).onClick.AddListener(() => 
@@ -383,10 +334,7 @@ public class GameScene : eSingletonMono<GameScene>
         
         actionMenu.UpdateRadialMenu();
     }
-    #endregion
 
-
-    #region State Managers
 
     public void StateAwaitInput()
     {
@@ -394,14 +342,14 @@ public class GameScene : eSingletonMono<GameScene>
         gameUI.ShowEndButton();
         AddListeners();
         actionMenu.Hide();
-        _gameState = GameState.awaitingInput;
+        _gameState = new AwaitingInput();
     }
     public void StateUnitSelected()
     {
         AddListeners();
         InputEvents.ins.OnMouseMoved += ShowPath;
         gameUI.HideEndButton();
-        _gameState = GameState.unitSelected;
+        _gameState = new UnitSelected();
     }
     public void StateAwaitAction()
     {
@@ -411,12 +359,13 @@ public class GameScene : eSingletonMono<GameScene>
         InputEvents.ins.OnMouseMoved -= selectionbox.Move;
         selectionbox.Hide();
         actionMenu.Show();
-        if(PersistentSettings.gameMode == GameMode.tutorial && (tutorialPhase == TutorialPhase.phase2 || tutorialPhase == TutorialPhase.phase5))
+        if(PersistentSettings.gameMode == GameMode.tutorial 
+        && (tutorialPhase == TutorialPhase.phase2 
+        || tutorialPhase == TutorialPhase.phase5))
         {
             NextTutorialPhase();
         }
-         
-        _gameState = GameState.awaitingAction;
+        _gameState = new AwaitingAction();
     }
     public void StateAwaitSplit()
     {
@@ -430,7 +379,7 @@ public class GameScene : eSingletonMono<GameScene>
         }
         selectionbox.Show();
         actionMenu.Hide();
-        _gameState = GameState.awaitingSplit;
+        _gameState = new AwaitingSplit();
     }
     public void StateAwaitAttack()
     {
@@ -439,7 +388,7 @@ public class GameScene : eSingletonMono<GameScene>
         gameUI.HideEndButton();
         selectionbox.Show();
         actionMenu.Hide();
-        _gameState = GameState.awaitingAttack;
+        _gameState = new AwaitingAttack();
     }
     public void StateAwaitEat()
     {
@@ -447,7 +396,7 @@ public class GameScene : eSingletonMono<GameScene>
         gameUI.HideEndButton();
         selectionbox.Show();
         actionMenu.Hide();
-        _gameState = GameState.awaitingEat;
+        _gameState = new AwaitingEat();
     }
     public void StateAnimating()
     {
@@ -457,22 +406,8 @@ public class GameScene : eSingletonMono<GameScene>
         selectionbox.Hide();
         actionMenu.Hide();
         DeselectAllTiles();
-        _gameState = GameState.animating;
+        _gameState = new Animating();
     }
-    public void StatePaused()
-    {
-        gameUI.HideEndButton();
-        RemoveListeners();
-        selectionbox.Hide();
-        _gameState = GameState.paused;
-    }
-
-    #endregion
-
-
-    #region Tile Controls
-
-    // wake up all units
     public void WakeUpAll()
     {
         foreach (KeyValuePair<Vector2, Unit> item in MapManager.ins.unitGrid)
@@ -480,17 +415,13 @@ public class GameScene : eSingletonMono<GameScene>
             item.Value.Idle();
         }
     }
-
-    // deselected everything
     private void DeselectAll()
     {
         DeselectAllTiles();
         DeselectAllUnits();
         StateAwaitInput();
     }
-
-    // Make sure there are no highlighted tiles
-    private void DeselectAllTiles()
+    public void DeselectAllTiles()
     {
         foreach (KeyValuePair<Vector2, Tile> k in MapManager.ins.currentMap) 
         { 
@@ -498,8 +429,6 @@ public class GameScene : eSingletonMono<GameScene>
             k.Value.UnHighlight();
         }
     }
-
-    // make sure there are no units selected
     private void DeselectAllUnits()
     {
         foreach (KeyValuePair<Vector2, Unit> k in MapManager.ins.unitGrid)
@@ -508,7 +437,6 @@ public class GameScene : eSingletonMono<GameScene>
         }
         _currentSelected = null;
     }
-    // this method cleans up the scene
     public override void CleanUp()
     {
         if(running)
@@ -522,13 +450,6 @@ public class GameScene : eSingletonMono<GameScene>
         }
         running = false;
     }
-
-    #endregion
-
-
-    #region Unit Controls
-
-    // temporary unit move, can still be undon
     public void TempMoveUnit()
     {
         MapManager.ins.unitGrid.Remove(_currentSelected.prevPos);
@@ -540,34 +461,26 @@ public class GameScene : eSingletonMono<GameScene>
         SetupActionMenu();
         StateAwaitAction();
     }
-
-    // setup the action menu based on what is around the unit
     private void SetupActionMenu()
     {
         actionMenu.transform.position = selectionbox.transform.position;
         actionMenu.Clear();
-        
-        
         if(_currentSelected.data.id == UnitType.worker)
         {
             if (_currentSelected.foodInRange.Count > 0) actionMenu.AddRadialButton("Gather").onClick.AddListener(HandleEat);
             if (GetTeamFoodCount() > 0 && _currentSelected.inSplitRange.Count > 0) actionMenu.AddRadialButton("Build").onClick.AddListener(HandleSplit);
         }
         else if (GetTeamFoodCount() >= _currentSelected.data.cost) actionMenu.AddRadialButton("Copy").onClick.AddListener(HandleSplit);
-
         if(_currentSelected.enemiesInRange.Count > 0) actionMenu.AddRadialButton("Attack").onClick.AddListener(HandleAttack);
         actionMenu.AddRadialButton("Wait").onClick.AddListener(HandleWait);
         actionMenu.AddRadialButton("Undo").onClick.AddListener(HandleUndo);
         actionMenu.UpdateRadialMenu();
     }
-
-    // destroy the unit
     private void KillUnit(Vector2 unitPos)
     {
         MapManager.ins.RemoveUnit(unitPos);
+        SoundManager.ins.PlayDeath();
     }
-    
-    //
     public void SpawnUnit(UnitType type, Team team, Vector2 gridPos)
     {
         Vector3 worldPos = MapManager.ins.GridToWorld(gridPos);
@@ -581,9 +494,7 @@ public class GameScene : eSingletonMono<GameScene>
         unit.gameObject.transform.SetParent(unitHolder.transform);
         UpdateFog();
     }
-
-    //
-    private void SelectUnit()
+    public void SelectUnit()
     {
         _currentSelected = MapManager.ins.unitGrid[selectionbox.gridpos];
         _currentSelected.Select();
@@ -602,13 +513,6 @@ public class GameScene : eSingletonMono<GameScene>
         }
         StateUnitSelected();
     }
-
-    #endregion
-
-
-
-    // OnMouseMoved listener
-    // when the mouse moves show the path that will be followed
     private void ShowPath()
     {
         foreach (Vector2 v in currentSelected.inMoveRange) 
@@ -631,12 +535,9 @@ public class GameScene : eSingletonMono<GameScene>
                     t.SetIconColor(Color.red); 
                     t.Highlight();
                 }
-                
             }
         }
     }
-
-    //
     private void UpdateFog()
     {
         AllFogOn();
@@ -660,8 +561,6 @@ public class GameScene : eSingletonMono<GameScene>
             }
         }
     }
-
-    //
     public void AllFogOn()
     {
         allVisibleTiles.Clear();
@@ -670,7 +569,6 @@ public class GameScene : eSingletonMono<GameScene>
             k.Value.ShowFog();
         }
     }
-    //
     public void AllUnitsOff()
     {
         foreach(Unit u in GetAllUnits())
@@ -678,8 +576,6 @@ public class GameScene : eSingletonMono<GameScene>
             u.Hide();
         }
     }
-
-    // end the turn
     public void EndTurn()
     {
         DeselectAll();
@@ -706,9 +602,7 @@ public class GameScene : eSingletonMono<GameScene>
             turnCount++;
         }
     }
-
-    
-    private void Undo()
+    public void Undo()
     {
         MapManager.ins.unitGrid.Remove(_currentSelected.gridpos);
         MapManager.ins.unitGrid.Add(_currentSelected.prevPos, _currentSelected);
@@ -751,19 +645,27 @@ public class GameScene : eSingletonMono<GameScene>
         }
         return units;
     }
-    public void CheckForWin(Team team)
+    public bool CheckForWin(Team team)
     {
         // check to see if all units on a team are dead
         if (GetArmyValue(team) == 0)
         {
-            if(team == (Team)currentTurn) NextTurn();
-            else SocketManager.ins.Send(PacketFactory.BuildEndTurn());
+            if(PersistentSettings.gameMode == GameMode.online) 
+            {
+                if(team == (Team)currentTurn)
+                {
+                    NextTurn();
+                    SocketManager.ins.Send(PacketFactory.BuildGameOver());
+                } 
+                else SocketManager.ins.Send(PacketFactory.BuildEndTurn());
+            }
             MatchStats.UpdateWinner((Team)currentTurn);
             MatchStats.UpdateMapName();
             MatchStats.UpdateTurnCount(turnCount);
             gameUI.BeginEndGameTransition();
-            
+            return true;
         }
+        return false;
 
     }
     public void Surrender()
@@ -772,6 +674,15 @@ public class GameScene : eSingletonMono<GameScene>
         gameUI.BeginEndGameTransition();
         MatchStats.UpdateWinner((Team)currentTurn);
         MatchStats.UpdateMapName();
+        if(PersistentSettings.gameMode == GameMode.online) 
+        {
+            List<Unit> units = GetAllUnits();
+            for(int i = units.Count - 1; i >= 0; i--)
+            {
+                if(units[i].team == clientTeam) MapManager.ins.RemoveUnit(units[i].gridpos);
+            }
+            SocketManager.ins.Send(PacketFactory.BuildEndTurn());
+        }
     }
     private void NextTutorialPhase()
     {
@@ -798,9 +709,12 @@ public class GameScene : eSingletonMono<GameScene>
         {
             AllFogOn();
             AllUnitsOff();
+            gameUI.BeginOnlineTurnTransition();
         }
     }
+    public Team OtherTeam()
+    {
+        if(clientTeam == Team.player1) return Team.player2;
+        else return Team.player1;
+    }
 }
-
-
-

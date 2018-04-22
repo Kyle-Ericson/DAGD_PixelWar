@@ -103,11 +103,25 @@ AnimationClip:
     floatParameter: 0.2
     intParameter: 0
     messageOptions: 0
+  - time: 0.05
+    functionName: PlayShootSound
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.15
     functionName: JuiceCamera
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0.2
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.15
+    functionName: PlayShootSound
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.25
@@ -117,6 +131,13 @@ AnimationClip:
     floatParameter: 0.2
     intParameter: 0
     messageOptions: 0
+  - time: 0.25
+    functionName: PlayShootSound
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.35
     functionName: JuiceCamera
     data: 
@@ -124,11 +145,25 @@ AnimationClip:
     floatParameter: 0.2
     intParameter: 0
     messageOptions: 0
+  - time: 0.35
+    functionName: PlayShootSound
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.45
     functionName: JuiceCamera
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0.2
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.45
+    functionName: PlayShootSound
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.5

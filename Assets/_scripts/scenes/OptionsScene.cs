@@ -17,6 +17,9 @@ public class OptionsScene : eSingletonMono<OptionsScene>
     private Slider musicSlider = null;
     private TextMeshProUGUI musicValueText = null;
 
+    private GameObject creditsPanel = null;
+    private Button creditsButton = null;
+
 
     public override void Init()
     {
@@ -32,6 +35,11 @@ public class OptionsScene : eSingletonMono<OptionsScene>
         musicSlider = musicVolume.transform.GetChild(1).GetComponent<Slider>();
         musicValueText = musicVolume.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
         musicSlider.onValueChanged.AddListener(HandleMusicSliderChange);
+
+        creditsButton = ui.transform.GetChild(7).GetComponent<Button>();
+        creditsButton.onClick.AddListener(ToggleCredits);
+
+        creditsPanel = ui.transform.GetChild(6).gameObject;
     }
     public void HandleSFXSliderChange(float value)
     {
@@ -42,5 +50,13 @@ public class OptionsScene : eSingletonMono<OptionsScene>
     {
         PersistentSettings.SetMusicVolume(value);
         musicValueText.text = ((int)(value * 100f)).ToString();
+    }
+    public void ToggleCredits()
+    {
+        creditsPanel.SetActive(!creditsPanel.activeSelf);
+    }
+    public bool CreditsOpen()
+    {
+        return creditsPanel.activeSelf;
     }
 }

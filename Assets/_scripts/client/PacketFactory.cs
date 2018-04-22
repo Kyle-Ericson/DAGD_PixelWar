@@ -57,8 +57,26 @@ public static class PacketFactory
 		packet.gameKey = key;
 		return System.Text.Encoding.ASCII.GetBytes(JsonUtility.ToJson(packet));
 	}
+	public static byte[] BuildLeave()
+	{
+		LeaveGame packet = new LeaveGame();
+		packet.type = "LEAV";
+		Debug.Log(PersistentSettings.gameKey);
+		packet.gameKey = PersistentSettings.gameKey;
+		return System.Text.Encoding.ASCII.GetBytes(JsonUtility.ToJson(packet));
+	}
+	public static byte[] BuildGameOver()
+	{
+		GameOver packet = new GameOver();
+		packet.type = "GMOV";
+		packet.gameKey = PersistentSettings.gameKey;
+		return System.Text.Encoding.ASCII.GetBytes(JsonUtility.ToJson(packet));
+	}
+
 }
 
+
+////////////////////// Generic
 // this is used to grab the type from the packets
 [System.Serializable]
 public class JsonType
@@ -91,6 +109,23 @@ public class FindGame // FGAM
 {
 	public string type;
 }
+[System.Serializable]
+public class LeaveGame // FGAM
+{
+	public string type;
+	public string gameKey;
+}
+[System.Serializable]
+public class GameOver // FGAM
+{
+	public string type;
+	public string gameKey;
+}
+
+
+
+
+
 ////////////////////// packets for receiving
 [System.Serializable]
 public class JoinResponse // JRES
@@ -98,6 +133,19 @@ public class JoinResponse // JRES
 	public string type;
 	public int response; // 0: Deny 1: Accept
 }
+[System.Serializable]
+public class GameKey
+{
+	public string type;
+	public string gameKey;
+}
+
+
+
+
+
+
+
 ////////////////////// packets for sending and receiving
 [System.Serializable]
 public class EndTurn // ENDT
@@ -113,6 +161,13 @@ public class GameStart // GMST
 	public int mapID;
 	public string gameKey;
 }
+[System.Serializable]
+public class EndGame
+{
+	public string type;
+	public string gameKey;
+}
+
 
 
 ///////////////////// Data Structures

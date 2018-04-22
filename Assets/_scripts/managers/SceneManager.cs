@@ -47,6 +47,8 @@ public class SceneManager : eSingletonMono<SceneManager> {
         HideAll();
         TitleScene.ins.Show();
         SoundManager.ins.PlayTitleMusic();
+        PersistentSettings.gameKey = "";
+        PersistentSettings.gameMode = GameMode.local;
     }
     public void ToPost()
     {
@@ -68,7 +70,7 @@ public class SceneManager : eSingletonMono<SceneManager> {
     {
         HideAll();
         TransitionScene.ins.Show();
-        TransitionScene.ins.SetText("Waiting...");
+        TransitionScene.ins.SetText("Game Key: " + PersistentSettings.gameKey +"\nWaiting for other player...");
     }
     public void HideAll()
     {
@@ -85,20 +87,9 @@ public class SceneManager : eSingletonMono<SceneManager> {
     {
         HideAll();
         GameScene.ins.Show();
-        GameScene.ins.SetupMatch(map, GameMode.local);
+        GameScene.ins.SetupMatch(map);
     }
-    public void StartTutorial()
-    {
-        HideAll();
-        GameScene.ins.Show();
-        GameScene.ins.SetupMatch(0, GameMode.tutorial);
-    }
-    public void StartOnlineMatch(int map)
-    {
-        HideAll();
-        GameScene.ins.Show();
-        GameScene.ins.SetupMatch(map, GameMode.online);
-    }
+    
     public void ToggleOptions()
     {
         isOptionsOpen = !isOptionsOpen;

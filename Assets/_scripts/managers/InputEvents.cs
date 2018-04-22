@@ -18,7 +18,6 @@ public class InputEvents : eSingletonMono<InputEvents> {
 
     private void Update()
     {
-        if (GameScene.ins.gameState == GameState.paused) return;
         if(GameScene.ins.running)
         {
             CheckInputs();

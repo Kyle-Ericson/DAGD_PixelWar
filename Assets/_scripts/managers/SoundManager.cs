@@ -17,6 +17,8 @@ public class SoundManager : eSingletonMono<SoundManager> {
 	private AudioClip musicPyramidLevel = null;
 	private AudioClip musicAirship = null;
 	private AudioClip musicWeCanDoIt = null;
+	private AudioClip musicTogetherWeAreStronger = null;
+	private AudioClip musicQuietSaturday = null;
 
 	public override void Init () 
 	{
@@ -34,10 +36,13 @@ public class SoundManager : eSingletonMono<SoundManager> {
 		musicPyramidLevel = Resources.Load<AudioClip>("audio/music/Visager_-_06_-_Pyramid_Level");
 		musicAirship = Resources.Load<AudioClip>("audio/music/Visager_-_08_-_Airship");
 		musicWeCanDoIt = Resources.Load<AudioClip>("audio/music/Visager_-_26_-_We_Can_Do_It_Loop");
+		musicTogetherWeAreStronger = Resources.Load<AudioClip>("audio/music/Komiku_-_59_-_Together_we_are_stronger");
+		musicQuietSaturday = Resources.Load<AudioClip>("audio/music/Komiku_-_57_-_Quiet_Saturday");
 	}
 	public void PlayTitleMusic()
 	{
-		musicSource.clip = musicFireDarer;
+		if(musicSource.isPlaying) return;
+		musicSource.clip = musicQuietSaturday;
 		musicSource.Play();
 	}	
 	public void PlayGameMusic()
@@ -57,8 +62,8 @@ public class SoundManager : eSingletonMono<SoundManager> {
 	}
 	public void PlayeMoveCursor()
 	{
-		sfxSource.clip = sfxCursor;
-		sfxSource.Play();
+		//sfxSource.clip = sfxCursor;
+		//sfxSource.Play();
 	}
 	public void PlayHoverButton()
 	{

@@ -1,14 +1,14 @@
-﻿public enum GameState
-{
-    awaitingInput,
-    unitSelected,
-    awaitingAction,
-    awaitingAttack,
-    awaitingEat,
-    paused,
-    awaitingSplit,
-    animating
-}
+﻿// public enum GameState
+// {
+//     awaitingInput,
+//     unitSelected,
+//     awaitingAction,
+//     awaitingAttack,
+//     awaitingEat,
+//     paused,
+//     awaitingSplit,
+//     animating
+// }
 
 public enum UnitState
 {

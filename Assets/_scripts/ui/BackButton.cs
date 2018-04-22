@@ -15,9 +15,15 @@ public class BackButton : MonoBehaviour {
     }
     private void HandleClick()
     {
-
-        if(!isOptions) SceneManager.ins.ToTitle();
+        if(!isOptions) 
+        {
+            if(OptionsScene.ins.CreditsOpen()) OptionsScene.ins.ToggleCredits();
+            SceneManager.ins.ToTitle();
+        }
         else SceneManager.ins.ToggleOptions();
+        if(PersistentSettings.gameMode == GameMode.online && !GameScene.ins.running) {
+            SocketManager.ins.Send(PacketFactory.BuildLeave());            
+        }
     }
 
 }

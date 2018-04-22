@@ -23,6 +23,7 @@ public class LobbyScene : eSingletonMono<LobbyScene>  {
 		createGame = ui.transform.GetChild(2).GetComponent<Button>();
 		createGame.onClick.AddListener(HandleCreateGame);
 		joinGame = ui.transform.GetChild(3).GetComponent<Button>();
+		joinGame.onClick.AddListener(HandleJoinGame);
 		inputField = ui.transform.GetChild(5).GetComponent<TMP_InputField>();
 	}
 	public void HandleFindGame()
@@ -44,6 +45,6 @@ public class LobbyScene : eSingletonMono<LobbyScene>  {
 			return;
 		}
 		PersistentSettings.isHost = false;
-		SocketManager.ins.Send(PacketFactory.BuildJoinGame(inputField.text));
+		SocketManager.ins.Send(PacketFactory.BuildJoinGame(inputField.text.ToUpper()));
 	}
 }

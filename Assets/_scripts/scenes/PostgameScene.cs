@@ -42,6 +42,9 @@ public class PostgameScene : eSingletonMono<PostgameScene>
     }
     public void UpdateAll()
     {
+        if(PersistentSettings.gameMode == GameMode.online) rematchButton.gameObject.SetActive(false);
+        else rematchButton.gameObject.SetActive(true);
+
         winner.text = "Player " + ((int)MatchStats.winner).ToString().ToUpper() + " Wins!";
 
         p1Text.text = "Red";

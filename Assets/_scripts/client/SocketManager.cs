@@ -16,7 +16,7 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	string localhost = "127.0.0.1";
 	string ec2_HelloWorld = "18.188.129.215";
 	int serverPort = 5643;
-	int clientPort = 5646;
+	int clientPort = 0;
 	List<string> packetBuffer = new List<string>();
 
 	public void Update()
@@ -43,6 +43,12 @@ public class SocketManager : eSingletonMono<SocketManager> {
 				case "GMST":
 					PacketHandler.HandleGameStart(nextPacket);
 					break;
+				case "EDGM":
+					PacketHandler.HandleEndGame();
+					break;
+				case "GKEY":
+					PacketHandler.HandleGameKey(nextPacket);
+					break;
 			}
 			packetBuffer.Remove(nextPacket);
 		}
@@ -64,7 +70,7 @@ public class SocketManager : eSingletonMono<SocketManager> {
 		if(NotOnline()) return;
 		if(client != null && client.Client.Connected) return;
 		serverEndPoint = new IPEndPoint(IPAddress.Parse(ec2_HelloWorld), serverPort);
-		client = new UdpClient(5644);
+		client = new UdpClient(clientPort);
 		client.Connect(serverEndPoint);
 		client.Client.Blocking = false;
         client.BeginReceive(new AsyncCallback(Receive), client);
@@ -112,5 +118,13 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	{
 		Debug.Log("Join Response");
 		packetBuffer.Add(packet);
+	}
+	void OnApplicationQuit()
+	{
+		if(PersistentSettings.gameMode == GameMode.online)
+		{
+			SocketManager.ins.Send(PacketFactory.BuildLeave());
+			SocketManager.ins.Disconnect();
+		}
 	}
 }

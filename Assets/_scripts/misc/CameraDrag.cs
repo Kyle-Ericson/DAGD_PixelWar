@@ -33,7 +33,8 @@ public class CameraDrag : MonoBehaviour {
                 else
                 {
                     float direction = Normalize(GetDistance(touchpos[0], touchpos[1]) - prevDistance);
-                    Camera.main.orthographicSize += -direction * (PersistentSettings.zoomSpeed * 0.2f) * Time.deltaTime;
+                    Camera.main.orthographicSize += -direction * PersistentSettings.zoomSpeed * Time.deltaTime;
+                    ClampZoom();
                     prevDistance = GetDistance(touchpos[0], touchpos[1]);
                 }
             }
@@ -43,6 +44,8 @@ public class CameraDrag : MonoBehaviour {
         {
             var scrollDir = Input.GetAxis("Mouse ScrollWheel");
             Camera.main.orthographicSize += -scrollDir * PersistentSettings.zoomSpeed * Time.deltaTime;
+            ClampZoom();
+
             if (!Input.GetMouseButton(2))
             {
                 holdTimer = 0;
@@ -58,7 +61,7 @@ public class CameraDrag : MonoBehaviour {
             newpos.y = Input.GetAxisRaw("Mouse Y");
             transform.position -= newpos * PersistentSettings.dragSpeed * Time.deltaTime;
         }
-        ClampZoom();
+        
     }
     private float GetDistance(Vector2 posA, Vector2 posB)
     {
