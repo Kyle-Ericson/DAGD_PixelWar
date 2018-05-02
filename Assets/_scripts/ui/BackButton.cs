@@ -21,9 +21,8 @@ public class BackButton : MonoBehaviour {
             SceneManager.ins.ToTitle();
         }
         else SceneManager.ins.ToggleOptions();
-        if(PersistentSettings.gameMode == GameMode.online && !GameScene.ins.running) {
-            SocketManager.ins.Send(PacketFactory.BuildLeave());            
-        }
+
+        
     }
 
 }

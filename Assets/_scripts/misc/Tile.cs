@@ -11,6 +11,7 @@ public class Tile : eSprite
     public TileData data { get { return _data; }}
 
     public Vector2 gridpos;
+    public FunWithSine gridLineSine;
     private GameObject fog = null;
     private SpriteRenderer gridLine = null;
     private SpriteRenderer icon = null;
@@ -31,20 +32,19 @@ public class Tile : eSprite
     private void Awake()
     {
         gridLine = transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+        gridLineSine = transform.GetChild(0).gameObject.GetComponent<FunWithSine>();
         icon = transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>();
         fog = transform.GetChild(2).gameObject;
     }
     private void Start()
     {
-        icon.gameObject.SetActive(false);
-       
+       icon.gameObject.SetActive(false);
     }
     public void SetType(TileType type)
     {
         GetComponent<SpriteRenderer>().sprite = Sprites.ins.tileSprites[type];
         _data = Database.tileData[(int)type];
         gridpos = MapManager.ins.WorldToGrid(transform.position);
-        //if((int)type == 1) CheckNeighbors();
     }
     public void Highlight()
     {
@@ -65,6 +65,16 @@ public class Tile : eSprite
         textIcon.gameObject.SetActive(false);
         highlighted = false;
     }
+    public void HighlightGrid()
+    {
+        gridLine.color = Color.white;
+        gridLineSine.TurnOnScaling();
+    }
+    public void UnHighlightGrid()
+    {
+        gridLine.color = Color.black;
+        gridLineSine.Reset();
+    }
     public void SetIconColor(Color color)
     {
         icon.color = color;
@@ -84,65 +94,5 @@ public class Tile : eSprite
     public void HideFog()
     {
        if(fog) fog.SetActive(false);
-    }
-    public void CheckNeighbors()
-    {
-        Debug.Log("Checking");
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-
-        // left corner
-        if(!CheckTop() && !CheckLeft()) 
-        { 
-            sr.sprite = Sprites.ins.tileSprites[TileType.grassCorner]; 
-            sr.flipX = true;
-        }
-        // right corner
-        else if(!CheckTop() && !CheckRight()) 
-        { 
-            sr.sprite = Sprites.ins.tileSprites[TileType.grassCorner];
-        }
-        // right bottom
-        else if(!CheckRight() && !CheckBottom())
-        { 
-            sr.sprite = Sprites.ins.tileSprites[TileType.grassCorner]; 
-            sr.flipY = true; 
-        }
-        // left bottom 
-        else if(!CheckLeft() && !CheckBottom())
-        { 
-            sr.sprite = Sprites.ins.tileSprites[TileType.grassCorner]; 
-            sr.flipY = true; 
-            sr.flipX = true; 
-        }
-        
-    }
-    public bool CheckTop()
-    {
-        if(gridpos.y == 0) return false;
-        int tileType = MapManager.ins.OneDGridPos((int)gridpos.x, (int)gridpos.y - 1);
-        if(tileType == 0) return false;
-        return true;
-    }
-    public bool CheckBottom()
-    {
-        if(gridpos.y == MapManager.ins.currentMapData.rows - 1) return false;
-        int tileType = MapManager.ins.OneDGridPos((int)gridpos.x, (int)gridpos.y + 1);
-        if(tileType == 0) return false;
-        
-        return true;
-    }
-    public bool CheckLeft()
-    {
-        if(gridpos.x == 0) return false;
-        int tileType = MapManager.ins.OneDGridPos((int)gridpos.x - 1, (int)gridpos.y);
-        if(tileType == 0) return false;
-        return true;
-    }
-    public bool CheckRight()
-    {
-        if(gridpos.x == MapManager.ins.currentMapData.cols - 1) return false;
-        int tileType = MapManager.ins.OneDGridPos((int)gridpos.x + 1, (int)gridpos.y);
-        if(tileType == 0) return false;
-        return true;
     }
 }

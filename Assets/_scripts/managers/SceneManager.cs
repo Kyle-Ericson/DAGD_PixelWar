@@ -60,17 +60,19 @@ public class SceneManager : eSingletonMono<SceneManager> {
     {
         HideAll();
         PregameScene.ins.Show();
+        PregameScene.ins.maplist.buttons[0].onClick.Invoke();
     }
     public void ToLobby()
     {
         HideAll();
+        PersistentSettings.gameMode = GameMode.online;
         LobbyScene.ins.Show();
     }
     public void ToWait()
     {
         HideAll();
         TransitionScene.ins.Show();
-        TransitionScene.ins.SetText("Game Key: " + PersistentSettings.gameKey +"\nWaiting for other player...");
+        TransitionScene.ins.SetText("Game Key: " + PersistentSettings.gameKey +"\nWaiting for another player...");
     }
     public void HideAll()
     {
@@ -88,6 +90,7 @@ public class SceneManager : eSingletonMono<SceneManager> {
         HideAll();
         GameScene.ins.Show();
         GameScene.ins.SetupMatch(map);
+        SoundManager.ins.PlayGameMusic();
     }
     
     public void ToggleOptions()

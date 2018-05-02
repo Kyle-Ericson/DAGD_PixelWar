@@ -13,7 +13,7 @@ namespace ericson
 
         private GameObject basicButtonFab = null;
         private GameObject radialButtonFab = null;
-        private List<Button> buttons = new List<Button>();
+        public List<Button> buttons = new List<Button>();
         private List<Button> radialButtons = new List<Button>();
         private int buttonGap = 10;
 
@@ -81,7 +81,6 @@ namespace ericson
             if (basicButtonFab == null) basicButtonFab = Resources.Load<GameObject>("prefabs/BasicButton");
             Button newButton = Instantiate(basicButtonFab).GetComponent<Button>();
             newButton.gameObject.transform.SetParent(gameObject.transform);
-            newButton.transform.localScale = Vector3.one;
             newButton.transform.localPosition = Vector3.zero;
             newButton.gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = label;
             buttons.Add(newButton);

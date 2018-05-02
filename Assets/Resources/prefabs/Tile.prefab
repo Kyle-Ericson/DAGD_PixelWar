@@ -89,6 +89,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4669098111788608}
   - component: {fileID: 212901110099367794}
+  - component: {fileID: 114534404052535406}
   m_Layer: 0
   m_Name: GridLine
   m_TagString: Untagged
@@ -205,6 +206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridpos: {x: 0, y: 0}
+  gridLineSine: {fileID: 0}
   textIcon: {fileID: 114964922110609108}
   typeIcon: {fileID: 0}
   highlighted: 0
@@ -216,6 +218,25 @@ MonoBehaviour:
   grassEdge: {fileID: 0}
   grassCorner: {fileID: 0}
   wall: {fileID: 0}
+--- !u!114 &114534404052535406
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1883371834857224}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9efabc3799be12e4d9c53ee07e21205c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  theta: 0
+  amplitude: 0.05
+  speed: 10
+  baseLine: 1
+  newScale: {x: 0, y: 0, z: 0}
+  doScale: 0
+  doAlpha: 0
+  startRandom: 0
 --- !u!114 &114680767123717096
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -537,7 +558,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1166021249223498}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4533026755739352}

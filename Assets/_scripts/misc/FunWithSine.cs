@@ -13,14 +13,15 @@ public class FunWithSine : MonoBehaviour {
     public bool doScale = false;
     public bool doAlpha = false;
     public bool startRandom = false;
+    private Vector3 originalScale;
 	
     void Start()
     {
+        originalScale = transform.localScale;
         if(startRandom) theta = Random.Range(0f, 360f);
     }
 	void Update ()
     {
-        
         theta += Time.deltaTime * speed;
         if (doScale) DoScale(theta);
         if (doAlpha) DoAlpha(theta);
@@ -36,5 +37,32 @@ public class FunWithSine : MonoBehaviour {
         Color newColor = sr.color;
         newColor.a = (Mathf.Sin(theta) * amplitude) + baseLine;
         sr.color = newColor;
+    }
+    public void Reset()
+    {
+        theta = 0;
+        Stop();
+        transform.localScale = originalScale;
+    }
+    public void Stop()
+    {
+        TurnOffAlpha();
+        TurnOffScaling();
+    }
+    public void TurnOnScaling()
+    {
+        doScale = true;
+    }
+    public void TurnOffScaling()
+    {
+        doScale = false;
+    }
+    public void TurnOnAlpha()
+    {
+        doAlpha = true;
+    }
+    public void TurnOffAlpha()
+    {
+        doAlpha = false;
     }
 }

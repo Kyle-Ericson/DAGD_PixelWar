@@ -12,6 +12,7 @@ public class GameScene : eSingletonMono<GameScene>
     private Unit _currentSelected = null;
     
     public Team clientTeam;
+    public GameMode gameMode;
     public GameObject unitPrefab;
     public Unit gettingAttacked = null;
     public SelectionBox selectionbox;
@@ -56,11 +57,6 @@ public class GameScene : eSingletonMono<GameScene>
     {
         running = true;
         _gameState = new AwaitingInput();
-        if(PersistentSettings.gameMode == GameMode.online)
-        {
-            if(PersistentSettings.isHost) clientTeam = Team.player1;
-            else clientTeam = Team.player2;
-        }
         LoadMap(map);
         selectionbox.Show();
         selectionbox.Move(Vector2.zero);
@@ -71,7 +67,13 @@ public class GameScene : eSingletonMono<GameScene>
         gameUI.ResetTransitions();
         if(gameUI.menuOpen) gameUI.CloseMenu();
         currentTurn = 1;
-        if(PersistentSettings.gameMode == GameMode.online) CheckTurnOnline();
+    
+        if(PersistentSettings.gameMode == GameMode.online) 
+        {
+            if(PersistentSettings.isHost) clientTeam = Team.player1;
+            else clientTeam = Team.player2;
+            CheckTurnOnline();
+        }
     }
     //
     private void LoadMap(int mapID)
@@ -83,6 +85,7 @@ public class GameScene : eSingletonMono<GameScene>
         {
             gameUI.ShowTutorial();
             tutorialPhase = TutorialPhase.phase1;
+            MapManager.ins.currentMap[MapManager.ins.currentMapData.start1.ToVector2()].HighlightGrid();
             gameUI.UpdateTutorial();
         }
         else gameUI.HideTutorial();
@@ -107,93 +110,19 @@ public class GameScene : eSingletonMono<GameScene>
     // handle a left mouse button click
     private void HandleMouseLClick()
     {
+        if(PersistentSettings.gameMode == GameMode.online && currentTurn != (int)clientTeam) return;
         if(PersistentSettings.gameMode == GameMode.tutorial && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
         if(Application.platform == RuntimePlatform.Android) selectionbox.Move();
         _gameState.HandleLeftClick();
 
-        /*    
-        switch (_gameState)
-        {
-            case GameState.awaitingInput:
-                
-                break;
-
-            case GameState.unitSelected:
-
-                if (_currentSelected.inMoveRange.Contains(selectionbox.gridpos) 
-                    && !MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos)
-                    || selectionbox.gridpos == _currentSelected.gridpos)
-                { 
-                    _currentSelected.StartMoving(AStar.ins.FindPath(_currentSelected.gridpos,selectionbox.gridpos));
-                    StateAnimating();
-                }
-                else Undo();
-
-                break;
-            case GameState.awaitingAction:
-                //Undo();
-                break;
-            case GameState.awaitingSplit:
-                if(currentSelected.inSplitRange.Contains(selectionbox.gridpos) && !MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos))
-                {
-                    ConfirmSplit(selectionbox.gridpos);
-                }
-                else if(MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos))
-                {
-
-                }
-                break;
-            case GameState.awaitingAttack:
-                if (currentSelected.inAttackRange.Contains(selectionbox.gridpos)
-                    && MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos))
-                {
-                    BeginAttack();
-                    if(currentSelected.type != UnitType.worker) gettingAttacked = MapManager.ins.unitGrid[selectionbox.gridpos];
-                    else gettingAttacked = null;
-                }
-                break;
-            case GameState.awaitingEat:
-                if(currentSelected.foodInRange.Contains(selectionbox.gridpos)) 
-                {
-                    BeginAttack();
-                }
-                break;
-            case GameState.paused:
-                break;
-        }
-        */
     }
 
     // handle when the right mouse button is clicked
     private void HandleMouseRClick()
     {
+        if(PersistentSettings.gameMode == GameMode.online && currentTurn != (int)clientTeam) return;
         if(PersistentSettings.gameMode == GameMode.tutorial && tutorialPhase == TutorialPhase.phase7) gameUI.HideTutorial();
         _gameState.HandleRightClick();
-        
-        /*
-        switch(_gameState)
-        {
-            case GameState.awaitingInput:
-                DeselectAllTiles();
-                if (MapManager.ins.unitGrid.ContainsKey(selectionbox.gridpos))
-                {
-                    var unit = MapManager.ins.unitGrid[selectionbox.gridpos];
-                    unit.CheckAttackRange();
-
-                    foreach(Vector2 v in unit.inAttackRange)
-                    {
-                        if (v == selectionbox.gridpos) continue;
-                        Tile tile = MapManager.ins.currentMap[v];
-                        tile.Highlight();
-                        tile.SetIconColor(Color.red);
-                    }
-                }
-                break;
-            default:
-                Undo();
-                break;
-        }
-        */
     }
 
     public void ConfirmSplit(Vector2 splitPos)
@@ -242,6 +171,7 @@ public class GameScene : eSingletonMono<GameScene>
     }
     public void ConfirmMove()
     {
+        
         currentSelected.Sleep();
         _currentSelected = null;
         gettingAttacked = null;
@@ -257,8 +187,8 @@ public class GameScene : eSingletonMono<GameScene>
         foreach(Vector2 v in _currentSelected.enemiesInRange)
         {
             Tile tile = MapManager.ins.currentMap[v];
-            tile.Highlight();
-            tile.SetIconColor(Color.red / 2);
+            tile.Highlight("Attack");
+            tile.SetIconColor(Color.red);
         }
         StateAwaitAttack();
     }
@@ -445,8 +375,10 @@ public class GameScene : eSingletonMono<GameScene>
             MapManager.ins.CleanUp();
             RemoveListeners();
             selectionbox.Hide();
+            clientTeam = Team.None;
             currentTurn = 1;
             turnCount = 1;
+            PersistentSettings.isHost = false;
         }
         running = false;
     }
@@ -542,7 +474,6 @@ public class GameScene : eSingletonMono<GameScene>
     {
         AllFogOn();
         AllUnitsOff();
-
         foreach(KeyValuePair<Vector2, Unit> k in MapManager.ins.unitGrid)
         {
             if(k.Value.team == (Team)currentTurn)
@@ -589,7 +520,6 @@ public class GameScene : eSingletonMono<GameScene>
             {
                 gameUI.BeginTurnTransition();
             }
-
             if(tutorialPhase == TutorialPhase.phase4 || tutorialPhase == TutorialPhase.phase6) NextTutorialPhase();
         }
     }
@@ -688,6 +618,38 @@ public class GameScene : eSingletonMono<GameScene>
     {
         tutorialPhase++;
         gameUI.UpdateTutorial();
+        foreach(KeyValuePair<Vector2, Tile> k in MapManager.ins.currentMap)
+        {
+            k.Value.UnHighlightGrid();
+        }
+        var startpos = MapManager.ins.currentMapData.start1.ToVector2();
+        switch(tutorialPhase)
+        {
+            case TutorialPhase.phase2:
+                startpos.x -= 1;
+                MapManager.ins.currentMap[startpos].HighlightGrid();
+                startpos.y -= 1;
+                MapManager.ins.currentMap[startpos].HighlightGrid();
+                startpos.y += 2;
+                MapManager.ins.currentMap[startpos].HighlightGrid();
+                break;
+            case TutorialPhase.phase3:
+                startpos.x -= 2;
+                MapManager.ins.currentMap[startpos].HighlightGrid();
+                startpos.y -= 1;
+                MapManager.ins.currentMap[startpos].HighlightGrid();
+                startpos.y += 2;
+                MapManager.ins.currentMap[startpos].HighlightGrid();
+                break;
+            case TutorialPhase.phase4:
+                break;
+            case TutorialPhase.phase5:
+                break;
+            case TutorialPhase.phase6:
+                break;
+            case TutorialPhase.phase7:
+                break;
+        }
     }
     public void HideLines()
     {
@@ -709,6 +671,7 @@ public class GameScene : eSingletonMono<GameScene>
         {
             AllFogOn();
             AllUnitsOff();
+            gameUI.HideEndButton();
             gameUI.BeginOnlineTurnTransition();
         }
     }

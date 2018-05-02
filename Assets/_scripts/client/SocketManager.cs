@@ -14,7 +14,7 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	private IPEndPoint serverEndPoint;
 	private IPAddress serverIP;
 	string localhost = "127.0.0.1";
-	string ec2_HelloWorld = "18.188.129.215";
+	string ec2_HelloWorld = "13.59.170.6";
 	int serverPort = 5643;
 	int clientPort = 0;
 	List<string> packetBuffer = new List<string>();
@@ -116,7 +116,7 @@ public class SocketManager : eSingletonMono<SocketManager> {
 	}
 	private void AddToBuffer(string packet)
 	{
-		Debug.Log("Join Response");
+		
 		packetBuffer.Add(packet);
 	}
 	void OnApplicationQuit()

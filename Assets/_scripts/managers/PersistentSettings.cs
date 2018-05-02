@@ -55,7 +55,7 @@ public static class PersistentSettings {
 
     public static void SetMusicVolume(float value)
     {
-        _musicVolume = value / 2;
+        _musicVolume = value;
         SoundManager.ins.SetMusicVolume();
     }
     public static void SetSFXVolume(float value)

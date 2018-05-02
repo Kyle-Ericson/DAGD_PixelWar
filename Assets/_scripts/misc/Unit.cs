@@ -72,6 +72,7 @@ public class Unit : eSprite
         SetPrevPos();
         pathToFollow = path;
         isMoving = true;
+        if(pathToFollow.Count != 0) SoundManager.ins.PlayWalk();
     }
     public void FollowPath()
     {
@@ -80,7 +81,9 @@ public class Unit : eSprite
             var target = pathToFollow[moveIterator].transform.position;
             target.z = zoffset;
             transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
+            
             if (transform.position == target) moveIterator++;
+
         }
         if (moveIterator >= pathToFollow.Count)
         {
@@ -173,7 +176,7 @@ public class Unit : eSprite
         this.type = type;
         UpdateText();
     }
-    private void UpdateText()
+    public void UpdateText()
     {
         if (healthText) healthText.text = health.ToString();
     }

@@ -67,7 +67,7 @@ public class SelectionBox : MonoBehaviour
     }
     private void CheckInfoBox()
     {
-        if (MapManager.ins.unitGrid.ContainsKey(gridpos) && MapManager.ins.unitGrid[gridpos].team == (Team)GameScene.ins.currentTurn )
+        if (MapManager.ins.unitGrid.ContainsKey(gridpos) && GameScene.ins.GetAllVisibleTiles().Contains(gridpos))
         {
             GameScene.ins.gameUI.ShowInfo(MapManager.ins.unitGrid[gridpos]);
         }

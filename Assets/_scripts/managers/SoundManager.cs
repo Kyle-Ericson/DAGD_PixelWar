@@ -12,11 +12,9 @@ public class SoundManager : eSingletonMono<SoundManager> {
 	private AudioClip sfxShoot = null;
 	private AudioClip sfxCursor = null;
 	private AudioClip sfxHover = null;
+	private AudioClip sfxWalk = null;
 
-	private AudioClip musicFireDarer = null;
-	private AudioClip musicPyramidLevel = null;
-	private AudioClip musicAirship = null;
-	private AudioClip musicWeCanDoIt = null;
+	
 	private AudioClip musicTogetherWeAreStronger = null;
 	private AudioClip musicQuietSaturday = null;
 
@@ -24,30 +22,27 @@ public class SoundManager : eSingletonMono<SoundManager> {
 	{
 		musicSource = gameObject.AddComponent(typeof(AudioSource)) as AudioSource;
 		sfxSource = gameObject.AddComponent(typeof(AudioSource)) as AudioSource;
-		musicSource.volume = PersistentSettings.musicVolume;
-		sfxSource.volume = PersistentSettings.sfxVolume;
+		SetMusicVolume();
+		SetSFXVolume();
 
 		sfxDeath = Resources.Load<AudioClip>("audio/sfx/death1");
 		sfxShoot = Resources.Load<AudioClip>("audio/sfx/shoot1");
 		sfxCursor = Resources.Load<AudioClip>("audio/sfx/cursor_move1");
 		sfxHover = Resources.Load<AudioClip>("audio/sfx/hover_button");
-
-		musicFireDarer = Resources.Load<AudioClip>("audio/music/sawsquarenoise_-_02_-_Fire_Darer");
-		musicPyramidLevel = Resources.Load<AudioClip>("audio/music/Visager_-_06_-_Pyramid_Level");
-		musicAirship = Resources.Load<AudioClip>("audio/music/Visager_-_08_-_Airship");
-		musicWeCanDoIt = Resources.Load<AudioClip>("audio/music/Visager_-_26_-_We_Can_Do_It_Loop");
+		sfxWalk = Resources.Load<AudioClip>("audio/sfx/move1");
+		
 		musicTogetherWeAreStronger = Resources.Load<AudioClip>("audio/music/Komiku_-_59_-_Together_we_are_stronger");
 		musicQuietSaturday = Resources.Load<AudioClip>("audio/music/Komiku_-_57_-_Quiet_Saturday");
 	}
 	public void PlayTitleMusic()
 	{
 		if(musicSource.isPlaying) return;
-		musicSource.clip = musicQuietSaturday;
+		musicSource.clip = musicTogetherWeAreStronger;
 		musicSource.Play();
 	}	
 	public void PlayGameMusic()
 	{
-		musicSource.clip = musicAirship;
+		musicSource.clip = musicQuietSaturday;
 		musicSource.Play();
 	}
 	public void PlayShoot()
@@ -57,13 +52,19 @@ public class SoundManager : eSingletonMono<SoundManager> {
 	}
 	public void PlayDeath()
 	{
-		sfxSource.clip = sfxShoot;
+		sfxSource.clip = sfxDeath;
 		sfxSource.Play();
 	}
 	public void PlayeMoveCursor()
 	{
 		//sfxSource.clip = sfxCursor;
 		//sfxSource.Play();
+	}
+	public void PlayWalk()
+	{
+		if(sfxSource.isPlaying) return;
+		sfxSource.clip = sfxWalk;
+		sfxSource.Play();
 	}
 	public void PlayHoverButton()
 	{
@@ -72,7 +73,7 @@ public class SoundManager : eSingletonMono<SoundManager> {
 	}
 	public void SetMusicVolume()
 	{
-		musicSource.volume = PersistentSettings.musicVolume;
+		musicSource.volume = PersistentSettings.musicVolume / 5;
 	}
 	public void SetSFXVolume()
 	{

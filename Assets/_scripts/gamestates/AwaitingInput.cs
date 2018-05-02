@@ -11,6 +11,7 @@ public class AwaitingInput : GameState {
 			MapManager.ins.unitGrid[GameScene.ins.selectionbox.gridpos].team == (Team)GameScene.ins.currentTurn)
 		{
 			GameScene.ins.SelectUnit();
+			
 		}
 		else
 		{

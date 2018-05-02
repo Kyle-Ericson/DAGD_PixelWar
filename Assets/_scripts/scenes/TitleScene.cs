@@ -37,8 +37,8 @@ public class TitleScene : eSingletonMono<TitleScene>
     }
     public void HandleOnline()
     {
-        SocketManager.ins.ConnectLocal();
-        //SocketManager.ins.ConnectOnline();
+        //SocketManager.ins.ConnectLocal();
+        SocketManager.ins.ConnectOnline();
         PersistentSettings.gameMode = GameMode.online;
         SceneManager.ins.ToLobby();
     }

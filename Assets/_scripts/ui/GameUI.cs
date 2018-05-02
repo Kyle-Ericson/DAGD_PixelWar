@@ -47,10 +47,11 @@ public class GameUI : MonoBehaviour
         if(PersistentSettings.gameMode == GameMode.online) 
         {
             BeginOnlineTurnTransition();
-            Debug.Log("End Turn Sent");
             SocketManager.ins.Send(PacketFactory.BuildEndTurn());
+            MapManager.ins.RemoveAllUnits();
             return;
         }
+        
         playerText.text = "Player " + GameScene.ins.currentTurn.ToString();
         turnText.text = "Turn " + GameScene.ins.turnCount.ToString();
         gameOver = false;
@@ -101,6 +102,7 @@ public class GameUI : MonoBehaviour
     }
     private void CheckTransition()
     {
+        Debug.Log("CHECK TRANSITION");
         transitionCount++;
         if (transitionCount >= 2)
         {
@@ -109,12 +111,14 @@ public class GameUI : MonoBehaviour
                 SceneManager.ins.ToPost();
             }
             GameScene.ins.EndTurn();
-            turnBarText.text = "Turn " + GameScene.ins.currentTurn;
+            turnBarText.text = "Turn " + GameScene.ins.turnCount;
             UpdateArmyText();
             UpdateFoodText();
             transitionCount = 0;
             transition1.OnLerpComplete -= CheckTransition;
             transition2.OnLerpComplete -= CheckTransition;
+            transition1.OnHalfLerpComplete -= CheckTransition;
+            transition2.OnHalfLerpComplete -= CheckTransition;
         }
     }
     public void OpenMenu()
@@ -144,7 +148,11 @@ public class GameUI : MonoBehaviour
         turnBarImage.color = PersistentSettings.teamColors[(Team)GameScene.ins.currentTurn];
         transition1.Reset();
         transition2.Reset();
-        
+        transition1.OnLerpComplete -= CheckTransition;
+        transition1.OnHalfLerpComplete -= CheckTransition;
+        transition2.OnLerpComplete -= CheckTransition;
+        transition2.OnHalfLerpComplete -= CheckTransition;
+        transitionCount = 0;
     }
     public void UnpauseTransition()
     {

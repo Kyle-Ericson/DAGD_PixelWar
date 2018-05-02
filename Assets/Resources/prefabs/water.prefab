@@ -62,7 +62,7 @@ MonoBehaviour:
   angle: -45
   speed: 0
   doFlips: 1
-  maxTime: 2
+  maxTime: 1
 --- !u!212 &212214359929004148
 SpriteRenderer:
   m_ObjectHideFlags: 1

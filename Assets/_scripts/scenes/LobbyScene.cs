@@ -28,9 +28,9 @@ public class LobbyScene : eSingletonMono<LobbyScene>  {
 	}
 	public void HandleFindGame()
 	{
-		SocketManager.ins.Send(PacketFactory.BuildFindGame());
 		PersistentSettings.isHost = false;
 		SceneManager.ins.ToWait();
+		SocketManager.ins.Send(PacketFactory.BuildFindGame());
 	}
 	public void HandleCreateGame()
 	{

@@ -3,16 +3,16 @@
     
     "Let's start by selecting our MINER. Simply LEFT CLICK or TAP on units to select them.",
 
-    "You may have noticed that you can hover over units to see their stats on the left side of the screen. Miners are the only units that can make money, so they are essential for a strong economy. Now lets move that MINER next to those minerals. LEFT Click or TAP on one of the blinking squares to move a unit. If you don't like your choice, you can always RIGHT CLICK or TAP with two fingers to reset the current unit.",
+    "Move that MINER next to those minerals. LEFT Click or TAP on one of the blinking squares to move a unit. RIGHT CLICK or TAP with TWO fingers to undo.",
 
-    "These new buttons are the Action Menu. This menu changes depending on the tiles you are next to or how many resources you have to use. Let's get to work and make some money! Select the button labeled GATHER, then LEFT CLICK or TAP on the space with GATHER.",
+    "These new buttons are the Action Menu. This menu changes depending on the tiles you are next to or how many resources you have to use. Select the button labeled GATHER then LEFT CLICK or TAP on the space labeled GATHER.",
 
-    "Check the top of the screen. Here you can see the current turn, your avaible resources and your army value. Use this to keep track of your resources so you can spend them effectively. Since our units can only move once and perform one action per turn, that is all we can do for now. Hit the End Turn button in the top right.",
+    "Check the top of the screen. You now have some money to spend! But our units can only move once and perform one action per turn, that is all we can do for now. Hit the End Turn button in the top right.",
     
-    "Now lets start building our army! Miners can build any unit as long as there is enough money available. Other units can make copies of themselves. Select the MINER like before, then LEFT CLICK or TAP it again to remain in that same space.",
+    "Miners can build any unit as long as there is enough money available. Other units can make copies of themselves. Select the MINER like before, then LEFT CLICK or TAP it again to remain in that same space.",
 
-    "Now select BUILD and build a SCOUT. Hover over the SCOUT to view it's stats. Here you can see the cost, speed (movement and vision range), attack power, health and attack range. You can also RIGHT CLICK or TAP and HOLD on a unit to view their attack range from that location. End your turn to continue.",
+    "Now select BUILD and select the SCOUT. Choose a location to build the SCOUT then end your turn to continue.",
 
-    "Go ahead and use the scout to finish off the enemy! Move the scout into range and attack! Play around some more with other unts in this tutorial to see how they work. GLHF!"
+    "Go ahead and play around some more with other unts to see how they work. Use them to find and finish off the enemy. You can see the stats of all the units in the OPTIONS menu. Use the dropdown menu in the top right."
   ]
 }

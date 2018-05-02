@@ -9,7 +9,7 @@
       "size": 0,
       "maxHealth": 1,
       "maxFood": 5,
-      "cost": 3
+      "cost": 2
     },
     {
       "name": "Scout",
@@ -47,11 +47,11 @@
     {
       "name": "Tank",
       "id": 4,
-      "range": 1,
+      "range": 2,
       "attack": 3,
       "speed": 3,
       "size": 3,
-      "maxHealth": 4,
+      "maxHealth": 5,
       "maxFood": 0,
       "cost": 4
     }

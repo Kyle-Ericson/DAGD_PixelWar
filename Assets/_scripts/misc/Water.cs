@@ -5,7 +5,7 @@ using UnityEngine;
 public class Water : MonoBehaviour {
 
 	public float angle = -45f;
-	public float speed = 1f;
+	public float speed = 2f;
 	public bool doFlips = false;
 	
 	private float timer = 0f;

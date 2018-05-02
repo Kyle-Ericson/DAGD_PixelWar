@@ -8,7 +8,7 @@ public class PregameScene : eSingletonMono<PregameScene>
 {
     public GameObject ui = null;
     public eMenu maplist = null;
-    public int mapToLoad = -1;
+    public int mapToLoad = 1;
     public Button startMatchButton = null;
 
     public override void Init()

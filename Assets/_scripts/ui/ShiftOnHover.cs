@@ -8,10 +8,12 @@ public class ShiftOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public int shiftAmount = 80;
     private Vector3 startpos;
+    private Vector3 originalScale;
     
 	
 	void Awake()
     {
+        originalScale = transform.localScale;
         //if (transform.localPosition != startpos) startpos = transform.localPosition;
     }
 
@@ -35,7 +37,7 @@ public class ShiftOnHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void Reset()
     {
         //transform.localPosition = startpos;
-        transform.localScale = new Vector3(1,1,1);
+        transform.localScale = originalScale;
     }
 
 }
