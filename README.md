@@ -1,2 +1,1 @@
-# Ted
-Working capstone project
+School Project. Ferris State University - Digital Animation and Game Design.
